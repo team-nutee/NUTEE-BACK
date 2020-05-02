@@ -1,4 +1,4 @@
-package kr.nutee.nuteebackend.Entity;
+package kr.nutee.nuteebackend.Domain;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,17 +16,17 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Like {
+public class Hashtag {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
     @CreationTimestamp
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    LocalDateTime updatedAt;
-
-    @Id
-    int userId;
-
-    @Id
-    int postId;
+    private LocalDateTime updatedAt;
 
 }

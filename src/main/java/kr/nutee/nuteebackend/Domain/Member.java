@@ -1,5 +1,7 @@
-package kr.nutee.nuteebackend.Entity;
+package kr.nutee.nuteebackend.Domain;
 
+import kr.nutee.nuteebackend.Enum.Interest;
+import kr.nutee.nuteebackend.Enum.Major;
 import kr.nutee.nuteebackend.Enum.RoleType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,6 +40,18 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(length=20)
     private RoleType role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length=20)
+    private Major major;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length=20)
+    private Interest interest;
+
+    private boolean isDeleted;
+
+    private boolean isBlocked;
 
 }
 

@@ -1,13 +1,10 @@
-package kr.nutee.nuteebackend.Entity;
+package kr.nutee.nuteebackend.Domain;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,17 +16,21 @@ import java.time.LocalDateTime;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String src;
+    private String src;
 
     @CreationTimestamp
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    int userId;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    int postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 }
