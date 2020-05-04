@@ -1,16 +1,13 @@
 package kr.nutee.nuteebackend.Domain;
 
+import kr.nutee.nuteebackend.Domain.common.LogDateTime;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class Comment {
+public class Comment extends LogDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,12 +15,6 @@ public class Comment {
     private String content;
 
     private boolean isDeleted;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

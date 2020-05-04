@@ -1,11 +1,10 @@
 package kr.nutee.nuteebackend.Domain;
 
+import kr.nutee.nuteebackend.Domain.common.LogDateTime;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post {
+public class Post extends LogDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,11 +23,8 @@ public class Post {
 
     private boolean isBlocked;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    @OneToMany (mappedBy = "post")
+    private List<Image> images = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name="member_id")
