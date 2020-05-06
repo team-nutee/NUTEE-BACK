@@ -26,11 +26,11 @@ public class Post extends LogDateTime {
     @OneToMany (mappedBy = "post")
     private List<Image> images = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "retweet_id")
     private Post retweet;
 }
