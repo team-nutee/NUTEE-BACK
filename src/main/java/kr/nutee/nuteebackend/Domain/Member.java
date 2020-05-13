@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder @NoArgsConstructor @AllArgsConstructor
 public class Member extends LogDateTime {
     @Id
@@ -32,7 +32,7 @@ public class Member extends LogDateTime {
     private LocalDateTime accessedAt;
 
     @OneToMany (mappedBy = "member")
-    private List<Image> images = new ArrayList<>();
+    private final List<Image> images = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(length=20)

@@ -8,7 +8,6 @@ import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @MappedSuperclass
 public abstract class LogDateTime {
     @CreationTimestamp

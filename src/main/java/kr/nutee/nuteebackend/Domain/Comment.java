@@ -3,9 +3,11 @@ package kr.nutee.nuteebackend.Domain;
 import kr.nutee.nuteebackend.Domain.common.LogDateTime;
 import lombok.*;
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Getter @Setter @Builder
+@Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class Comment extends LogDateTime {
     @Id
@@ -27,4 +29,7 @@ public class Comment extends LogDateTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Comment> child = new ArrayList<>();
 }

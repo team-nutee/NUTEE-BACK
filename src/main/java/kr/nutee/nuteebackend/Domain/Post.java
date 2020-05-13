@@ -8,7 +8,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,8 +22,8 @@ public class Post extends LogDateTime {
 
     private boolean isBlocked;
 
-    @OneToMany (mappedBy = "post")
-    private List<Image> images = new ArrayList<>();
+    @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    private final List<Image> images = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
