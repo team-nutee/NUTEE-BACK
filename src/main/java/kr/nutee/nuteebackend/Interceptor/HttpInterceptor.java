@@ -1,4 +1,4 @@
-package kr.nutee.nuteebackend.Config;
+package kr.nutee.nuteebackend.Interceptor;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,6 +10,8 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class HttpInterceptor extends HandlerInterceptorAdapter {
@@ -21,6 +23,15 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
+    public Map<String,Object> getTokenInfo(HttpServletRequest request){
+        Map<String,Object> map = new HashMap<>();
+        String token = request.getHeader("Authorization").split(" ")[1];
+        Claims body = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        map.put("sub",body.getSubject());
+        map.put("role",body.get("role",String.class));
+        map.put("id",body.get("id",Integer.class).toString());
+        return map;
+    }
 
     @Override
     public boolean preHandle(
@@ -30,9 +41,11 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
     ) throws Exception {
         String token = request.getHeader("Authorization").split(" ")[1];
         Claims body = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        response.addHeader("sub",body.getSubject());
-        response.addHeader("role",body.get("role",String.class));
-        response.addHeader("id",body.get("id",Integer.class).toString());
+        Map<String,Object> map = new HashMap<>();
+        map.put("sub",body.getSubject());
+        map.put("role",body.get("role",String.class));
+        map.put("id",body.get("id",Integer.class));
+        request.setAttribute("user",map);
         return true;
     }
 }

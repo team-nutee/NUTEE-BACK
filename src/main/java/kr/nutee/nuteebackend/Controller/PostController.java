@@ -1,7 +1,9 @@
 package kr.nutee.nuteebackend.Controller;
 
+import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,13 +15,15 @@ import javax.servlet.http.HttpServletRequest;
 @ResponseBody
 @Slf4j
 public class PostController {
+    @Autowired
+    HttpInterceptor httpInterceptor;
 
     /*
         쿼리로 lastId, limit, 카테고리 받음
      */
     @GetMapping(path = "/all")
     public String getAllPosts(HttpServletRequest request){
-        System.out.println(request.getHeader("id"));
+        System.out.println(request.getAttribute("user"));
         return "SUCCESS";
     }
 
