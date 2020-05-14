@@ -1,17 +1,17 @@
-package kr.nutee.nuteebackend.Entity;
+package kr.nutee.nuteebackend.Domain;
 
+import kr.nutee.nuteebackend.Domain.common.LogDateTime;
 import kr.nutee.nuteebackend.Enum.RoleType;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder @NoArgsConstructor @AllArgsConstructor
-public class Member {
+public class Member extends LogDateTime {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
@@ -27,17 +27,24 @@ public class Member {
 
     private String password;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
     private LocalDateTime accessedAt;
+
+    @OneToMany (mappedBy = "member")
+    private final List<Image> images = new ArrayList<>();
+
+    @OneToMany (mappedBy = "member")
+    private final List<Interest> interests = new ArrayList<>();
+
+    @OneToMany (mappedBy = "member")
+    private final List<Major> majors = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(length=20)
     private RoleType role;
+
+    private boolean isDeleted;
+
+    private boolean isBlocked;
 
 }
 
