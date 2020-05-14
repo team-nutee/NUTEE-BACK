@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping(path = "/sns/post",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 @RequiredArgsConstructor
@@ -12,8 +14,17 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class PostController {
 
+    /*
+        쿼리로 lastId, limit, 카테고리 받음
+     */
+    @GetMapping(path = "/all")
+    public String getAllPosts(HttpServletRequest request){
+        System.out.println(request.getHeader("id"));
+        return "SUCCESS";
+    }
+
     @GetMapping(path = "/")
-    public void getPosts(){
+    public void getCategoryPosts(){
 
     }
 

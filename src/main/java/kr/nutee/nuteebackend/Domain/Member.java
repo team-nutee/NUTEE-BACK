@@ -1,8 +1,6 @@
 package kr.nutee.nuteebackend.Domain;
 
 import kr.nutee.nuteebackend.Domain.common.LogDateTime;
-import kr.nutee.nuteebackend.Enum.Interest;
-import kr.nutee.nuteebackend.Enum.Major;
 import kr.nutee.nuteebackend.Enum.RoleType;
 import lombok.*;
 import javax.persistence.*;
@@ -34,17 +32,15 @@ public class Member extends LogDateTime {
     @OneToMany (mappedBy = "member")
     private final List<Image> images = new ArrayList<>();
 
+    @OneToMany (mappedBy = "member")
+    private final List<Interest> interests = new ArrayList<>();
+
+    @OneToMany (mappedBy = "member")
+    private final List<Major> majors = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Column(length=20)
     private RoleType role;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length=20)
-    private Major major;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length=20)
-    private Interest interest;
 
     private boolean isDeleted;
 
