@@ -12,6 +12,7 @@ import javax.persistence.*;
 public class Image extends LogDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "image_id")
     private Long id;
 
     private String src;

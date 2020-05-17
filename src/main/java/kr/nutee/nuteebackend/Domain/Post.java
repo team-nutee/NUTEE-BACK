@@ -3,6 +3,7 @@ package kr.nutee.nuteebackend.Domain;
 import kr.nutee.nuteebackend.Domain.common.LogDateTime;
 import lombok.*;
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,10 @@ import java.util.List;
 public class Post extends LogDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
     private Long id;
+
+    private String title;
 
     private String content;
 
@@ -32,4 +36,8 @@ public class Post extends LogDateTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "retweet_id")
     private Post retweet;
+
+    private String interest;
+
+    private String major;
 }

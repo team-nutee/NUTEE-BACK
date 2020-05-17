@@ -16,6 +16,7 @@ public class Interest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "interest_id")
     private Long id;
 
     @Column(length=20)

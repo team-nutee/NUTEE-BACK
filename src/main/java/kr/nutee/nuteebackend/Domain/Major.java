@@ -16,6 +16,7 @@ public class Major {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "major_id")
     private Long id;
 
     @Column(length=20)

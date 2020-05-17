@@ -12,6 +12,7 @@ import javax.persistence.*;
 public class Report extends LogDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "report_id")
     private Long id;
 
     private String content;

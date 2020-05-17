@@ -14,6 +14,7 @@ import java.util.List;
 public class Member extends LogDateTime {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
 
     @Column(nullable=false, unique=true, length=20)

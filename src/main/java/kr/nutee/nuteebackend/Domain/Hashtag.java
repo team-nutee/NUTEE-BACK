@@ -2,10 +2,8 @@ package kr.nutee.nuteebackend.Domain;
 
 import kr.nutee.nuteebackend.Domain.common.LogDateTime;
 import lombok.*;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -15,6 +13,7 @@ import javax.persistence.Id;
 public class Hashtag extends LogDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "hashtag_id")
     private Long id;
 
     private String name;
