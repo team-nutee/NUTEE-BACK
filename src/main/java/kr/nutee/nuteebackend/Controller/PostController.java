@@ -3,6 +3,7 @@ package kr.nutee.nuteebackend.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
 import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
+import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,22 +28,29 @@ public class PostController {
     @Autowired
     PostService postService;
 
+    @Autowired
+    MemberService memberService;
+
     /*
         쿼리로 lastId, limit, 카테고리 받음
      */
-    @PostMapping(path = "/all")
-    public String getAllPosts(
+    @PostMapping(path = "/preference")
+    public String getPreferencePosts(
             HttpServletRequest request,
             @RequestParam("lastId") int lastId,
             @RequestParam("limit") int limit
     ){
-        System.out.println(request.getAttribute("user"));
+
         return "SUCCESS";
     }
 
     @GetMapping(path = "")
-    public void getCategoryPosts(){
-
+    public void getCategoryPosts(
+            HttpServletRequest request,
+            @RequestBody @Valid CreatePostRequest body
+    ){
+        Long id = getTokenMemberId(request);
+        postService.getPreferencePosts(id);
     }
 
     @PostMapping(path = "")
