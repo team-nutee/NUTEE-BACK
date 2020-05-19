@@ -23,11 +23,3 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
-
-cloud:
-  aws:
-    region:
-      static: ap-northeast-2
-    credentials:
-      access-key: AKIATMO3KHNJRJJHGLTE
-      secret-key: 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
