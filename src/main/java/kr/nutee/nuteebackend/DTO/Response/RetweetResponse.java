@@ -1,20 +1,18 @@
 package kr.nutee.nuteebackend.DTO.Response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import kr.nutee.nuteebackend.DTO.Comment;
-import kr.nutee.nuteebackend.DTO.Image;
-import kr.nutee.nuteebackend.DTO.Like;
-import kr.nutee.nuteebackend.DTO.User;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Data
+@NoArgsConstructor
 @Builder
-public class CreatePostResponse implements Serializable {
+public class RetweetResponse implements Serializable {
     private Long id;
     private String title;
     private String content;
@@ -22,15 +20,16 @@ public class CreatePostResponse implements Serializable {
     private LocalDateTime updatedAt;
     private boolean isBlocked;
     private User user;
-    private List<Image> images;
-    private List<Like> likers;
-    private List<Comment> comments;
-    private CreatePostResponse retweet;
+    private List<ImageResponse> imageResponses;
+    private List<LikeResponse> likers;
+    private List<CommentResponse> commentResponses;
     private String interest;
     private String major;
 
     @QueryProjection
-    public CreatePostResponse(Long id,String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isBlocked, User user, List<Image> images, List<Like> likers, List<Comment> comments, CreatePostResponse retweet, String interest, String major) {
+    public RetweetResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
+                           boolean isBlocked, User user, List<ImageResponse> imageResponses, List<LikeResponse> likers,
+                           List<CommentResponse> commentResponses, String interest, String major) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -38,10 +37,9 @@ public class CreatePostResponse implements Serializable {
         this.updatedAt = updatedAt;
         this.isBlocked = isBlocked;
         this.user = user;
-        this.images = images;
+        this.imageResponses = imageResponses;
         this.likers = likers;
-        this.comments = comments;
-        this.retweet = retweet;
+        this.commentResponses = commentResponses;
         this.interest = interest;
         this.major = major;
     }

@@ -30,8 +30,8 @@ public class Member extends LogDateTime {
 
     private LocalDateTime accessedAt;
 
-    @OneToMany (mappedBy = "member")
-    private final List<Image> images = new ArrayList<>();
+    @OneToOne (mappedBy = "member")
+    private Image image;
 
     @OneToMany (mappedBy = "member")
     private final List<Interest> interests = new ArrayList<>();

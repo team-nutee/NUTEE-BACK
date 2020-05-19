@@ -1,6 +1,6 @@
 package kr.nutee.nuteebackend.DTO.Request;
 
-import kr.nutee.nuteebackend.DTO.Image;
+import kr.nutee.nuteebackend.DTO.Response.ImageResponse;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
@@ -12,14 +12,14 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreatePostRequest implements Serializable {
+public class PostRequest implements Serializable {
     @NotEmpty
     String title;
 
     @NotEmpty
     String content;
 
-    List<Image> images;
+    List<ImageResponse> images;
 
     @NotEmpty
     String interest;

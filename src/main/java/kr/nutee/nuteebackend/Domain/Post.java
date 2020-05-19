@@ -28,6 +28,12 @@ public class Post extends LogDateTime {
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
     private final List<Image> images = new ArrayList<>();
 
+    @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    private final List<Likes> likes = new ArrayList<>();
+
+    @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    private final List<Comment> comments = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
     private Member member;
