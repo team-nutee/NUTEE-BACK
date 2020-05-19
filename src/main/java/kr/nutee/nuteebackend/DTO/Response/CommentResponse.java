@@ -1,4 +1,4 @@
-package kr.nutee.nuteebackend.DTO;
+package kr.nutee.nuteebackend.DTO.Response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
@@ -8,22 +8,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @Builder
-public class Comment implements Serializable {
+public class CommentResponse implements Serializable {
     private Long id;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<Comment> reComments;
+    private List<ReCommentResponse> reCommentResponses;
     User user;
 
     @QueryProjection
-    public Comment(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, List<Comment> reComments, User user) {
+    public CommentResponse(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, List<ReCommentResponse> reCommentResponses, User user) {
         this.id = id;
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.reComments = reComments;
+        this.reCommentResponses = reCommentResponses;
         this.user = user;
     }
 }

@@ -1,7 +1,8 @@
 package kr.nutee.nuteebackend.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
+import kr.nutee.nuteebackend.DTO.Request.PostRequest;
+import kr.nutee.nuteebackend.DTO.Response.PostResponse;
 import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
@@ -47,19 +48,19 @@ public class PostController {
     @GetMapping(path = "")
     public void getCategoryPosts(
             HttpServletRequest request,
-            @RequestBody @Valid CreatePostRequest body
+            @RequestBody @Valid PostRequest body
     ){
         Long id = getTokenMemberId(request);
         postService.getPreferencePosts(id);
     }
 
     @PostMapping(path = "")
-    public void createPost(
+    public PostResponse createPost(
             HttpServletRequest request,
-            @RequestBody @Valid CreatePostRequest body
+            @RequestBody @Valid PostRequest body
     ){
         Long id = getTokenMemberId(request);
-        postService.createPost(id,body);
+        return postService.createPost(id,body);
     }
 
     @GetMapping(path = "/{postId}")

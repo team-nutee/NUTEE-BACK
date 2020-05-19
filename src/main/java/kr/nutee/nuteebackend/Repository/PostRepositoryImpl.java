@@ -3,10 +3,6 @@ package kr.nutee.nuteebackend.Repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.nutee.nuteebackend.DTO.PostSearchCondition;
-import kr.nutee.nuteebackend.DTO.QImage;
-import kr.nutee.nuteebackend.DTO.QUser;
-import kr.nutee.nuteebackend.DTO.Response.CreatePostResponse;
-import kr.nutee.nuteebackend.DTO.Response.QCreatePostResponse;
 import kr.nutee.nuteebackend.Domain.Post;
 import kr.nutee.nuteebackend.Domain.QPost;
 

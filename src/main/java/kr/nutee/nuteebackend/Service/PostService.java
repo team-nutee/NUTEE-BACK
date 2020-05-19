@@ -1,11 +1,11 @@
 package kr.nutee.nuteebackend.Service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kr.nutee.nuteebackend.DTO.PostSearchCondition;
-import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
+import kr.nutee.nuteebackend.DTO.*;
+import kr.nutee.nuteebackend.DTO.Request.PostRequest;
+import kr.nutee.nuteebackend.DTO.Response.*;
 import kr.nutee.nuteebackend.Domain.*;
 import kr.nutee.nuteebackend.Repository.*;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,36 +44,163 @@ public class PostService {
     ImageRepository imageRepository;
 
     @Transactional
-    public void createPost(Long memberId, CreatePostRequest body){
+    public PostResponse createPost(Long memberId, PostRequest body){
         Member member = memberRepository.findMemberById(memberId);
-        Post post = Post.builder()
-                .content(body.getContent())
-                .interest(body.getInterest())
-                .major(body.getMajor())
-                .isBlocked(false)
-                .isDeleted(false)
-                .member(member)
-                .title(body.getTitle())
-                .build();
-        postRepository.save(post);
+        Post post = fillPost(body, member);
+        post = postRepository.save(post);
+        saveHashTag(body, post);
+        saveImage(body, post);
+        return fillPostResponse(post);
+    }
 
+    private void saveImage(PostRequest body, Post post) {
+        if(body.getImages().size()!=0){
+            body.getImages().forEach(v->imageRepository.save(Image.builder().post(post).src(v.getSrc()).build()));
+        }
+    }
+
+    private Post fillPost(PostRequest body, Member member) {
+        return Post.builder()
+                    .content(body.getContent())
+                    .interest(body.getInterest())
+                    .major(body.getMajor())
+                    .isBlocked(false)
+                    .isDeleted(false)
+                    .member(member)
+                    .title(body.getTitle())
+                    .build();
+    }
+
+    private void saveHashTag(PostRequest body, Post post) {
         List<String> hashtags = getHashtags(body.getContent());
         if(hashtags.size()!=0){
             hashtags.forEach(tag->{
                 if(hashtagRepository.findByName(tag)==null){
                     Hashtag hashtag = Hashtag.builder().name(tag.substring(1).toLowerCase()).build();
-                    log.info(tag);
+                    Hashtag findHash = hashtagRepository.findByName(hashtag.getName());
+                    if(findHash != null){
+                        PostHashtag postHashtag = PostHashtag.builder().hashtag(findHash).post(post).build();
+                        postHashtagRepository.save(postHashtag);
+                        return;
+                    }
                     hashtag = hashtagRepository.save(hashtag);
                     PostHashtag postHashtag = PostHashtag.builder().hashtag(hashtag).post(post).build();
                     postHashtagRepository.save(postHashtag);
                 }
             });
         }
-
-        if(body.getImages().size()!=0){
-            body.getImages().forEach(v->imageRepository.save(Image.builder().src(v.getSrc()).build()));
-        }
     }
+
+    private PostResponse fillPostResponse(Post post) {
+        List<ImageResponse> imageResponses = transferImageResponses(post);
+        List<LikeResponse> likers = transferLikeResponses(post);
+        List<ReCommentResponse> reComments = transferReCommentResponses(post);
+        List<CommentResponse> comments = transferCommentResponses(post, reComments);
+        RetweetResponse retweet = transferRetweet(post.getRetweet());
+
+        return PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .isBlocked(post.isBlocked())
+                .user(transferUser(post.getMember()))
+                .images(imageResponses)
+                .likers(likers)
+                .comments(comments)
+                .retweet(retweet)
+                .major(post.getMajor())
+                .interest(post.getInterest())
+                .build();
+    }
+
+    private RetweetResponse transferRetweet(Post retweet) {
+        if(retweet == null){
+            return null;
+        }
+        return RetweetResponse.builder()
+                    .id(retweet.getId())
+                    .content(retweet.getContent())
+                    .commentResponses(transferCommentResponses(retweet,transferReCommentResponses(retweet)))
+                    .createdAt(retweet.getCreatedAt())
+                    .imageResponses(transferImageResponses(retweet))
+                    .interest(retweet.getInterest())
+                    .isBlocked(retweet.isBlocked())
+                    .likers(transferLikeResponses(retweet))
+                    .major(retweet.getMajor())
+                    .updatedAt(retweet.getUpdatedAt())
+                    .title(retweet.getTitle())
+                    .user(transferUser(retweet.getMember()))
+                    .build();
+    }
+
+    private List<ImageResponse> transferImageResponses(Post post) {
+        if(post.getImages().size()==0){
+            return null;
+        }
+        List<ImageResponse> imageResponses = new ArrayList<>();
+        post.getImages().forEach(v-> imageResponses.add(transferImage(v)));
+        return imageResponses;
+    }
+
+    private List<LikeResponse> transferLikeResponses(Post post) {
+        if(post.getLikes().size()==0){
+            return null;
+        }
+        List<LikeResponse> likers = new ArrayList<>();
+        post.getLikes().forEach(v-> likers.add(new LikeResponse(v.getId())));
+        return likers;
+    }
+
+    private List<CommentResponse> transferCommentResponses(Post post, List<ReCommentResponse> reComments) {
+        if(post.getComments().size()==0){
+            return null;
+        }
+        List<CommentResponse> comments = new ArrayList<>();
+        post.getComments().forEach(v->comments.add(new CommentResponse(
+                v.getId(),
+                v.getContent(),
+                v.getCreatedAt(),
+                v.getUpdatedAt(),
+                reComments,
+                transferUser(v.getMember())
+        )));
+        return comments;
+    }
+
+    private List<ReCommentResponse> transferReCommentResponses(Post post) {
+        List<ReCommentResponse> reComments = new ArrayList<>();
+        post.getComments().forEach(v->v.getChild().forEach(r->reComments.add(new ReCommentResponse(
+                v.getId(),
+                v.getContent(),
+                v.getCreatedAt(),
+                v.getUpdatedAt(),
+                transferUser(v.getMember())
+        ))));
+        if(reComments.size()==0){
+            return null;
+        }
+        return reComments;
+    }
+
+    private User transferUser(Member member) {
+        return new User(
+                member.getId(),
+                member.getNickname(),
+                transferImage(member.getImage())
+        );
+    }
+
+    private ImageResponse transferImage(Image image) {
+        if(image == null){
+            return null;
+        }
+        return new ImageResponse(
+                image.getSrc()
+        );
+    }
+
 
     //글 내용에 해쉬태그가 있는 부분들을 리스트에 저장에 반환한다.
     public List<String> getHashtags(String content){
@@ -99,4 +226,5 @@ public class PostService {
 
         return null;
     }
+
 }

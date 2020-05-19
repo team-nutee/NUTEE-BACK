@@ -32,5 +32,5 @@ public class Comment extends LogDateTime {
     private Comment parent;
 
     @OneToMany(mappedBy = "parent")
-    private List<Comment> child = new ArrayList<>();
+    private final List<Comment> child = new ArrayList<>();
 }

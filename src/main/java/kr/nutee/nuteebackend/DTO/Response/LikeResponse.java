@@ -1,4 +1,4 @@
-package kr.nutee.nuteebackend.DTO;
+package kr.nutee.nuteebackend.DTO.Response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
@@ -6,13 +6,14 @@ import lombok.*;
 import java.io.Serializable;
 
 @Data
+@NoArgsConstructor
 @Builder
-public class Like implements Serializable {
+public class LikeResponse implements Serializable {
 
-    int id;
+    Long id;
 
     @QueryProjection
-    public Like(int id) {
+    public LikeResponse(Long id) {
         this.id = id;
     }
 }
