@@ -20,10 +20,10 @@ public class MemberService {
     public List<Post> getFeedsList(){
         return null;
     }
-    //id로부터 유저를 가져온다.
-    public Member getUser(Long id){
-        return memberRepository.search
-    }
+//    //id로부터 유저를 가져온다.
+//    public Member getUser(Long id){
+//        return memberRepository.search
+//    }
 
 
 

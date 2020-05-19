@@ -1,14 +1,18 @@
 package kr.nutee.nuteebackend.DTO;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
+@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Like implements Serializable {
+
     int id;
+
+    @QueryProjection
+    public Like(int id) {
+        this.id = id;
+    }
 }

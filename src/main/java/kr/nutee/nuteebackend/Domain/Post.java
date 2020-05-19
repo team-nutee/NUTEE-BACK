@@ -3,7 +3,6 @@ package kr.nutee.nuteebackend.Domain;
 import kr.nutee.nuteebackend.Domain.common.LogDateTime;
 import lombok.*;
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 

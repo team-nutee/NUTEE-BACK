@@ -1,6 +1,7 @@
 package kr.nutee.nuteebackend.Service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import kr.nutee.nuteebackend.DTO.PostSearchCondition;
 import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
 import kr.nutee.nuteebackend.Domain.*;
 import kr.nutee.nuteebackend.Repository.*;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -88,7 +90,12 @@ public class PostService {
     //해당 유저가 구독한 게시판의 글들을 가져온다.
     public List<Post> getPreferencePosts(Long id){
         Member member = memberRepository.findMemberById(id);
-        QMember m  = new QMember("m");
+        List<String> majors = member.getMajors().stream().map(Major::getMajor).collect(Collectors.toList());
+        PostSearchCondition condition =
+                PostSearchCondition.builder()
+                .majors(majors)
+                .build();
+        postRepository.search(condition);
 
         return null;
     }

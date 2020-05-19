@@ -7,6 +7,5 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.List;
 
-public interface PostRepository extends JpaRepository<Post,Long>, QuerydslPredicateExecutor<Post> {
-    List<Post> search(PostSearchCondition condition);
+public interface PostRepository extends JpaRepository<Post,Long>, QuerydslPredicateExecutor<Post> ,PostRepositoryCustom {
 }

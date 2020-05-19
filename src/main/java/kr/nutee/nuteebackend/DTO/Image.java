@@ -1,14 +1,12 @@
 package kr.nutee.nuteebackend.DTO;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
+@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Image implements Serializable {
     String src;
 
@@ -17,5 +15,10 @@ public class Image implements Serializable {
         return "Image{" +
                 "src='" + src + '\'' +
                 '}';
+    }
+
+    @QueryProjection
+    public Image(String src) {
+        this.src = src;
     }
 }

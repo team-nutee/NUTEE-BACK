@@ -10,5 +10,7 @@ import java.util.List;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long>, QuerydslPredicateExecutor<Member> {
-
+    Member findByUserId(String userId);
+    Member findMemberById(Long memberId);
+    List<Member> findAll();
 }
