@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
+@Getter @Setter
 @Builder @NoArgsConstructor @AllArgsConstructor
 public class Member extends LogDateTime {
     @Id

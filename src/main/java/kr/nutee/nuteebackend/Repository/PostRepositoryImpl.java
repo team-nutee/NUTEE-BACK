@@ -9,8 +9,6 @@ import kr.nutee.nuteebackend.Domain.QPost;
 import static kr.nutee.nuteebackend.Domain.QPost.post;
 import static kr.nutee.nuteebackend.Domain.QMember.member;
 
-
-
 import javax.persistence.EntityManager;
 import java.util.List;
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member, Long>, QuerydslPredicateExecutor<Member> {
+public interface MemberRepository extends JpaRepository<Member, Long>{
     Member findByUserId(String userId);
     Member findMemberById(Long memberId);
     List<Member> findAll();

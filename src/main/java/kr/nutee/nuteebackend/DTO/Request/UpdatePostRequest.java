@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostRequest implements Serializable {
+public class UpdatePostRequest implements Serializable {
     @NotEmpty
     String title;
 
@@ -20,12 +20,6 @@ public class PostRequest implements Serializable {
     String content;
 
     List<ImageResponse> images;
-
-    @NotEmpty
-    String interest;
-
-    @NotEmpty
-    String major;
 
     @Override
     public String toString() {

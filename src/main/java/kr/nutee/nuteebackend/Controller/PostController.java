@@ -1,15 +1,20 @@
 package kr.nutee.nuteebackend.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.nutee.nuteebackend.DTO.Request.PostRequest;
-import kr.nutee.nuteebackend.DTO.Response.PostResponse;
+import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
+import kr.nutee.nuteebackend.DTO.Request.ReportRequest;
+import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
 import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,17 +28,12 @@ import java.util.Map;
 @Slf4j
 public class PostController {
 
-    @Autowired
-    HttpInterceptor httpInterceptor;
-
-    @Autowired
-    PostService postService;
-
-    @Autowired
-    MemberService memberService;
+    private final HttpInterceptor httpInterceptor;
+    private final PostService postService;
+    private final MemberService memberService;
 
     /*
-        쿼리로 lastId, limit, 카테고리 받음
+        즐겨찾기 게시판 불러오기
      */
     @PostMapping(path = "/preference")
     public String getPreferencePosts(
@@ -45,42 +45,76 @@ public class PostController {
         return "SUCCESS";
     }
 
+    /*
+        카테고리 게시판 불러오기
+     */
     @GetMapping(path = "")
     public void getCategoryPosts(
             HttpServletRequest request,
-            @RequestBody @Valid PostRequest body
+            @RequestBody @Valid CreatePostRequest body
     ){
         Long id = getTokenMemberId(request);
         postService.getPreferencePosts(id);
     }
 
+    /*
+        글작성
+     */
     @PostMapping(path = "")
-    public PostResponse createPost(
+    public ResponseEntity<Object> createPost(
             HttpServletRequest request,
-            @RequestBody @Valid PostRequest body
+            @RequestBody @Valid CreatePostRequest body
     ){
         Long id = getTokenMemberId(request);
-        return postService.createPost(id,body);
+        return new ResponseEntity<>(postService.createPost(id,body), HttpStatus.OK);
     }
 
+    /*
+        글 읽기
+     */
     @GetMapping(path = "/{postId}")
-    public void getPost(@PathVariable String postId){
-
+    public ResponseEntity<Object> getPost(
+            HttpServletRequest request,
+            @PathVariable String postId
+    ){
+        Long id = getTokenMemberId(request);
+        return new ResponseEntity<>(postService.getPost(id), HttpStatus.OK);
     }
 
+    /*
+        글 수정
+     */
     @PatchMapping(path = "/{postId}")
-    public void updatePost(@PathVariable String postId){
-
+    public ResponseEntity<Object> updatePost(
+            HttpServletRequest request,
+            @PathVariable String postId,
+            @RequestBody @Valid UpdatePostRequest body
+    ){
+        Long memberId = getTokenMemberId(request);
+        return new ResponseEntity<>(postService.updatePost(memberId,Long.parseLong(postId), body), HttpStatus.OK);
     }
 
+    /*
+        글 삭제
+     */
     @DeleteMapping(path = "/{postId}")
-    public void deletePost(@PathVariable String postId){
-
+    public ResponseEntity<Object> deletePost(
+            @PathVariable String postId
+    ){
+        return new ResponseEntity<>(postService.deletePost(Long.parseLong(postId)),HttpStatus.OK);
     }
 
+    /*
+        글 신고
+     */
     @PostMapping(path = "/{postId}/report")
-    public void reportPost(@PathVariable String postId){
-
+    public ResponseEntity<Object> reportPost(
+            @PathVariable String postId,
+            HttpServletRequest request,
+            @RequestBody @Valid ReportRequest body
+            ){
+        Long memberId = getTokenMemberId(request);
+        return new ResponseEntity<>(postService.reportPost(Long.parseLong(postId),memberId,body.getContent()),HttpStatus.OK);
     }
 
     @GetMapping(path = "/{postId}/comments")

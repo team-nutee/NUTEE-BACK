@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 @Entity(name = "posthashtag")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -8,6 +8,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,6 +34,9 @@ public class Post extends LogDateTime {
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
     private final List<Comment> comments = new ArrayList<>();
+
+    @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    private final List<Report> reporters = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")

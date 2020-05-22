@@ -2,9 +2,12 @@ package kr.nutee.nuteebackend.Service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.nutee.nuteebackend.DTO.*;
-import kr.nutee.nuteebackend.DTO.Request.PostRequest;
+import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
+import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
 import kr.nutee.nuteebackend.DTO.Response.*;
 import kr.nutee.nuteebackend.Domain.*;
+import kr.nutee.nuteebackend.Enum.ErrorCode;
+import kr.nutee.nuteebackend.Exception.NotAllowedException;
 import kr.nutee.nuteebackend.Repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -23,7 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PostService {
 
-    @Autowired
+    @PersistenceContext
     EntityManager em;
 
     JPAQueryFactory queryFactory = new JPAQueryFactory(em);
@@ -43,8 +49,15 @@ public class PostService {
     @Autowired
     ImageRepository imageRepository;
 
+    @Autowired
+    ReportRepository reportRepository;
+
+    public List<PostResponse> getCategoryPosts(int lastId, int offset, String category){
+        return null;
+    }
+
     @Transactional
-    public PostResponse createPost(Long memberId, PostRequest body){
+    public PostResponse createPost(Long memberId, CreatePostRequest body){
         Member member = memberRepository.findMemberById(memberId);
         Post post = fillPost(body, member);
         post = postRepository.save(post);
@@ -53,13 +66,80 @@ public class PostService {
         return fillPostResponse(post);
     }
 
-    private void saveImage(PostRequest body, Post post) {
+    public PostResponse getPost(Long postId){
+        Post post = postRepository.findPostById(postId);
+        return fillPostResponse(post);
+    }
+
+    @Transactional
+    public PostResponse updatePost(Long memberId, Long postId, UpdatePostRequest body) throws NotAllowedException {
+        Post post = postRepository.findPostById(postId);
+        if(!post.getMember().getId().equals(memberId)){
+            throw new NotAllowedException("접근 권한이 없는 유저입니다.", ErrorCode.ACCEPT_DENIED);
+        }
+
+        post.setTitle(body.getTitle());
+        post.setContent(body.getContent());
+
+        postRepository.save(post);
+        imageRepository.deleteImagesByPostId(postId);
+        em.flush();
+        saveImage(body,post);
+        return fillPostResponse(postRepository.findPostById(postId));
+    }
+
+    @Transactional
+    public PostResponse deletePost(Long postId){
+        Post post = postRepository.findPostById(postId);
+        post.setDeleted(true);
+        post = postRepository.save(post);
+        return fillPostResponse(post);
+    }
+
+    @Transactional
+    public PostResponse reportPost(Long postId, Long memberId, String content) {
+        Member member = memberRepository.findMemberById(memberId);
+        Post post = postRepository.findPostById(postId);
+        List<Report> reports = reportRepository.findReportsByPostId(postId);
+        if(reports.stream().anyMatch(v -> v.getMember().getId().equals(memberId))){
+            //이미 신고한 글 예외처리
+        }
+
+        //신고 등록
+        Report report = Report.builder()
+                .content(content)
+                .member(member)
+                .post(post)
+                .build();
+        reportRepository.save(report);
+
+        //포스트 신고카운트
+        Query query = em.createQuery("SELECT COUNT(r) FROM Report r where r.post.id = :postId",Long.class)
+                .setParameter("postId",postId);
+        Object count = query.getSingleResult();
+
+        //신고횟수 넘을 시 포스트 블락
+        if((Long)count >= 5){
+            post.setBlocked(true);
+            postRepository.save(post);
+        }
+
+        return fillPostResponse(post);
+    }
+
+    private void saveImage(CreatePostRequest body, Post post) {
         if(body.getImages().size()!=0){
             body.getImages().forEach(v->imageRepository.save(Image.builder().post(post).src(v.getSrc()).build()));
         }
     }
 
-    private Post fillPost(PostRequest body, Member member) {
+    private void saveImage(UpdatePostRequest body, Post post) {
+        if(body.getImages().size()!=0){
+            body.getImages().forEach(v->imageRepository.save(Image.builder().post(post).src(v.getSrc()).build()));
+        }
+    }
+
+    private Post fillPost(CreatePostRequest body, Member member) {
         return Post.builder()
                     .content(body.getContent())
                     .interest(body.getInterest())
@@ -71,7 +151,18 @@ public class PostService {
                     .build();
     }
 
-    private void saveHashTag(PostRequest body, Post post) {
+    private Post fillPost(UpdatePostRequest body, Member member,Long postId) {
+        return Post.builder()
+                .id(postId)
+                .title(body.getTitle())
+                .content(body.getContent())
+                .isBlocked(false)
+                .isDeleted(false)
+                .member(member)
+                .build();
+    }
+
+    private void saveHashTag(CreatePostRequest body, Post post) {
         List<String> hashtags = getHashtags(body.getContent());
         if(hashtags.size()!=0){
             hashtags.forEach(tag->{
@@ -222,7 +313,7 @@ public class PostService {
                 PostSearchCondition.builder()
                 .majors(majors)
                 .build();
-        postRepository.search(condition);
+//        postRepository.search(condition);
 
         return null;
     }

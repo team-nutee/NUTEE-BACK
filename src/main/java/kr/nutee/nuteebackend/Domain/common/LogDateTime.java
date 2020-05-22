@@ -7,7 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
-@Getter
+@Getter @Setter
 @MappedSuperclass
 public abstract class LogDateTime {
     @CreationTimestamp

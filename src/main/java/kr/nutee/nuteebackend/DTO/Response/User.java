@@ -11,12 +11,12 @@ import java.io.Serializable;
 public class User implements Serializable {
     private Long id;
     private String nickname;
-    private ImageResponse imageResponse;
+    private ImageResponse image;
 
     @QueryProjection
-    public User(Long id, String nickname, ImageResponse imageResponse) {
+    public User(Long id, String nickname, ImageResponse image) {
         this.id = id;
         this.nickname = nickname;
-        this.imageResponse = imageResponse;
+        this.image = image;
     }
 }
