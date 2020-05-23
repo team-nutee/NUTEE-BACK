@@ -9,6 +9,7 @@ import kr.nutee.nuteebackend.Domain.*;
 import kr.nutee.nuteebackend.Enum.ErrorCode;
 import kr.nutee.nuteebackend.Exception.NotAllowedException;
 import kr.nutee.nuteebackend.Repository.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +26,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static kr.nutee.nuteebackend.Domain.QPost.post;
+import static kr.nutee.nuteebackend.Domain.QMember.member;
+import static kr.nutee.nuteebackend.Domain.QComment.comment;
+
 @Service
 @Transactional(readOnly = true)
 @Slf4j
+@RequiredArgsConstructor
 public class PostService {
 
     @PersistenceContext
@@ -34,23 +41,13 @@ public class PostService {
 
     JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
-    @Autowired
-    PostRepository postRepository;
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    HashtagRepository hashtagRepository;
-
-    @Autowired
-    PostHashtagRepository postHashtagRepository;
-
-    @Autowired
-    ImageRepository imageRepository;
-
-    @Autowired
-    ReportRepository reportRepository;
+    private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
+    private final HashtagRepository hashtagRepository;
+    private final PostHashtagRepository postHashtagRepository;
+    private final ImageRepository imageRepository;
+    private final ReportRepository reportRepository;
+    private final CommentRepository commentRepository;
 
     public List<PostResponse> getCategoryPosts(int lastId, int offset, String category){
         return null;
@@ -127,6 +124,45 @@ public class PostService {
         return fillPostResponse(post);
     }
 
+    public List<CommentResponse> getComments(Long postId){
+        Long lastId = 8L;
+        List<Comment> comments = em.createQuery(
+                "SELECT c " +
+                        "FROM Comment c " +
+                        "WHERE c.parent IS NULL AND c.post.id = :postId AND c.isDeleted = false AND c.id < :lastId " +
+                        "ORDER BY c.createdAt DESC", Comment.class)
+                .setParameter("postId", postId)
+                .setParameter("lastId",lastId)
+                .setMaxResults(6)
+                .getResultList();
+
+        System.out.println(comments);
+        return transferCommentResponses(comments);
+    }
+
+    @Transactional
+    public CommentResponse createComment(Long memberId, Long postId, String content){
+        Member member = memberRepository.findMemberById(memberId);
+        Post post = postRepository.findPostById(postId);
+
+        Comment comment = Comment.builder()
+                .content(content)
+                .isDeleted(false)
+                .member(member)
+                .post(post)
+                .build();
+
+        commentRepository.save(comment);
+
+        return CommentResponse.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .updatedAt(comment.getUpdatedAt())
+                .user(transferUser(comment.getMember()))
+                .build();
+    }
+
     private void saveImage(CreatePostRequest body, Post post) {
         if(body.getImages().size()!=0){
             body.getImages().forEach(v->imageRepository.save(Image.builder().post(post).src(v.getSrc()).build()));
@@ -185,8 +221,7 @@ public class PostService {
     private PostResponse fillPostResponse(Post post) {
         List<ImageResponse> imageResponses = transferImageResponses(post);
         List<LikeResponse> likers = transferLikeResponses(post);
-        List<ReCommentResponse> reComments = transferReCommentResponses(post);
-        List<CommentResponse> comments = transferCommentResponses(post, reComments);
+        List<CommentResponse> comments = transferCommentResponses(post.getComments());
         RetweetResponse retweet = transferRetweet(post.getRetweet());
 
         return PostResponse.builder()
@@ -213,7 +248,7 @@ public class PostService {
         return RetweetResponse.builder()
                     .id(retweet.getId())
                     .content(retweet.getContent())
-                    .commentResponses(transferCommentResponses(retweet,transferReCommentResponses(retweet)))
+                    .commentResponses(transferCommentResponses(retweet.getComments()))
                     .createdAt(retweet.getCreatedAt())
                     .imageResponses(transferImageResponses(retweet))
                     .interest(retweet.getInterest())
@@ -244,31 +279,31 @@ public class PostService {
         return likers;
     }
 
-    private List<CommentResponse> transferCommentResponses(Post post, List<ReCommentResponse> reComments) {
-        if(post.getComments().size()==0){
+    private List<CommentResponse> transferCommentResponses(List<Comment> originComments) {
+        if(originComments.size()==0){
             return null;
         }
         List<CommentResponse> comments = new ArrayList<>();
-        post.getComments().forEach(v->comments.add(new CommentResponse(
+        originComments.forEach(v->comments.add(new CommentResponse(
                 v.getId(),
                 v.getContent(),
                 v.getCreatedAt(),
                 v.getUpdatedAt(),
-                reComments,
+                transferReCommentResponses(v),
                 transferUser(v.getMember())
         )));
         return comments;
     }
 
-    private List<ReCommentResponse> transferReCommentResponses(Post post) {
+    private List<ReCommentResponse> transferReCommentResponses(Comment comment) {
         List<ReCommentResponse> reComments = new ArrayList<>();
-        post.getComments().forEach(v->v.getChild().forEach(r->reComments.add(new ReCommentResponse(
+        comment.getChild().forEach(v->reComments.add(new ReCommentResponse(
                 v.getId(),
                 v.getContent(),
                 v.getCreatedAt(),
                 v.getUpdatedAt(),
                 transferUser(v.getMember())
-        ))));
+        )));
         if(reComments.size()==0){
             return null;
         }

@@ -1,6 +1,7 @@
 package kr.nutee.nuteebackend.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.nutee.nuteebackend.DTO.Request.CommentRequest;
 import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
 import kr.nutee.nuteebackend.DTO.Request.ReportRequest;
 import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
@@ -118,13 +119,21 @@ public class PostController {
     }
 
     @GetMapping(path = "/{postId}/comments")
-    public void getComments(@PathVariable String postId){
-
+    public ResponseEntity<Object> getComments(@PathVariable String postId){
+        return new ResponseEntity<>(postService.getComments(Long.parseLong(postId)),HttpStatus.OK);
     }
 
     @PostMapping(path = "/{postId}/comment")
-    public void createComment(@PathVariable String postId){
+    public ResponseEntity<Object> createComment(
+            @PathVariable String postId,
+            HttpServletRequest request,
+            @RequestBody @Valid CommentRequest body
+    ){
+        Long memberId = getTokenMemberId(request);
 
+        return new ResponseEntity<>(
+                postService.createComment(memberId,Long.parseLong(postId),body.getContent()),HttpStatus.OK
+        );
     }
 
     @PatchMapping(path = "/{postId}/comment/{commentId}")

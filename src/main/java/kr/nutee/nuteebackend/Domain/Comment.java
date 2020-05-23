@@ -1,11 +1,13 @@
 package kr.nutee.nuteebackend.Domain;
 
+import com.querydsl.core.annotations.QueryEntity;
 import kr.nutee.nuteebackend.Domain.common.LogDateTime;
 import lombok.*;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@QueryEntity
 @Entity @Setter
 @Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
