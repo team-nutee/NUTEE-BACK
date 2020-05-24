@@ -23,13 +23,12 @@ public class RetweetResponse implements Serializable {
     private List<ImageResponse> imageResponses;
     private List<LikeResponse> likers;
     private List<CommentResponse> commentResponses;
-    private String interest;
-    private String major;
+    private String category;
 
     @QueryProjection
     public RetweetResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
                            boolean isBlocked, User user, List<ImageResponse> imageResponses, List<LikeResponse> likers,
-                           List<CommentResponse> commentResponses, String interest, String major) {
+                           List<CommentResponse> commentResponses, String category) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -40,7 +39,6 @@ public class RetweetResponse implements Serializable {
         this.imageResponses = imageResponses;
         this.likers = likers;
         this.commentResponses = commentResponses;
-        this.interest = interest;
-        this.major = major;
+        this.category = category;
     }
 }

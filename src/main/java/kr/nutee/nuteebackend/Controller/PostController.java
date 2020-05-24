@@ -1,10 +1,7 @@
 package kr.nutee.nuteebackend.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.nutee.nuteebackend.DTO.Request.CommentRequest;
-import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
-import kr.nutee.nuteebackend.DTO.Request.ReportRequest;
-import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
+import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
@@ -50,16 +47,17 @@ public class PostController {
         카테고리 게시판 불러오기
      */
     @GetMapping(path = "")
-    public void getCategoryPosts(
-            HttpServletRequest request,
-            @RequestBody @Valid CreatePostRequest body
+    public ResponseEntity<Object> getCategoryPosts(
+            @RequestBody @Valid CategoryPostRequest body,
+            @RequestParam("lastId") int lastId,
+            @RequestParam("limit") int limit
     ){
-        Long id = getTokenMemberId(request);
-        postService.getPreferencePosts(id);
+        String category = body.getCategory();
+        return new ResponseEntity<>(postService.getCategoryPosts((long)lastId,limit,category), HttpStatus.OK);
     }
 
     /*
-        글작성
+        글 작성
      */
     @PostMapping(path = "")
     public ResponseEntity<Object> createPost(
@@ -119,8 +117,13 @@ public class PostController {
     }
 
     @GetMapping(path = "/{postId}/comments")
-    public ResponseEntity<Object> getComments(@PathVariable String postId){
-        return new ResponseEntity<>(postService.getComments(Long.parseLong(postId)),HttpStatus.OK);
+    public ResponseEntity<Object> getComments(
+            @PathVariable String postId,
+            @RequestParam("lastId") Long lastId,
+            @RequestParam("limit") int limit
+
+    ){
+        return new ResponseEntity<>(postService.getComments(Long.parseLong(postId),lastId,limit),HttpStatus.OK);
     }
 
     @PostMapping(path = "/{postId}/comment")

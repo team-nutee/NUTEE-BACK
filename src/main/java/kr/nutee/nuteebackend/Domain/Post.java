@@ -46,7 +46,5 @@ public class Post extends LogDateTime {
     @JoinColumn(name = "retweet_id")
     private Post retweet;
 
-    private String interest;
-
-    private String major;
+    private String category;
 }

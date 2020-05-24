@@ -22,10 +22,7 @@ public class CreatePostRequest implements Serializable {
     List<ImageResponse> images;
 
     @NotEmpty
-    String interest;
-
-    @NotEmpty
-    String major;
+    String category;
 
     @Override
     public String toString() {

@@ -49,8 +49,29 @@ public class PostService {
     private final ReportRepository reportRepository;
     private final CommentRepository commentRepository;
 
-    public List<PostResponse> getCategoryPosts(int lastId, int offset, String category){
-        return null;
+    public List<PostResponse> getCategoryPosts(Long lastId, int limit, String category){
+        List<Post> posts;
+        if(lastId==0){
+            posts = em.createQuery(
+                    "SELECT p " +
+                            "FROM Post p " +
+                            "WHERE p.category = :category AND p.isDeleted = false " +
+                            "ORDER BY p.createdAt DESC", Post.class)
+                    .setParameter("category", category)
+                    .setMaxResults(limit)
+                    .getResultList();
+        }else{
+            posts = em.createQuery(
+                    "SELECT p " +
+                            "FROM Post p " +
+                            "WHERE p.category = :category AND p.isDeleted = false AND p.id < :lastId " +
+                            "ORDER BY p.createdAt DESC", Post.class)
+                    .setParameter("category", category)
+                    .setParameter("lastId", lastId)
+                    .setMaxResults(limit)
+                    .getResultList();
+        }
+        return transferPosts(posts);
     }
 
     @Transactional
@@ -124,8 +145,7 @@ public class PostService {
         return fillPostResponse(post);
     }
 
-    public List<CommentResponse> getComments(Long postId){
-        Long lastId = 8L;
+    public List<CommentResponse> getComments(Long postId,Long lastId ,int limit){
         List<Comment> comments = em.createQuery(
                 "SELECT c " +
                         "FROM Comment c " +
@@ -133,10 +153,8 @@ public class PostService {
                         "ORDER BY c.createdAt DESC", Comment.class)
                 .setParameter("postId", postId)
                 .setParameter("lastId",lastId)
-                .setMaxResults(6)
+                .setMaxResults(limit)
                 .getResultList();
-
-        System.out.println(comments);
         return transferCommentResponses(comments);
     }
 
@@ -163,6 +181,25 @@ public class PostService {
                 .build();
     }
 
+    private List<PostResponse> transferPosts(List<Post> posts) {
+        List<PostResponse> result = new ArrayList<>();
+        posts.forEach(v-> result.add(PostResponse.builder()
+                .id(v.getId())
+                .category(v.getCategory())
+                .images(transferImageResponses(v))
+                .comments(transferCommentResponses(v.getComments()))
+                .content(v.getContent())
+                .updatedAt(v.getUpdatedAt())
+                .createdAt(v.getCreatedAt())
+                .isBlocked(v.isBlocked())
+                .likers(transferLikeResponses(v))
+                .retweet(transferRetweet(v))
+                .title(v.getTitle())
+                .user(transferUser(v.getMember()))
+                .build()));
+        return result;
+    }
+
     private void saveImage(CreatePostRequest body, Post post) {
         if(body.getImages().size()!=0){
             body.getImages().forEach(v->imageRepository.save(Image.builder().post(post).src(v.getSrc()).build()));
@@ -178,8 +215,7 @@ public class PostService {
     private Post fillPost(CreatePostRequest body, Member member) {
         return Post.builder()
                     .content(body.getContent())
-                    .interest(body.getInterest())
-                    .major(body.getMajor())
+                    .category(body.getCategory())
                     .isBlocked(false)
                     .isDeleted(false)
                     .member(member)
@@ -236,8 +272,7 @@ public class PostService {
                 .likers(likers)
                 .comments(comments)
                 .retweet(retweet)
-                .major(post.getMajor())
-                .interest(post.getInterest())
+                .category(post.getCategory())
                 .build();
     }
 
@@ -251,10 +286,9 @@ public class PostService {
                     .commentResponses(transferCommentResponses(retweet.getComments()))
                     .createdAt(retweet.getCreatedAt())
                     .imageResponses(transferImageResponses(retweet))
-                    .interest(retweet.getInterest())
                     .isBlocked(retweet.isBlocked())
                     .likers(transferLikeResponses(retweet))
-                    .major(retweet.getMajor())
+                    .category(retweet.getCategory())
                     .updatedAt(retweet.getUpdatedAt())
                     .title(retweet.getTitle())
                     .user(transferUser(retweet.getMember()))
