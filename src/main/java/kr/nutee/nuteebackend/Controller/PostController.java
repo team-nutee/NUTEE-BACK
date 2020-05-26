@@ -48,11 +48,10 @@ public class PostController {
      */
     @GetMapping(path = "")
     public ResponseEntity<Object> getCategoryPosts(
-            @RequestBody @Valid CategoryPostRequest body,
+            @RequestParam("category") String category,
             @RequestParam("lastId") int lastId,
             @RequestParam("limit") int limit
     ){
-        String category = body.getCategory();
         return new ResponseEntity<>(postService.getCategoryPosts((long)lastId,limit,category), HttpStatus.OK);
     }
 
@@ -116,6 +115,9 @@ public class PostController {
         return new ResponseEntity<>(postService.reportPost(Long.parseLong(postId),memberId,body.getContent()),HttpStatus.OK);
     }
 
+    /*
+        댓글목록 읽기
+     */
     @GetMapping(path = "/{postId}/comments")
     public ResponseEntity<Object> getComments(
             @PathVariable String postId,
@@ -123,9 +125,12 @@ public class PostController {
             @RequestParam("limit") int limit
 
     ){
-        return new ResponseEntity<>(postService.getComments(Long.parseLong(postId),lastId,limit),HttpStatus.OK);
+        return new ResponseEntity<>(postService.getComments(Long.parseLong(postId)),HttpStatus.OK);
     }
 
+    /*
+        댓글 작성
+     */
     @PostMapping(path = "/{postId}/comment")
     public ResponseEntity<Object> createComment(
             @PathVariable String postId,
@@ -139,19 +144,51 @@ public class PostController {
         );
     }
 
+    /*
+        댓글 수정
+     */
     @PatchMapping(path = "/{postId}/comment/{commentId}")
-    public void updateComment(@PathVariable String postId, @PathVariable String commentId){
-
+    public ResponseEntity<Object> updateComment(
+            @PathVariable String postId,
+            @PathVariable String commentId,
+            HttpServletRequest request,
+            @RequestBody @Valid CommentRequest body
+    ){
+        Long memberId = getTokenMemberId(request);
+        return new ResponseEntity<>(
+                postService.updateComment(memberId,Long.parseLong(commentId),body.getContent()),HttpStatus.OK
+        );
     }
 
+    /*
+        답글 생성
+     */
     @PostMapping(path = "/{postId}/comment/{parentId}")
-    public void createReComment(@PathVariable String postId, @PathVariable String parentId){
-
+    public ResponseEntity<Object> createReComment(
+            @PathVariable String postId,
+            @PathVariable String parentId,
+            HttpServletRequest request,
+            @RequestBody @Valid CommentRequest body
+    ){
+        Long memberId = getTokenMemberId(request);
+        return new ResponseEntity<>(
+                postService.createReComment(memberId,Long.parseLong(parentId),Long.parseLong(postId),body.getContent()),HttpStatus.OK
+        );
     }
 
+    /*
+        댓글 삭제
+     */
     @DeleteMapping(path = "/{postId}/comment/{commentId}")
-    public void deleteComment(@PathVariable String postId, @PathVariable String commentId){
-
+    public ResponseEntity<Object> deleteComment(
+            @PathVariable String postId,
+            @PathVariable String commentId,
+            HttpServletRequest request
+    ){
+        Long memberId = getTokenMemberId(request);
+        return new ResponseEntity<>(
+                postService.deleteComment(memberId,Long.parseLong(commentId),Long.parseLong(postId)),HttpStatus.OK
+        );
     }
 
     @PostMapping(path = "/{postId}/like")

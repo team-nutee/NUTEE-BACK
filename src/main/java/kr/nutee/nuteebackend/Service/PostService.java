@@ -11,24 +11,18 @@ import kr.nutee.nuteebackend.Exception.NotAllowedException;
 import kr.nutee.nuteebackend.Repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static kr.nutee.nuteebackend.Domain.QPost.post;
-import static kr.nutee.nuteebackend.Domain.QMember.member;
-import static kr.nutee.nuteebackend.Domain.QComment.comment;
 
 @Service
 @Transactional(readOnly = true)
@@ -51,25 +45,11 @@ public class PostService {
 
     public List<PostResponse> getCategoryPosts(Long lastId, int limit, String category){
         List<Post> posts;
+        Pageable limitP =PageRequest.of(0, limit);
         if(lastId==0){
-            posts = em.createQuery(
-                    "SELECT p " +
-                            "FROM Post p " +
-                            "WHERE p.category = :category AND p.isDeleted = false " +
-                            "ORDER BY p.createdAt DESC", Post.class)
-                    .setParameter("category", category)
-                    .setMaxResults(limit)
-                    .getResultList();
+            posts = postRepository.findPostsByCategory(category,limitP);
         }else{
-            posts = em.createQuery(
-                    "SELECT p " +
-                            "FROM Post p " +
-                            "WHERE p.category = :category AND p.isDeleted = false AND p.id < :lastId " +
-                            "ORDER BY p.createdAt DESC", Post.class)
-                    .setParameter("category", category)
-                    .setParameter("lastId", lastId)
-                    .setMaxResults(limit)
-                    .getResultList();
+            posts = postRepository.findPostsByCategoryEqualsAndIdLessThan(category,lastId,limitP);
         }
         return transferPosts(posts);
     }
@@ -141,21 +121,18 @@ public class PostService {
             post.setBlocked(true);
             postRepository.save(post);
         }
-
         return fillPostResponse(post);
     }
 
-    public List<CommentResponse> getComments(Long postId,Long lastId ,int limit){
+    public List<CommentResponse> getComments(Long postId){
         List<Comment> comments = em.createQuery(
                 "SELECT c " +
                         "FROM Comment c " +
-                        "WHERE c.parent IS NULL AND c.post.id = :postId AND c.isDeleted = false AND c.id < :lastId " +
+                        "WHERE c.parent IS NULL AND c.post.id = :postId AND c.isDeleted = false " +
                         "ORDER BY c.createdAt DESC", Comment.class)
                 .setParameter("postId", postId)
-                .setParameter("lastId",lastId)
-                .setMaxResults(limit)
                 .getResultList();
-        return transferCommentResponses(comments);
+        return transferCommentsResponse(comments);
     }
 
     @Transactional
@@ -181,19 +158,79 @@ public class PostService {
                 .build();
     }
 
+    @Transactional
+    public CommentResponse updateComment(Long memberId, Long commentId, String content){
+        Comment comment = commentRepository.findCommentById(commentId);
+        Member member = memberRepository.findMemberById(memberId);
+        if(comment == null){
+            //예외발생(해당 댓글 없음)
+        }
+        if(comment.getMember()==member){
+            comment.setContent(content);
+        }else{
+            //예외처리(수정 권한 없음)
+        }
+        commentRepository.save(comment);
+        return transferCommentResponse(comment);
+    }
+
+    @Transactional
+    public CommentResponse createReComment(Long memberId, Long parentId, Long postId, String content){
+        Comment comment = commentRepository.findCommentById(parentId);
+        Member member = memberRepository.findMemberById(memberId);
+        Post post = postRepository.findPostById(postId);
+        if(comment == null){
+            //예외발생(해당 댓글 없음)
+        }
+        Comment reComment = Comment.builder()
+                .content(content)
+                .isDeleted(false)
+                .member(member)
+                .parent(comment)
+                .post(post)
+                .build();
+        Comment save = commentRepository.save(reComment);
+        return transferCommentResponse(save);
+    }
+
+    @Transactional
+    public List<CommentResponse> deleteComment(Long memberId, Long commentId,Long postId){
+        Comment comment = commentRepository.findCommentById(commentId);
+        Member member = memberRepository.findMemberById(memberId);
+        if(comment.getMember().getId().equals(member.getId())){
+            comment.setDeleted(true);
+            commentRepository.save(comment);
+        }else{
+            //예외처리(수정 권한 없음)
+        }
+        List<Comment> comments = commentRepository.findAllCommentsByPostId(postId);
+        return transferCommentsResponse(comments);
+    }
+
+    private CommentResponse transferCommentResponse(Comment comment) {
+        return CommentResponse.builder()
+                .id(comment.getId())
+                .user(transferUser(comment.getMember()))
+                .reCommentResponses(transferReCommentResponses(comment))
+                .updatedAt(comment.getUpdatedAt())
+                .createdAt(comment.getCreatedAt())
+                .content(comment.getContent())
+                .build();
+    }
+
     private List<PostResponse> transferPosts(List<Post> posts) {
         List<PostResponse> result = new ArrayList<>();
         posts.forEach(v-> result.add(PostResponse.builder()
                 .id(v.getId())
                 .category(v.getCategory())
                 .images(transferImageResponses(v))
-                .comments(transferCommentResponses(v.getComments()))
+                .comments(transferCommentsResponse(v.getComments()))
                 .content(v.getContent())
                 .updatedAt(v.getUpdatedAt())
                 .createdAt(v.getCreatedAt())
                 .isBlocked(v.isBlocked())
                 .likers(transferLikeResponses(v))
-                .retweet(transferRetweet(v))
+                .retweet(transferRetweet(v.getRetweet()))
                 .title(v.getTitle())
                 .user(transferUser(v.getMember()))
                 .build()));
@@ -257,7 +294,7 @@ public class PostService {
     private PostResponse fillPostResponse(Post post) {
         List<ImageResponse> imageResponses = transferImageResponses(post);
         List<LikeResponse> likers = transferLikeResponses(post);
-        List<CommentResponse> comments = transferCommentResponses(post.getComments());
+        List<CommentResponse> comments = transferCommentsResponse(post.getComments());
         RetweetResponse retweet = transferRetweet(post.getRetweet());
 
         return PostResponse.builder()
@@ -283,7 +320,7 @@ public class PostService {
         return RetweetResponse.builder()
                     .id(retweet.getId())
                     .content(retweet.getContent())
-                    .commentResponses(transferCommentResponses(retweet.getComments()))
+                    .commentResponses(transferCommentsResponse(retweet.getComments()))
                     .createdAt(retweet.getCreatedAt())
                     .imageResponses(transferImageResponses(retweet))
                     .isBlocked(retweet.isBlocked())
@@ -313,7 +350,7 @@ public class PostService {
         return likers;
     }
 
-    private List<CommentResponse> transferCommentResponses(List<Comment> originComments) {
+    private List<CommentResponse> transferCommentsResponse(List<Comment> originComments) {
         if(originComments.size()==0){
             return null;
         }
