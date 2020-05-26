@@ -11,7 +11,7 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post,Long>{
     Post findPostById(Long postId);
 
-    @Query("SELECT p FROM Post p WHERE p.category = :category AND p.isDeleted = false  ORDER BY p.createdAt DESC")
+    @Query("SELECT p FROM Post p WHERE p.category = :category AND p.isDeleted = false ORDER BY p.createdAt DESC")
     List<Post> findPostsByCategory(String category, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.category = :category AND p.isDeleted = false AND p.id < :lastId ORDER BY p.createdAt DESC")
