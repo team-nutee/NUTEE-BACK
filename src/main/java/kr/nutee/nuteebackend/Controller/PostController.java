@@ -75,8 +75,8 @@ public class PostController {
             HttpServletRequest request,
             @PathVariable String postId
     ){
-        Long id = getTokenMemberId(request);
-        return new ResponseEntity<>(postService.getPost(id), HttpStatus.OK);
+        Long memberId = getTokenMemberId(request);
+        return new ResponseEntity<>(postService.getPost(Long.parseLong(postId),memberId), HttpStatus.OK);
     }
 
     /*
@@ -200,6 +200,7 @@ public class PostController {
     public void unlikePost(@PathVariable String postId){
 
     }
+
 
     @PostMapping(path = "/{postId}/retweet")
     public void retweetPost(@PathVariable String postId){

@@ -20,10 +20,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,8 +45,9 @@ public class PostService {
     private final ImageRepository imageRepository;
     private final ReportRepository reportRepository;
     private final CommentRepository commentRepository;
+    private final HitRepository hitRepository;
 
-    public List<PostResponse> getCategoryPosts(Long lastId, int limit, String category) {
+    public List<PostShowResponse> getCategoryPosts(Long lastId, int limit, String category) {
         List<Post> posts;
         Pageable limitP = PageRequest.of(0, limit);
         if (lastId == 0) {
@@ -65,7 +68,8 @@ public class PostService {
         return fillPostResponse(post);
     }
 
-    public PostResponse getPost(Long postId) {
+    @Transactional
+    public PostResponse getPost(Long postId,Long memberId) {
         Post post = postRepository.findPostById(postId);
         return fillPostResponse(post);
     }
@@ -208,6 +212,17 @@ public class PostService {
         return transferCommentsResponse(comments);
     }
 
+    private void hitPost(Post post,Member member) {
+        Hit hit = Hit.builder().member(member).post(post).build();
+        System.out.println(post.getHits());
+        List<Hit> memberHits = post.getHits().stream()
+                .filter(v -> v.getMember().getId().equals(member.getId()))
+                .collect(Collectors.toList());
+        if(memberHits.size()==0){
+            hitRepository.save(hit);
+        }
+    }
+
     private CommentResponse transferCommentResponse(Comment comment) {
         return CommentResponse.builder()
                 .id(comment.getId())
@@ -219,14 +234,15 @@ public class PostService {
                 .build();
     }
 
-    private List<PostResponse> transferPosts(List<Post> posts) {
-        List<PostResponse> result = new ArrayList<>();
-        posts.forEach(v -> result.add(PostResponse.builder()
+    private List<PostShowResponse> transferPosts(List<Post> posts) {
+        List<PostShowResponse> result = new ArrayList<>();
+        posts.forEach(v -> result.add(PostShowResponse.builder()
                 .id(v.getId())
                 .category(v.getCategory())
                 .images(transferImageResponses(v))
-                .comments(transferCommentsResponse(v.getComments()))
+                .commentNum(transferCommentsResponse(v.getComments())==null ? 0 : transferCommentsResponse(v.getComments()).size())
                 .content(v.getContent())
+                .hits(transferHits(v.getHits()))
                 .updatedAt(v.getUpdatedAt())
                 .createdAt(v.getCreatedAt())
                 .isBlocked(v.isBlocked())
@@ -297,11 +313,14 @@ public class PostService {
         List<LikeResponse> likers = transferLikeResponses(post);
         List<CommentResponse> comments = transferCommentsResponse(post.getComments());
         RetweetResponse retweet = transferRetweet(post.getRetweet());
+        List<Hit> hitList = hitRepository.findHitsByPostId(post.getId());
+        int hits = transferHits(hitList);
 
         return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .hits(hits)
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .isBlocked(post.isBlocked())
@@ -314,6 +333,16 @@ public class PostService {
                 .build();
     }
 
+    private int transferHits(List<Hit> hitList) {
+        int hits;
+        if(hitList==null){
+            hits = 0;
+        }else{
+            hits = hitList.size();
+        }
+        return hits;
+    }
+
     private RetweetResponse transferRetweet(Post retweet) {
         if (retweet == null) {
             return null;
@@ -321,7 +350,8 @@ public class PostService {
         return RetweetResponse.builder()
                 .id(retweet.getId())
                 .content(retweet.getContent())
-                .commentResponses(transferCommentsResponse(retweet.getComments()))
+                .hits(transferHits(retweet.getHits()))
+                .commentNum(retweet.getComments().size())
                 .createdAt(retweet.getCreatedAt())
                 .imageResponses(transferImageResponses(retweet))
                 .isBlocked(retweet.isBlocked())
