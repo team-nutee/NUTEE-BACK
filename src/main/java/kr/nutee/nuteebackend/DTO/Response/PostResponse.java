@@ -24,11 +24,12 @@ public class PostResponse implements Serializable {
     private List<CommentResponse> comments;
     private RetweetResponse retweet;
     private String category;
+    private int hits;
 
     @QueryProjection
     public PostResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
                         boolean isBlocked, User user, List<ImageResponse> images, List<LikeResponse> likers,
-                        List<CommentResponse> comments, RetweetResponse retweet, String category) {
+                        List<CommentResponse> comments, RetweetResponse retweet, String category, int hits) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -41,5 +42,6 @@ public class PostResponse implements Serializable {
         this.comments = comments;
         this.retweet = retweet;
         this.category = category;
+        this.hits = hits;
     }
 }
