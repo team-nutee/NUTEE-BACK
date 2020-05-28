@@ -21,7 +21,7 @@ public class PostShowResponse implements Serializable {
     private boolean isBlocked;
     private User user;
     private List<ImageResponse> images;
-    private List<LikeResponse> likers;
+    private List<User> likers;
     private int commentNum;
     private RetweetResponse retweet;
     private String category;
@@ -29,7 +29,7 @@ public class PostShowResponse implements Serializable {
 
     @QueryProjection
     public PostShowResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
-                        boolean isBlocked, User user, List<ImageResponse> images, List<LikeResponse> likers,
+                        boolean isBlocked, User user, List<ImageResponse> images, List<User> likers,
                         int commentNum, RetweetResponse retweet, String category, int hits) {
         this.id = id;
         this.title = title;
