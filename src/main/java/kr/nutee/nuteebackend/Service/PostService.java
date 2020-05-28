@@ -46,6 +46,7 @@ public class PostService {
     private final ReportRepository reportRepository;
     private final CommentRepository commentRepository;
     private final HitRepository hitRepository;
+    private final PostLikeRepository postLikeRepository;
 
     public List<PostShowResponse> getCategoryPosts(Long lastId, int limit, String category) {
         List<Post> posts;
@@ -96,6 +97,42 @@ public class PostService {
         Post post = postRepository.findPostById(postId);
         post.setDeleted(true);
         post = postRepository.save(post);
+        return fillPostResponse(post);
+    }
+
+    @Transactional
+    public PostResponse likePost(Long postId, Long memberId){
+        Post post = postRepository.findPostById(postId);
+        Member member = memberRepository.findMemberById(memberId);
+        List<PostLike> likes = post.getLikes().stream()
+                .filter(v->v.getMember().getId().equals(memberId))
+                .collect(Collectors.toList());
+        if(likes.size()==0){
+            PostLike postLike = PostLike.builder()
+                    .member(member)
+                    .post(post)
+                    .build();
+            postLikeRepository.save(postLike);
+        }else{
+            //이미 좋아요 누름
+        }
+        return fillPostResponse(post);
+    }
+
+    @Transactional
+    public PostResponse unlikePost(Long postId, Long memberId){
+        Post post = postRepository.findPostById(postId);
+        List<PostLike> like = post.getLikes().stream()
+                .filter(v->v.getMember().getId().equals(memberId))
+                .collect(Collectors.toList());
+        if(like.size()!=0){
+            System.out.println("================================================");
+            postLikeRepository.delete(like.get(0));
+            postLikeRepository.flush();
+            System.out.println("================================================");
+        }else{
+            //이미 좋아요 없어진 상태
+        }
         return fillPostResponse(post);
     }
 
@@ -246,7 +283,7 @@ public class PostService {
                 .updatedAt(v.getUpdatedAt())
                 .createdAt(v.getCreatedAt())
                 .isBlocked(v.isBlocked())
-                .likers(transferLikeResponses(v))
+                .likers(transferLikeResponses(v.getLikes()))
                 .retweet(transferRetweet(v.getRetweet()))
                 .title(v.getTitle())
                 .user(transferUser(v.getMember()))
@@ -310,7 +347,8 @@ public class PostService {
 
     private PostResponse fillPostResponse(Post post) {
         List<ImageResponse> imageResponses = transferImageResponses(post);
-        List<LikeResponse> likers = transferLikeResponses(post);
+        List<PostLike> likes = postLikeRepository.findPostLikesByPostId(post.getId());
+        List<User> likers = transferLikeResponses(likes);
         List<CommentResponse> comments = transferCommentsResponse(post.getComments());
         RetweetResponse retweet = transferRetweet(post.getRetweet());
         List<Hit> hitList = hitRepository.findHitsByPostId(post.getId());
@@ -355,7 +393,7 @@ public class PostService {
                 .createdAt(retweet.getCreatedAt())
                 .imageResponses(transferImageResponses(retweet))
                 .isBlocked(retweet.isBlocked())
-                .likers(transferLikeResponses(retweet))
+                .likers(transferLikeResponses(retweet.getLikes()))
                 .category(retweet.getCategory())
                 .updatedAt(retweet.getUpdatedAt())
                 .title(retweet.getTitle())
@@ -372,12 +410,18 @@ public class PostService {
         return imageResponses;
     }
 
-    private List<LikeResponse> transferLikeResponses(Post post) {
-        if (post.getLikes().size() == 0) {
+    private List<User> transferLikeResponses(List<PostLike> likes) {
+        if (likes.size() == 0) {
             return null;
         }
-        List<LikeResponse> likers = new ArrayList<>();
-        post.getLikes().forEach(v -> likers.add(new LikeResponse(v.getId())));
+        List<User> likers = new ArrayList<>();
+        likes.forEach(v -> likers.add(
+                User.builder()
+                    .id(v.getMember().getId())
+                .image(transferImage(v.getMember().getImage()))
+                .nickname(v.getMember().getNickname())
+                .build()
+        ));
         return likers;
     }
 

@@ -4,7 +4,7 @@ import kr.nutee.nuteebackend.Domain.common.LogDateTime;
 import lombok.*;
 import javax.persistence.*;
 
-@Entity(name = "posthashtag")
+@Entity
 @Getter
 @Setter
 @Builder

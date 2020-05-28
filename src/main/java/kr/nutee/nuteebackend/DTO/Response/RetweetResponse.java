@@ -21,14 +21,14 @@ public class RetweetResponse implements Serializable {
     private boolean isBlocked;
     private User user;
     private List<ImageResponse> imageResponses;
-    private List<LikeResponse> likers;
+    private List<User> likers;
     private int commentNum;
     private String category;
     private int hits;
 
     @QueryProjection
     public RetweetResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
-                           boolean isBlocked, User user, List<ImageResponse> imageResponses, List<LikeResponse> likers,
+                           boolean isBlocked, User user, List<ImageResponse> imageResponses, List<User> likers,
                            int commentNum, String category, int hits) {
         this.id = id;
         this.title = title;

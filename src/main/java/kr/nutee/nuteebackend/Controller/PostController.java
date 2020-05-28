@@ -192,13 +192,25 @@ public class PostController {
     }
 
     @PostMapping(path = "/{postId}/like")
-    public void likePost(@PathVariable String postId){
-
+    public ResponseEntity<Object> likePost(
+            @PathVariable String postId,
+            HttpServletRequest request
+    ){
+        Long memberId = getTokenMemberId(request);
+        return new ResponseEntity<>(
+                postService.likePost(Long.parseLong(postId),memberId),HttpStatus.OK
+        );
     }
 
     @DeleteMapping(path = "/{postId}/like")
-    public void unlikePost(@PathVariable String postId){
-
+    public ResponseEntity<Object> unlikePost(
+            @PathVariable String postId,
+            HttpServletRequest request
+    ){
+        Long memberId = getTokenMemberId(request);
+        return new ResponseEntity<>(
+                postService.unlikePost(Long.parseLong(postId),memberId),HttpStatus.OK
+        );
     }
 
 

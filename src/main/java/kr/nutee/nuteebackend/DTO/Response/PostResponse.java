@@ -1,6 +1,7 @@
 package kr.nutee.nuteebackend.DTO.Response;
 
 import com.querydsl.core.annotations.QueryProjection;
+import kr.nutee.nuteebackend.Domain.Member;
 import lombok.*;
 
 import java.io.Serializable;
@@ -20,7 +21,7 @@ public class PostResponse implements Serializable {
     private boolean isBlocked;
     private User user;
     private List<ImageResponse> images;
-    private List<LikeResponse> likers;
+    private List<User> likers;
     private List<CommentResponse> comments;
     private RetweetResponse retweet;
     private String category;
@@ -28,7 +29,7 @@ public class PostResponse implements Serializable {
 
     @QueryProjection
     public PostResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
-                        boolean isBlocked, User user, List<ImageResponse> images, List<LikeResponse> likers,
+                        boolean isBlocked, User user, List<ImageResponse> images, List<User> likers,
                         List<CommentResponse> comments, RetweetResponse retweet, String category, int hits) {
         this.id = id;
         this.title = title;
