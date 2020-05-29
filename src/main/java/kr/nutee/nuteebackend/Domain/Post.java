@@ -27,16 +27,19 @@ public class Post extends LogDateTime {
     private boolean isBlocked;
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
-    private final List<Image> images = new ArrayList<>();
+    private List<Image> images = new ArrayList<>();
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
     private final List<Likes> likes = new ArrayList<>();
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
-    private final List<Comment> comments = new ArrayList<>();
+    private List<Hit> hits = new ArrayList<>();
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
-    private final List<Report> reports = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    private List<Report> reports = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")

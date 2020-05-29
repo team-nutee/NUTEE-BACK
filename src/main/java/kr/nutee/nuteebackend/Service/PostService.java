@@ -127,8 +127,10 @@ public class PostService {
                 .collect(Collectors.toList());
         if(like.size()!=0){
             System.out.println("================================================");
+            post.getLikes().remove(like.get(0));
+            postRepository.save(post);
             postLikeRepository.delete(like.get(0));
-            postLikeRepository.flush();
+            em.flush();
             System.out.println("================================================");
         }else{
             //이미 좋아요 없어진 상태

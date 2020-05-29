@@ -34,10 +34,10 @@ public class Member extends LogDateTime {
     private Image image;
 
     @OneToMany (mappedBy = "member")
-    private final List<Interest> interests = new ArrayList<>();
+    private List<Interest> interests = new ArrayList<>();
 
     @OneToMany (mappedBy = "member")
-    private final List<Major> majors = new ArrayList<>();
+    private List<Major> majors = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(length=20)
