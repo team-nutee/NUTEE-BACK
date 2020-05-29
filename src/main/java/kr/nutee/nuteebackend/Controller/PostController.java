@@ -215,8 +215,15 @@ public class PostController {
 
 
     @PostMapping(path = "/{postId}/retweet")
-    public void retweetPost(@PathVariable String postId){
-
+    public ResponseEntity<Object> retweetPost(
+            @PathVariable String postId,
+            HttpServletRequest request,
+            @RequestBody @Valid RetweetRequest body
+    ){
+        Long memberId = getTokenMemberId(request);
+        return new ResponseEntity<>(
+                postService.createRetweet(Long.parseLong(postId),memberId,body),HttpStatus.OK
+        );
     }
 
     public Long getTokenMemberId(HttpServletRequest request){

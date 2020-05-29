@@ -25,11 +25,12 @@ public class RetweetResponse implements Serializable {
     private int commentNum;
     private String category;
     private int hits;
+    private boolean isDeleted;
 
     @QueryProjection
     public RetweetResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
                            boolean isBlocked, User user, List<ImageResponse> imageResponses, List<User> likers,
-                           int commentNum, String category, int hits) {
+                           int commentNum, String category, int hits, boolean isDeleted) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -42,5 +43,6 @@ public class RetweetResponse implements Serializable {
         this.commentNum = commentNum;
         this.category = category;
         this.hits = hits;
+        this.isDeleted = isDeleted;
     }
 }

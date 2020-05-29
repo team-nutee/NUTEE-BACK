@@ -3,6 +3,7 @@ package kr.nutee.nuteebackend.Service;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.nutee.nuteebackend.DTO.*;
 import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
+import kr.nutee.nuteebackend.DTO.Request.RetweetRequest;
 import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
 import kr.nutee.nuteebackend.DTO.Response.*;
 import kr.nutee.nuteebackend.Domain.*;
@@ -64,15 +65,17 @@ public class PostService {
         Member member = memberRepository.findMemberById(memberId);
         Post post = fillPost(body, member);
         post = postRepository.save(post);
-        saveHashTag(body, post);
+        saveHashTag(body.getContent(), post);
         saveImage(body, post);
-        return fillPostResponse(post);
+        return transferPost(post);
     }
 
     @Transactional
     public PostResponse getPost(Long postId,Long memberId) {
+        Member member = memberRepository.findMemberById(memberId);
         Post post = postRepository.findPostById(postId);
-        return fillPostResponse(post);
+        hitPost(post,member);
+        return transferPost(post);
     }
 
     @Transactional
@@ -89,7 +92,7 @@ public class PostService {
         imageRepository.deleteImagesByPostId(postId);
         em.flush();
         saveImage(body, post);
-        return fillPostResponse(postRepository.findPostById(postId));
+        return transferPost(postRepository.findPostById(postId));
     }
 
     @Transactional
@@ -97,7 +100,7 @@ public class PostService {
         Post post = postRepository.findPostById(postId);
         post.setDeleted(true);
         post = postRepository.save(post);
-        return fillPostResponse(post);
+        return transferPost(post);
     }
 
     @Transactional
@@ -116,7 +119,7 @@ public class PostService {
         }else{
             //이미 좋아요 누름
         }
-        return fillPostResponse(post);
+        return transferPost(post);
     }
 
     @Transactional
@@ -135,7 +138,7 @@ public class PostService {
         }else{
             //이미 좋아요 없어진 상태
         }
-        return fillPostResponse(post);
+        return transferPost(post);
     }
 
     @Transactional
@@ -165,7 +168,31 @@ public class PostService {
             post.setBlocked(true);
             postRepository.save(post);
         }
-        return fillPostResponse(post);
+        return transferPost(post);
+    }
+
+    /*
+     글 생성 및 수정 로직에 따라서
+     */
+    @Transactional
+    public PostResponse createRetweet(Long postId, Long memberId, RetweetRequest body){
+        Post retweet = postRepository.findPostById(postId);
+        Member member = memberRepository.findMemberById(memberId);
+        Post post = Post.builder()
+                .title(body.getTitle())
+                .content(body.getContent())
+                .images(new ArrayList<>())
+                .member(member)
+                .comments(new ArrayList<>())
+                .isDeleted(false)
+                .isBlocked(false)
+                .category(body.getCategory())
+                .retweet(retweet)
+                .build();
+
+        post = postRepository.save(post);
+        saveHashTag(body.getContent(), post);
+        return transferPost(post);
     }
 
     public List<CommentResponse> getComments(Long postId) {
@@ -316,19 +343,8 @@ public class PostService {
                 .build();
     }
 
-    private Post fillPost(UpdatePostRequest body, Member member, Long postId) {
-        return Post.builder()
-                .id(postId)
-                .title(body.getTitle())
-                .content(body.getContent())
-                .isBlocked(false)
-                .isDeleted(false)
-                .member(member)
-                .build();
-    }
-
-    private void saveHashTag(CreatePostRequest body, Post post) {
-        List<String> hashtags = getHashtags(body.getContent());
+    private void saveHashTag(String content, Post post) {
+        List<String> hashtags = getHashtags(content);
         if (hashtags.size() != 0) {
             hashtags.forEach(tag -> {
                 if (hashtagRepository.findByName(tag) == null) {
@@ -347,7 +363,7 @@ public class PostService {
         }
     }
 
-    private PostResponse fillPostResponse(Post post) {
+    private PostResponse transferPost(Post post) {
         List<ImageResponse> imageResponses = transferImageResponses(post);
         List<PostLike> likes = postLikeRepository.findPostLikesByPostId(post.getId());
         List<User> likers = transferLikeResponses(likes);
@@ -394,6 +410,7 @@ public class PostService {
                 .commentNum(retweet.getComments().size())
                 .createdAt(retweet.getCreatedAt())
                 .imageResponses(transferImageResponses(retweet))
+                .isDeleted(retweet.isDeleted())
                 .isBlocked(retweet.isBlocked())
                 .likers(transferLikeResponses(retweet.getLikes()))
                 .category(retweet.getCategory())
