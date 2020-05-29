@@ -34,4 +34,21 @@ public interface PostRepository extends JpaRepository<Post,Long>{
             "ORDER BY p.createdAt DESC")
     List<Post> findPostsByTextAndIdLessThan(String text,Long lastId, Pageable pageable);
 
+    @Query("SELECT p FROM Post p " +
+            "LEFT JOIN p.postHashtags ph " +
+            "LEFT JOIN ph.hashtag h " +
+            "WHERE h.id = :hashtagId " +
+            "AND p.isDeleted = false " +
+            "ORDER BY p.createdAt DESC")
+    List<Post> findPostsByHashtagId(Long hashtagId, Pageable pageable);
+
+    @Query("SELECT p FROM Post p " +
+            "LEFT JOIN p.postHashtags ph " +
+            "LEFT JOIN ph.hashtag h " +
+            "WHERE h.id = :hashtagId " +
+            "AND p.isDeleted = false " +
+            "AND p.id < :lastId " +
+            "ORDER BY p.createdAt DESC")
+    List<Post> findPostsByHashtagIdAndIdLessThan(Long hashtagId, Long lastId, Pageable pageable);
+
 }

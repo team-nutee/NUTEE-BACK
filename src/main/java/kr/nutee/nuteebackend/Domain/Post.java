@@ -41,6 +41,9 @@ public class Post extends LogDateTime {
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
     private List<Report> reports = new ArrayList<>();
 
+    @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    private List<PostHashtag> postHashtags = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
     private Member member;

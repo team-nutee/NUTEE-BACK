@@ -69,6 +69,9 @@ public class Transfer {
     }
 
     public void saveImage(CreatePostRequest body, Post post) {
+        if(body.getImages()==null){
+            return;
+        }
         if (body.getImages().size() != 0) {
             body.getImages().forEach(v -> imageRepository.save(Image.builder().post(post).src(v.getSrc()).build()));
         }
@@ -169,6 +172,9 @@ public class Transfer {
     }
 
     public List<ImageResponse> transferImageResponses(Post post) {
+        if(post.getImages()==null){
+            return null;
+        }
         if (post.getImages().size() == 0) {
             return null;
         }
@@ -193,6 +199,9 @@ public class Transfer {
     }
 
     public List<CommentResponse> transferCommentsResponse(List<Comment> originComments) {
+        if (originComments==null){
+            return null;
+        }
         if (originComments.size() == 0) {
             return null;
         }

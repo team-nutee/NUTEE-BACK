@@ -40,6 +40,8 @@ public class PostService {
     JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
     private final PostRepository postRepository;
+    private final PostHashtagRepository postHashtagRepository;
+    private final HashtagRepository hashtagRepository;
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final ReportRepository reportRepository;
@@ -174,6 +176,24 @@ public class PostService {
             posts = postRepository.findPostsByText(text, limitP);
         } else {
             posts = postRepository.findPostsByTextAndIdLessThan(text, lastId, limitP);
+        }
+        return transfer.transferPosts(posts);
+    }
+
+    public List<PostShowResponse> getHashtagPosts(Long lastId, int limit, String tag){
+        List<Post> posts;
+        Pageable limitP = PageRequest.of(0, limit);
+        Hashtag hashtag = hashtagRepository.findByName(tag);
+        if(hashtag == null){
+            //결과값 없음
+            return null;
+        }else{
+            Long hashtagId = hashtagRepository.findByName(tag).getId();
+            if (lastId == 0) {
+                posts = postRepository.findPostsByHashtagId(hashtagId, limitP);
+            } else {
+                posts = postRepository.findPostsByHashtagIdAndIdLessThan(hashtagId, lastId, limitP);
+            }
         }
         return transfer.transferPosts(posts);
     }

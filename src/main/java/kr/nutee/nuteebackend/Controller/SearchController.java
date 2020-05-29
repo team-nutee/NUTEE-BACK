@@ -18,7 +18,7 @@ public class SearchController {
     private final PostService postService;
 
     @GetMapping(path = "/{text}")
-    public ResponseEntity<Object> searchPost(
+    public ResponseEntity<Object> searchPosts(
             @PathVariable String text,
             @RequestParam("lastId") int lastId,
             @RequestParam("limit") int limit
