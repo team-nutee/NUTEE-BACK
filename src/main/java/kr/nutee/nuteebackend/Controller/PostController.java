@@ -5,6 +5,7 @@ import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
+import kr.nutee.nuteebackend.Service.Util;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -26,21 +27,20 @@ import java.util.Map;
 @Slf4j
 public class PostController {
 
-    private final HttpInterceptor httpInterceptor;
     private final PostService postService;
-    private final MemberService memberService;
+    private final Util util;
 
     /*
         즐겨찾기 게시판 불러오기
      */
-    @PostMapping(path = "/preference")
-    public String getPreferencePosts(
+    @GetMapping(path = "/preference")
+    public ResponseEntity<Object> getPreferencePosts(
             HttpServletRequest request,
             @RequestParam("lastId") int lastId,
             @RequestParam("limit") int limit
     ){
-
-        return "SUCCESS";
+        Long memberId = util.getTokenMemberId(request);
+        return new ResponseEntity<>(postService.getPreferencePosts((long)lastId,limit,memberId), HttpStatus.OK);
     }
 
     /*
@@ -63,7 +63,7 @@ public class PostController {
             HttpServletRequest request,
             @RequestBody @Valid CreatePostRequest body
     ){
-        Long id = getTokenMemberId(request);
+        Long id = util.getTokenMemberId(request);
         return new ResponseEntity<>(postService.createPost(id,body), HttpStatus.OK);
     }
 
@@ -75,7 +75,7 @@ public class PostController {
             HttpServletRequest request,
             @PathVariable String postId
     ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
         return new ResponseEntity<>(postService.getPost(Long.parseLong(postId),memberId), HttpStatus.OK);
     }
 
@@ -88,7 +88,7 @@ public class PostController {
             @PathVariable String postId,
             @RequestBody @Valid UpdatePostRequest body
     ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
         return new ResponseEntity<>(postService.updatePost(memberId,Long.parseLong(postId), body), HttpStatus.OK);
     }
 
@@ -111,7 +111,7 @@ public class PostController {
             HttpServletRequest request,
             @RequestBody @Valid ReportRequest body
             ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
         return new ResponseEntity<>(postService.reportPost(Long.parseLong(postId),memberId,body.getContent()),HttpStatus.OK);
     }
 
@@ -137,7 +137,7 @@ public class PostController {
             HttpServletRequest request,
             @RequestBody @Valid CommentRequest body
     ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
 
         return new ResponseEntity<>(
                 postService.createComment(memberId,Long.parseLong(postId),body.getContent()),HttpStatus.OK
@@ -154,7 +154,7 @@ public class PostController {
             HttpServletRequest request,
             @RequestBody @Valid CommentRequest body
     ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
         return new ResponseEntity<>(
                 postService.updateComment(memberId,Long.parseLong(commentId),body.getContent()),HttpStatus.OK
         );
@@ -170,7 +170,7 @@ public class PostController {
             HttpServletRequest request,
             @RequestBody @Valid CommentRequest body
     ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
         return new ResponseEntity<>(
                 postService.createReComment(memberId,Long.parseLong(parentId),Long.parseLong(postId),body.getContent()),HttpStatus.OK
         );
@@ -185,7 +185,7 @@ public class PostController {
             @PathVariable String commentId,
             HttpServletRequest request
     ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
         return new ResponseEntity<>(
                 postService.deleteComment(memberId,Long.parseLong(commentId),Long.parseLong(postId)),HttpStatus.OK
         );
@@ -196,7 +196,7 @@ public class PostController {
             @PathVariable String postId,
             HttpServletRequest request
     ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
         return new ResponseEntity<>(
                 postService.likePost(Long.parseLong(postId),memberId),HttpStatus.OK
         );
@@ -207,7 +207,7 @@ public class PostController {
             @PathVariable String postId,
             HttpServletRequest request
     ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
         return new ResponseEntity<>(
                 postService.unlikePost(Long.parseLong(postId),memberId),HttpStatus.OK
         );
@@ -220,16 +220,10 @@ public class PostController {
             HttpServletRequest request,
             @RequestBody @Valid RetweetRequest body
     ){
-        Long memberId = getTokenMemberId(request);
+        Long memberId = util.getTokenMemberId(request);
         return new ResponseEntity<>(
                 postService.createRetweet(Long.parseLong(postId),memberId,body),HttpStatus.OK
         );
-    }
-
-    public Long getTokenMemberId(HttpServletRequest request){
-        ObjectMapper mapper = new ObjectMapper();
-        Map map = mapper.convertValue(request.getAttribute("user"),Map.class);
-        return Long.parseLong(map.get("id").toString());
     }
 
 }

@@ -1,7 +1,6 @@
 package kr.nutee.nuteebackend.Service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kr.nutee.nuteebackend.DTO.*;
 import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
 import kr.nutee.nuteebackend.DTO.Request.RetweetRequest;
 import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
@@ -21,12 +20,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -47,7 +42,7 @@ public class PostService {
     private final ReportRepository reportRepository;
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
-    private final Transfer transfer;
+    private final Util util;
 
     public List<PostShowResponse> getCategoryPosts(Long lastId, int limit, String category) {
         List<Post> posts;
@@ -57,25 +52,25 @@ public class PostService {
         } else {
             posts = postRepository.findPostsByCategoryEqualsAndIdLessThan(category, lastId, limitP);
         }
-        return transfer.transferPosts(posts);
+        return util.transferPosts(posts);
     }
 
     @Transactional
     public PostResponse createPost(Long memberId, CreatePostRequest body) {
         Member member = memberRepository.findMemberById(memberId);
-        Post post = transfer.fillPost(body, member);
+        Post post = util.fillPost(body, member);
         post = postRepository.save(post);
-        transfer.saveHashTag(body.getContent(), post);
-        transfer.saveImage(body, post);
-        return transfer.transferPost(post);
+        util.saveHashTag(body.getContent(), post);
+        util.saveImage(body, post);
+        return util.transferPost(post);
     }
 
     @Transactional
     public PostResponse getPost(Long postId,Long memberId) {
         Member member = memberRepository.findMemberById(memberId);
         Post post = postRepository.findPostById(postId);
-        transfer.hitPost(post,member);
-        return transfer.transferPost(post);
+        util.hitPost(post,member);
+        return util.transferPost(post);
     }
 
     @Transactional
@@ -91,8 +86,8 @@ public class PostService {
         postRepository.save(post);
         imageRepository.deleteImagesByPostId(postId);
         em.flush();
-        transfer.saveImage(body, post);
-        return transfer.transferPost(postRepository.findPostById(postId));
+        util.saveImage(body, post);
+        return util.transferPost(postRepository.findPostById(postId));
     }
 
     @Transactional
@@ -100,7 +95,7 @@ public class PostService {
         Post post = postRepository.findPostById(postId);
         post.setDeleted(true);
         post = postRepository.save(post);
-        return transfer.transferPost(post);
+        return util.transferPost(post);
     }
 
     @Transactional
@@ -119,7 +114,7 @@ public class PostService {
         }else{
             //이미 좋아요 누름
         }
-        return transfer.transferPost(post);
+        return util.transferPost(post);
     }
 
     @Transactional
@@ -136,7 +131,7 @@ public class PostService {
         }else{
             //이미 좋아요 없어진 상태
         }
-        return transfer.transferPost(post);
+        return util.transferPost(post);
     }
 
     @Transactional
@@ -166,7 +161,7 @@ public class PostService {
             post.setBlocked(true);
             postRepository.save(post);
         }
-        return transfer.transferPost(post);
+        return util.transferPost(post);
     }
 
     public List<PostShowResponse> searchPost(Long lastId, int limit, String text){
@@ -177,7 +172,7 @@ public class PostService {
         } else {
             posts = postRepository.findPostsByTextAndIdLessThan(text, lastId, limitP);
         }
-        return transfer.transferPosts(posts);
+        return util.transferPosts(posts);
     }
 
     public List<PostShowResponse> getHashtagPosts(Long lastId, int limit, String tag){
@@ -195,7 +190,44 @@ public class PostService {
                 posts = postRepository.findPostsByHashtagIdAndIdLessThan(hashtagId, lastId, limitP);
             }
         }
-        return transfer.transferPosts(posts);
+        return util.transferPosts(posts);
+    }
+
+    //해당 유저가 구독한 게시판의 글들을 가져온다.
+    public List<PostShowResponse> getPreferencePosts(Long lastId, int limit, Long memberId) {
+        List<String> preferences = new ArrayList<>();
+        List<Post> preferPosts = new ArrayList<>();
+        Pageable limitP = PageRequest.of(0, limit);
+        Member member = memberRepository.findMemberById(memberId);
+
+        member.getInterests().forEach(v->preferences.add(v.getInterest()));
+        member.getMajors().forEach(v->preferences.add(v.getMajor()));
+        List<Post> finalPreferPosts = preferPosts;
+        preferences.forEach(v-> {
+            if (lastId == 0) {
+                finalPreferPosts.addAll(postRepository.findPostsByCategory(v, limitP));
+            } else {
+                finalPreferPosts.addAll(postRepository.findPostsByCategoryEqualsAndIdLessThan(v,lastId,limitP));
+            }
+        });
+        preferPosts = preferPosts.stream()
+                .sorted()
+                .collect(Collectors.toList());
+
+        return util.transferPosts(preferPosts).stream()
+                .limit(limit).collect(Collectors.toList());
+    }
+
+    public List<PostShowResponse> getUserPosts(Long memberId, int limit, Long lastId) {
+        Pageable limitP = PageRequest.of(0, limit);
+        List<Post> posts;
+
+        if (lastId == 0) {
+            posts = postRepository.findPostsByMemberId(memberId, limitP);
+        } else {
+            posts = postRepository.findPostsByMemberIdAndIdLessThan(memberId, lastId, limitP);
+        }
+        return util.transferPosts(posts);
     }
 
     /*
@@ -218,8 +250,8 @@ public class PostService {
                 .build();
 
         post = postRepository.save(post);
-        transfer.saveHashTag(body.getContent(), post);
-        return transfer.transferPost(post);
+        util.saveHashTag(body.getContent(), post);
+        return util.transferPost(post);
     }
 
     public List<CommentResponse> getComments(Long postId) {
@@ -230,7 +262,7 @@ public class PostService {
                         "ORDER BY c.createdAt DESC", Comment.class)
                 .setParameter("postId", postId)
                 .getResultList();
-        return transfer.transferCommentsResponse(comments);
+        return util.transferCommentsResponse(comments);
     }
 
     @Transactional
@@ -252,7 +284,7 @@ public class PostService {
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
-                .user(transfer.transferUser(comment.getMember()))
+                .user(util.transferUser(comment.getMember()))
                 .build();
     }
 
@@ -269,7 +301,7 @@ public class PostService {
             //예외처리(수정 권한 없음)
         }
         commentRepository.save(comment);
-        return transfer.transferCommentResponse(comment);
+        return util.transferCommentResponse(comment);
     }
 
     @Transactional
@@ -288,7 +320,7 @@ public class PostService {
                 .post(post)
                 .build();
         Comment save = commentRepository.save(reComment);
-        return transfer.transferCommentResponse(save);
+        return util.transferCommentResponse(save);
     }
 
     @Transactional
@@ -302,20 +334,7 @@ public class PostService {
             //예외처리(수정 권한 없음)
         }
         List<Comment> comments = commentRepository.findAllCommentsByPostId(postId);
-        return transfer.transferCommentsResponse(comments);
-    }
-
-    //해당 유저가 구독한 게시판의 글들을 가져온다.
-    public List<Post> getPreferencePosts(Long id) {
-        Member member = memberRepository.findMemberById(id);
-        List<String> majors = member.getMajors().stream().map(Major::getMajor).collect(Collectors.toList());
-        PostSearchCondition condition =
-                PostSearchCondition.builder()
-                        .majors(majors)
-                        .build();
-//        postRepository.search(condition);
-
-        return null;
+        return util.transferCommentsResponse(comments);
     }
 
 }

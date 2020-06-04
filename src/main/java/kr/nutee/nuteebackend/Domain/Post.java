@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post extends LogDateTime {
+public class Post extends LogDateTime implements Comparable<Post> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
@@ -53,4 +53,9 @@ public class Post extends LogDateTime {
     private Post retweet;
 
     private String category;
+
+    @Override
+    public int compareTo(Post o) {
+        return Long.compare(o.getId(),this.getId());
+    }
 }

@@ -1,5 +1,6 @@
 package kr.nutee.nuteebackend.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
 import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
 import kr.nutee.nuteebackend.DTO.Response.*;
@@ -9,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -18,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class Transfer {
+public class Util {
 
     private final HashtagRepository hashtagRepository;
     private final PostHashtagRepository postHashtagRepository;
@@ -264,5 +267,11 @@ public class Transfer {
             hashtags.add(matcher.group());
         }
         return hashtags;
+    }
+
+    public Long getTokenMemberId(HttpServletRequest request){
+        ObjectMapper mapper = new ObjectMapper();
+        Map map = mapper.convertValue(request.getAttribute("user"),Map.class);
+        return Long.parseLong(map.get("id").toString());
     }
 }
