@@ -10,7 +10,7 @@ import kr.nutee.nuteebackend.Repository.MemberRepository;
 import kr.nutee.nuteebackend.Repository.PostLikeRepository;
 import kr.nutee.nuteebackend.Repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,6 +28,7 @@ public class MemberService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final PasswordEncoder bcryptEncoder;
     private final Util util;
 
     //
@@ -58,9 +59,11 @@ public class MemberService {
         return fillUserData(member, commentNum, postNum, likeNum);
     }
 
+    @Transactional
     public void updatePassword(Long memberId,String password){
         Member member = memberRepository.findMemberById(memberId);
-        password
+        member.setPassword(bcryptEncoder.encode(password));
+        memberRepository.save(member);
     }
 
     private UserData fillUserData(Member member, int commentNum, int postNum, int likeNum) {

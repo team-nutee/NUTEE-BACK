@@ -1,7 +1,9 @@
 package kr.nutee.nuteebackend.Controller;
 
-import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
 import kr.nutee.nuteebackend.DTO.Request.NicknameUpdateRequest;
+import kr.nutee.nuteebackend.DTO.Request.PasswordUpdateRequest;
+import kr.nutee.nuteebackend.DTO.Request.ProfileRequest;
+import kr.nutee.nuteebackend.Service.ImageService;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
@@ -11,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -25,6 +26,7 @@ public class UserController {
     private final Util util;
     private final MemberService memberService;
     private final PostService postService;
+    private final ImageService imageService;
 
     @GetMapping(path = "/{userId}")
     public ResponseEntity<Object> getUser(
@@ -60,18 +62,35 @@ public class UserController {
     @PostMapping(path = "/pwchange")
     public ResponseEntity<Object> passwordChange(
             HttpServletRequest request,
-            @RequestBody @Valid NicknameUpdateRequest body
+            @RequestBody @Valid PasswordUpdateRequest body
     ){
-        memberService.
+        Long memberId = util.getTokenMemberId(request);
+        memberService.updatePassword(memberId,body.getPassword());
+        return new ResponseEntity<>(
+                "비밀번호 변경에 성공하였습니다.", HttpStatus.OK
+        );
     }
 
     @PostMapping(path = "/profile")
-    public void uploadProfileImage(){
-
+    public ResponseEntity<Object> uploadProfileImage(
+            HttpServletRequest request,
+            @RequestBody @Valid ProfileRequest body
+    ){
+        Long memberId = util.getTokenMemberId(request);
+        imageService.uploadProfile(memberId,body.getSrc());
+        return new ResponseEntity<>(
+                "프로필 이미지 등록에 성공하였습니다.", HttpStatus.OK
+        );
     }
 
     @DeleteMapping(path = "/profile")
-    public void deleteProfileImage(){
-
+    public ResponseEntity<Object> deleteProfileImage(
+            HttpServletRequest request
+    ){
+        Long memberId = util.getTokenMemberId(request);
+        imageService.deleteProfile(memberId);
+        return new ResponseEntity<>(
+                "프로필 이미지 삭제에 성공하였습니다.", HttpStatus.OK
+        );
     }
 }
