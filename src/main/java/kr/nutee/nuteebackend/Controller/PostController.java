@@ -2,6 +2,9 @@ package kr.nutee.nuteebackend.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.nutee.nuteebackend.DTO.Request.*;
+import kr.nutee.nuteebackend.Enum.ErrorCode;
+import kr.nutee.nuteebackend.Exception.GlobalExceptionHandler;
+import kr.nutee.nuteebackend.Exception.NotAllowedException;
 import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
@@ -28,7 +31,13 @@ import java.util.Map;
 public class PostController {
 
     private final PostService postService;
+    private final GlobalExceptionHandler globalExceptionHandler;
     private final Util util;
+
+    @GetMapping(path = "/test")
+    public void test() {
+        throw new NotAllowedException("접근 권한이 없는 유저입니다.", ErrorCode.ACCEPT_DENIED);
+    }
 
     /*
         즐겨찾기 게시판 불러오기
