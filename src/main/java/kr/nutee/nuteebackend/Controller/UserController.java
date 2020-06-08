@@ -1,8 +1,6 @@
 package kr.nutee.nuteebackend.Controller;
 
-import kr.nutee.nuteebackend.DTO.Request.NicknameUpdateRequest;
-import kr.nutee.nuteebackend.DTO.Request.PasswordUpdateRequest;
-import kr.nutee.nuteebackend.DTO.Request.ProfileRequest;
+import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.Service.ImageService;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
@@ -91,6 +89,30 @@ public class UserController {
         imageService.deleteProfile(memberId);
         return new ResponseEntity<>(
                 "프로필 이미지 삭제에 성공하였습니다.", HttpStatus.OK
+        );
+    }
+
+    @PatchMapping(path = "/interests")
+    public ResponseEntity<Object> updateInterests(
+            HttpServletRequest request,
+            @RequestBody InterestsUpdateRequest body
+    ){
+        Long memberId = util.getTokenMemberId(request);
+        memberService.updateInterests(memberId,body.getInterests());
+        return new ResponseEntity<>(
+                "관심사 변경에 성공하였습니다.", HttpStatus.OK
+        );
+    }
+
+    @PatchMapping(path = "/majors")
+    public ResponseEntity<Object> updateMajors(
+            HttpServletRequest request,
+            @RequestBody MajorsUpdateRequest body
+    ){
+        Long memberId = util.getTokenMemberId(request);
+        memberService.updateMajors(memberId,body.getMajors());
+        return new ResponseEntity<>(
+                "전공 변경에 성공하였습니다.", HttpStatus.OK
         );
     }
 }

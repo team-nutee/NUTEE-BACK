@@ -5,16 +5,14 @@ import kr.nutee.nuteebackend.Domain.Interest;
 import kr.nutee.nuteebackend.Domain.Major;
 import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Domain.Post;
-import kr.nutee.nuteebackend.Repository.CommentRepository;
-import kr.nutee.nuteebackend.Repository.MemberRepository;
-import kr.nutee.nuteebackend.Repository.PostLikeRepository;
-import kr.nutee.nuteebackend.Repository.PostRepository;
+import kr.nutee.nuteebackend.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +26,8 @@ public class MemberService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final InterestRepository interestRepository;
+    private final MajorRepository majorRepository;
     private final PasswordEncoder bcryptEncoder;
     private final Util util;
 
@@ -66,6 +66,24 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
+    public void updateInterests(Long memberId, List<String> interests){
+        Member member = memberRepository.findMemberById(memberId);
+        List<Interest> interestList = new ArrayList<>();
+        interests.forEach(v-> interestList.add(interestRepository.save(Interest.builder().interest(v).member(member).build())));
+        member.setInterests(interestList);
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void updateMajors(Long memberId, List<String> majors){
+        Member member = memberRepository.findMemberById(memberId);
+        List<Major> majorList = new ArrayList<>();
+        majors.forEach(v-> majorList.add(majorRepository.save(Major.builder().major(v).member(member).build())));
+        member.setMajors(majorList);
+        memberRepository.save(member);
+    }
+
     private UserData fillUserData(Member member, int commentNum, int postNum, int likeNum) {
         return UserData.builder()
                 .id(member.getId())
@@ -78,6 +96,7 @@ public class MemberService {
                 .postNum(postNum)
                 .build();
     }
+
 
 
 
