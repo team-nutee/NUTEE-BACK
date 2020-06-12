@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class, MissingServletRequestParameterException.class})
     public ResponseEntity<Object> paramsEx(Exception e) {
         Map<String, Object> map = new HashMap<>();
-        map.put("errorCode", 51);
+        map.put("code", 51);
         map.put("message","");
         log.warn("params ex: "+ e.getClass());
         return new ResponseEntity<>(map, HttpStatus.CONFLICT);
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<Object> nullEx(Exception e) {
         Map<String, Object> map = new HashMap<>();
-        map.put("errorCode", 61);
+        map.put("code", 61);
         map.put("message","");
         log.warn("null ex" + e.getClass());
         return new ResponseEntity<>(map, HttpStatus.CONFLICT);
