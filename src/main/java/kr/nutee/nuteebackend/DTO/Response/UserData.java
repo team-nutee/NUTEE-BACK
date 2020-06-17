@@ -1,6 +1,6 @@
 package kr.nutee.nuteebackend.DTO.Response;
 
-import com.querydsl.core.annotations.QueryProjection;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +29,7 @@ public class UserData implements Serializable {
 
     private int likeNum;
 
-    @QueryProjection
+
     public UserData(Long id, String nickname, ImageResponse image, List<String> interests, List<String> majors, int postNum, int commentNum, int likeNum) {
         this.id = id;
         this.nickname = nickname;

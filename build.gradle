@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.2.7.RELEASE'
-    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 }
 
@@ -26,13 +25,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.6.1'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    implementation 'com.querydsl:querydsl-jpa'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
 
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.1.RELEASE'
     compile group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.3.2.RELEASE'
+
+//    compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '1.0.5.RELEASE'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -43,18 +43,4 @@ test {
     useJUnitPlatform()
 }
 
-def querydslDir = "$buildDir/generated/querydsl"
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
-sourceSets {
-    main.java.srcDir querydslDir
-}
-configurations {
-    querydsl.extendsFrom compileClasspath
-}
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl
-}
 

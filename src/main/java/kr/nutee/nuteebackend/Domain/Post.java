@@ -27,21 +27,26 @@ public class Post extends LogDateTime implements Comparable<Post> {
     private boolean isBlocked;
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    @Builder.Default
     private List<Image> images = new ArrayList<>();
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
     private final List<Likes> likes = new ArrayList<>();
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    @Builder.Default
     private List<Hit> hits = new ArrayList<>();
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    @Builder.Default
     private List<Report> reports = new ArrayList<>();
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
+    @Builder.Default
     private List<PostHashtag> postHashtags = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

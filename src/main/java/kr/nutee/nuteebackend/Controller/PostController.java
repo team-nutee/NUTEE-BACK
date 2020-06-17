@@ -26,13 +26,14 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "/sns/post",consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@AllArgsConstructor
 @ResponseBody
 @Slf4j
 public class PostController {
 
-    private final PostService postService;
-    private final GlobalExceptionHandler globalExceptionHandler;
-    private final Util util;
+    private PostService postService;
+    private GlobalExceptionHandler globalExceptionHandler;
+    private Util util;
 
     @GetMapping(path = "/test")
     public void test() {

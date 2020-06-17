@@ -1,6 +1,7 @@
 package kr.nutee.nuteebackend.Controller;
 
 import kr.nutee.nuteebackend.Service.S3Service;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/sns/upload", consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@AllArgsConstructor
 @ResponseBody
 @Slf4j
 public class ImageController {
 
-    private final S3Service s3Service;
+    private S3Service s3Service;
 
     @PostMapping("")
     public List<String> uploadImages(MultipartHttpServletRequest mtfRequest) {

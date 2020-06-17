@@ -1,6 +1,6 @@
 package kr.nutee.nuteebackend.DTO.Response;
 
-import com.querydsl.core.annotations.QueryProjection;
+
 import kr.nutee.nuteebackend.Domain.Member;
 import lombok.*;
 
@@ -27,7 +27,7 @@ public class PostResponse implements Serializable {
     private String category;
     private int hits;
 
-    @QueryProjection
+
     public PostResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
                         boolean isBlocked, User user, List<ImageResponse> images, List<User> likers,
                         List<CommentResponse> comments, RetweetResponse retweet, String category, int hits) {

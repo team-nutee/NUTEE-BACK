@@ -1,6 +1,6 @@
 package kr.nutee.nuteebackend.Service;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
 import kr.nutee.nuteebackend.DTO.Request.RetweetRequest;
 import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
@@ -9,6 +9,8 @@ import kr.nutee.nuteebackend.Domain.*;
 import kr.nutee.nuteebackend.Enum.ErrorCode;
 import kr.nutee.nuteebackend.Exception.NotAllowedException;
 import kr.nutee.nuteebackend.Repository.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -31,8 +33,6 @@ public class PostService {
 
     @PersistenceContext
     EntityManager em;
-
-    JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;

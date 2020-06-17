@@ -1,6 +1,6 @@
 package kr.nutee.nuteebackend.DTO.Response;
 
-import com.querydsl.core.annotations.QueryProjection;
+
 import lombok.*;
 
 import java.io.Serializable;
@@ -18,7 +18,6 @@ public class CommentResponse implements Serializable {
     private List<ReCommentResponse> reCommentResponses;
     User user;
 
-    @QueryProjection
     public CommentResponse(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, List<ReCommentResponse> reCommentResponses, User user) {
         this.id = id;
         this.content = content;

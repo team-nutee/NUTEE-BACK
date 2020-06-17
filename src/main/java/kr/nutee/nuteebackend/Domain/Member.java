@@ -34,9 +34,11 @@ public class Member extends LogDateTime {
     private Image image;
 
     @OneToMany (mappedBy = "member")
+    @Builder.Default
     private List<Interest> interests = new ArrayList<>();
 
     @OneToMany (mappedBy = "member")
+    @Builder.Default
     private List<Major> majors = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

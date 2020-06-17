@@ -1,6 +1,6 @@
 package kr.nutee.nuteebackend.DTO.Response;
 
-import com.querydsl.core.annotations.QueryProjection;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class RetweetResponse implements Serializable {
     private int hits;
     private boolean isDeleted;
 
-    @QueryProjection
+
     public RetweetResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
                            boolean isBlocked, User user, List<ImageResponse> imageResponses, List<User> likers,
                            int commentNum, String category, int hits, boolean isDeleted) {

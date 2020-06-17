@@ -1,6 +1,6 @@
 package kr.nutee.nuteebackend.DTO.Response;
 
-import com.querydsl.core.annotations.QueryProjection;
+
 import lombok.*;
 
 import java.io.Serializable;
@@ -19,7 +19,7 @@ public class ImageResponse implements Serializable {
                 '}';
     }
 
-    @QueryProjection
+
     public ImageResponse(String src) {
         this.src = src;
     }

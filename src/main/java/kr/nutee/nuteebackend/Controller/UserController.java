@@ -5,6 +5,7 @@ import kr.nutee.nuteebackend.Service.ImageService;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,14 +18,15 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(path = "/sns/user",consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@AllArgsConstructor
 @ResponseBody
 @Slf4j
 public class UserController {
 
-    private final Util util;
-    private final MemberService memberService;
-    private final PostService postService;
-    private final ImageService imageService;
+    private Util util;
+    private MemberService memberService;
+    private PostService postService;
+    private ImageService imageService;
 
     @GetMapping(path = "/{userId}")
     public ResponseEntity<Object> getUser(
