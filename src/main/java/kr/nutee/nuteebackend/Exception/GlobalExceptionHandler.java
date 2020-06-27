@@ -1,5 +1,6 @@
 package kr.nutee.nuteebackend.Exception;
 
+import kr.nutee.nuteebackend.DTO.Response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -15,12 +16,14 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(NotAllowedException.class)
-    public ResponseEntity<Object> notAllowedException(Exception e) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 51);
-        map.put("message","권한이 없는 유저입니다.");
+    public ResponseEntity<Response> notAllowedException(Exception e) {
+        Response res = Response.builder()
+                .code(51)
+                .message("권한이 없는 유저입니다.")
+                .body(null)
+                .build();
         log.warn("NotAllowedException" + e.getClass());
-        return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(res, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

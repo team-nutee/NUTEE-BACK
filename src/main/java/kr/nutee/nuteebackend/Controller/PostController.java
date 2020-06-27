@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +26,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/sns/post",consumes = MediaType.APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor
-@AllArgsConstructor
 @ResponseBody
+@RequiredArgsConstructor
 @Slf4j
 public class PostController {
 
-    private PostService postService;
-    private GlobalExceptionHandler globalExceptionHandler;
-    private Util util;
+    private final PostService postService;
+    private final GlobalExceptionHandler globalExceptionHandler;
+    private final Util util;
 
     @GetMapping(path = "/test")
     public void test() {
@@ -50,6 +50,7 @@ public class PostController {
             @RequestParam("limit") int limit
     ){
         Long memberId = util.getTokenMemberId(request);
+        System.out.println(memberId);
         return new ResponseEntity<>(postService.getPreferencePosts((long)lastId,limit,memberId), HttpStatus.OK);
     }
 
