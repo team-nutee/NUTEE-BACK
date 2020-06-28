@@ -1,5 +1,6 @@
 package kr.nutee.nuteebackend.Controller;
 
+import kr.nutee.nuteebackend.DTO.Response.PostShowResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
@@ -16,6 +17,12 @@ class PostControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("정상적으로 포스트를 생성하는 테스트")
     void createPost() {
+
+        //given
+
+        //when
+
+        //then
 
 
         mockMvc.perform(post("/sns/post")
