@@ -45,12 +45,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(map, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<Object> nullEx(Exception e) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 61);
-        map.put("message","");
-        log.warn("null ex" + e.getClass());
-        return new ResponseEntity<>(map, HttpStatus.CONFLICT);
-    }
+//    @ExceptionHandler(NullPointerException.class)
+//    public ResponseEntity<Object> nullEx(Exception e) {
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("code", 61);
+//        map.put("message","");
+//        log.warn("null ex" + e.getClass());
+//        return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+//    }
 }

@@ -75,7 +75,7 @@ public class PostController {
             @RequestBody @Valid CreatePostRequest body
     ){
         Long id = util.getTokenMemberId(request);
-        return new ResponseEntity<>(postService.createPost(id,body), HttpStatus.OK);
+        return new ResponseEntity<>(postService.createPost(id,body), HttpStatus.CREATED);
     }
 
     /*
