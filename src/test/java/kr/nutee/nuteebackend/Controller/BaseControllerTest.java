@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @Disabled
 public class BaseControllerTest {
 
-    protected String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZjMxMTEiLCJyb2xlIjoiUk9MRV9NQU5BR0VSIiwiaWQiOjIsImV4cCI6MTU5Mzg1MzAwNSwiaWF0IjoxNTkzMjQ4MjA1fQ.q7pO_JbnQ8_oFpDlr7W3athBLu6vHiBRu8a8LmmFccspKrdTX3eYBCCJIu6XvIiqdzRLDVPC_XuQJVptjwUb_g";
+    protected String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZjMxMTAiLCJyb2xlIjoiUk9MRV9NQU5BR0VSIiwiaWQiOjEsImV4cCI6MTU5NTI0Mjg5OCwiaWF0IjoxNTk0NjM4MDk4fQ.yddp_qOLybxXgegDB8knvv6ECEU82Rxc1GEsauT89EPpVh1ua-KGeheNws-EbB74_F_FsbSfII_OsLnLg9pr9A";
 
     @Autowired
     protected MockMvc mockMvc;

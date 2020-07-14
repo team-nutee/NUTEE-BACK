@@ -41,8 +41,8 @@ class PostControllerTest extends BaseControllerTest {
     Util util;
 
     @Test
-    @DisplayName("정상적으로 포스트를 생성하는 테스트")
-    void createPost() throws Exception {
+    @DisplayName("이미지가 없는 포스트를 생성하는 테스트")
+    void createPost1() throws Exception {
 
         //given
         CreatePostRequest body = CreatePostRequest.builder()
@@ -51,8 +51,9 @@ class PostControllerTest extends BaseControllerTest {
                 .category("IT")
                 .build();
 
-        Long memberId = 2L;
+        Long memberId = 1L;
         Member member = memberRepository.findMemberById(memberId);
+        System.out.println(member);
         User user = User.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
@@ -71,17 +72,23 @@ class PostControllerTest extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
-                .andExpect(jsonPath("id").exists())
-                .andExpect(jsonPath("title").value("제목 테스트"))
-                .andExpect(jsonPath("content").value("내용 테스트"))
-                .andExpect(jsonPath("category").value("IT"))
-                .andExpect(jsonPath("user").value(user))
-                .andExpect(jsonPath("images").isEmpty())
-                .andExpect(jsonPath("likers").isEmpty())
-                .andExpect(jsonPath("comments").isEmpty())
-                .andExpect(jsonPath("retweet").isEmpty())
-                .andExpect(jsonPath("hits").value(0))
-                .andExpect(jsonPath("blocked").value(false));
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("body.id").exists())
+                .andExpect(jsonPath("body.title").value("제목 테스트"))
+                .andExpect(jsonPath("body.content").value("내용 테스트"))
+                .andExpect(jsonPath("body.category").value("IT"))
+                .andExpect(jsonPath("body.user").value(user))
+                .andExpect(jsonPath("body.images").isEmpty())
+                .andExpect(jsonPath("body.likers").isEmpty())
+                .andExpect(jsonPath("body.comments").isEmpty())
+                .andExpect(jsonPath("body.retweet").isEmpty())
+                .andExpect(jsonPath("body.hits").value(0))
+                .andExpect(jsonPath("body.blocked").value(false))
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.update-post").exists())
+                .andExpect(jsonPath("_links.remove-post").exists());
 
 
 
