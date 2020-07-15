@@ -31,8 +31,7 @@ dependencies {
 
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.1.RELEASE'
     compile group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.3.2.RELEASE'
-
-//    compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '1.0.5.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.2.7.RELEASE'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

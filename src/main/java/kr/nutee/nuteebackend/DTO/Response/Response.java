@@ -1,7 +1,12 @@
 package kr.nutee.nuteebackend.DTO.Response;
 
-public class Response {
-    String code;
+import lombok.Builder;
+import lombok.Data;
+
+@Builder
+@Data
+public class Response{
+    int code;
     String message;
     Object body;
 }
