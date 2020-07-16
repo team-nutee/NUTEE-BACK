@@ -24,11 +24,4 @@ public class CreatePostRequest implements Serializable {
     @NotEmpty
     String category;
 
-    @Override
-    public String toString() {
-        return "CreatePostRequest{" +
-                "content='" + content + '\'' +
-                ", images=" + images +
-                '}';
-    }
 }

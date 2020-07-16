@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.in;
+
 
 @RestController
 @RequestMapping(path = "/sns/upload", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -36,6 +38,7 @@ public class ImageController {
             } catch (IllegalStateException | IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+
             }
         }
         return srcList;

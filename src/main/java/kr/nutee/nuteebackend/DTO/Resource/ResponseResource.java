@@ -7,9 +7,12 @@ import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 public class ResponseResource extends EntityModel<Response> {
 
-    public ResponseResource(Response content, Link... links){
-        super(content,links);
+    public ResponseResource(Response response, Class c, Long id, Link... links){
+        super(response,links);
+        add(linkTo(c).slash(id).withSelfRel());
     }
 }

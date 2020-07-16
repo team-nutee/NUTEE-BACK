@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -101,11 +102,10 @@ public class PostController {
                 .message("SUCCESS")
                 .body(post)
                 .build();
-        ResponseResource resource = new ResponseResource(response);
 
+        ResponseResource resource = new ResponseResource(response, PostController.class, post.getId());
         WebMvcLinkBuilder selfLinkBuilder = linkTo(PostController.class).slash(post.getId());
         URI createdURI = selfLinkBuilder.toUri();
-        resource.add(selfLinkBuilder.withSelfRel());
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("update-post"));
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("remove-post"));
         return ResponseEntity.created(createdURI).body(resource);
