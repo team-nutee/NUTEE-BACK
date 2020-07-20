@@ -3,6 +3,7 @@ package kr.nutee.nuteebackend.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.nutee.nuteebackend.Controller.Common.RestDocsConfiguration;
 import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -36,5 +37,10 @@ public class BaseControllerTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @BeforeAll
+    static void setDatabase(){
+
+    }
 
 }

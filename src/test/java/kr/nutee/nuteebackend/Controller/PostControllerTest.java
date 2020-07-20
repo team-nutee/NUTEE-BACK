@@ -33,9 +33,7 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -437,22 +435,95 @@ class PostControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("포스트 삭제")
     public void deletePost() throws Exception {
+
         //given
+        Long postId = 10L;
 
         //when
+        MockHttpServletRequestBuilder builder = delete("/sns/post/{postId}",postId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE);
 
         //then
-
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("body.id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andDo(document("delete-post",
+                        links(
+                                linkWithRel("self").description("link to self")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id of the post"),
+                                fieldWithPath("_links.self.href").description("link to self")
+                        )
+                ));
     }
 
     @Test
     @DisplayName("즐겨찾기 게시판 목록 읽기")
     public void getPreferencePosts() throws Exception {
         //given
+        Long memberId =1L;
+        Long lastId = 0L;
+        int limit = 10;
+
+        Member member = memberRepository.findMemberById(memberId);
 
         //when
+        MockHttpServletRequestBuilder builder = get("/sns/preference",lastId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .param("lastId", String.valueOf(lastId))
+                .param("limit", String.valueOf(limit));
 
         //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("body.id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andDo(document("delete-post",
+                        links(
+                                linkWithRel("self").description("link to self")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id of the post"),
+                                fieldWithPath("_links.self.href").description("link to self")
+                        )
+                ));
+
 
     }
 

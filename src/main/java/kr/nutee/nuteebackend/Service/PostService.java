@@ -22,7 +22,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,14 +92,16 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse deletePost(Long postId, Long memberId) {
+    public Map<String,Long> deletePost(Long postId, Long memberId) {
         Post post = postRepository.findPostById(postId);
         if (!post.getMember().getId().equals(memberId)) {
             throw new NotAllowedException("접근 권한이 없는 유저입니다.", ErrorCode.ACCEPT_DENIED);
         }
         post.setDeleted(true);
         post = postRepository.save(post);
-        return util.transferPost(post);
+        Map<String,Long> map = new HashMap<>();
+        map.put("id",post.getId());
+        return map;
     }
 
     @Transactional

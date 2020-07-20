@@ -170,17 +170,20 @@ public class PostController {
         글 삭제
      */
     @DeleteMapping(path = "/{postId}")
-    public ResponseEntity<Response> deletePost(
+    public ResponseEntity<ResponseResource> deletePost(
             HttpServletRequest request,
             @PathVariable String postId
     ){
         Long memberId = util.getTokenMemberId(request);
+        Map<String, Long> post = postService.deletePost(Long.parseLong(postId), memberId);
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
                 .body(postService.deletePost(Long.parseLong(postId),memberId))
                 .build();
-        return new ResponseEntity<>(response,HttpStatus.OK);
+
+        ResponseResource resource = new ResponseResource(response, PostController.class, post.get("id"));
+        return ResponseEntity.ok().body(resource);
     }
 
     /*
