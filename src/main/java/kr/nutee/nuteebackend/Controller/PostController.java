@@ -6,6 +6,7 @@ import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
 import kr.nutee.nuteebackend.DTO.Response.PostResponse;
 import kr.nutee.nuteebackend.DTO.Response.Response;
 import kr.nutee.nuteebackend.Enum.ErrorCode;
+import kr.nutee.nuteebackend.Exception.EmptyAttributeException;
 import kr.nutee.nuteebackend.Exception.GlobalExceptionHandler;
 import kr.nutee.nuteebackend.Exception.NotAllowedException;
 import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
@@ -82,6 +83,7 @@ public class PostController {
                 .message("SUCCESS")
                 .body(postService.getCategoryPosts((long)lastId,limit,category))
                 .build();
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -97,6 +99,10 @@ public class PostController {
 
         PostResponse post = postService.createPost(id, body);
 
+        if(body.getTitle().trim().equals("")||body.getContent().trim().equals("")){
+            throw new EmptyAttributeException("제목 혹은 내용이 비어있습니다.",ErrorCode.EMPTY_ATTRIBUTE);
+        }
+
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
@@ -108,6 +114,7 @@ public class PostController {
         URI createdURI = selfLinkBuilder.toUri();
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("update-post"));
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("remove-post"));
+
         return ResponseEntity.created(createdURI).body(resource);
     }
 
@@ -115,35 +122,48 @@ public class PostController {
         글 읽기
      */
     @GetMapping(path = "/{postId}")
-    public ResponseEntity<Response> getPost(
+    public ResponseEntity<ResponseResource> getPost(
             HttpServletRequest request,
             @PathVariable String postId
     ){
         Long memberId = util.getTokenMemberId(request);
+        PostResponse post = postService.getPost(Long.parseLong(postId), memberId);
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body(postService.getPost(Long.parseLong(postId),memberId))
+                .body(post)
                 .build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+        ResponseResource resource = new ResponseResource(response, PostController.class, post.getId());
+        resource.add(linkTo(PostController.class).slash(post.getId()).withRel("update-post"));
+        resource.add(linkTo(PostController.class).slash(post.getId()).withRel("remove-post"));
+
+        return ResponseEntity.ok().body(resource);
     }
 
     /*
         글 수정
      */
     @PatchMapping(path = "/{postId}")
-    public ResponseEntity<Response> updatePost(
+    public ResponseEntity<ResponseResource> updatePost(
             HttpServletRequest request,
             @PathVariable String postId,
             @RequestBody @Valid UpdatePostRequest body
     ){
         Long memberId = util.getTokenMemberId(request);
+
+        PostResponse post = postService.updatePost(Long.parseLong(postId), memberId, body);
+
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body(postService.updatePost(memberId,Long.parseLong(postId), body))
+                .body(post)
                 .build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+        ResponseResource resource = new ResponseResource(response, PostController.class, post.getId());
+        resource.add(linkTo(PostController.class).slash(post.getId()).withRel("update-post"));
+        resource.add(linkTo(PostController.class).slash(post.getId()).withRel("remove-post"));
+        return ResponseEntity.ok().body(resource);
     }
 
     /*
@@ -151,12 +171,14 @@ public class PostController {
      */
     @DeleteMapping(path = "/{postId}")
     public ResponseEntity<Response> deletePost(
+            HttpServletRequest request,
             @PathVariable String postId
     ){
+        Long memberId = util.getTokenMemberId(request);
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body(postService.deletePost(Long.parseLong(postId)))
+                .body(postService.deletePost(Long.parseLong(postId),memberId))
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }

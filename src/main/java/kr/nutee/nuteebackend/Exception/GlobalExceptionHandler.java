@@ -1,5 +1,6 @@
 package kr.nutee.nuteebackend.Exception;
 
+import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
 import kr.nutee.nuteebackend.DTO.Response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,6 +16,7 @@ import java.util.Map;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(NotAllowedException.class)
     public ResponseEntity<Response> notAllowedException(Exception e) {
         Response res = Response.builder()
@@ -23,7 +25,18 @@ public class GlobalExceptionHandler {
                 .body(null)
                 .build();
         log.warn("NotAllowedException" + e.getClass());
-        return new ResponseEntity<>(res, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(res, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(EmptyAttributeException.class)
+    public ResponseEntity<Response> emptyAttributeException(Exception e) {
+        Response res = Response.builder()
+                .code(52)
+                .message("제목 혹은 내용이 비어있습니다.")
+                .body(null)
+                .build();
+        log.warn("EmptyAttributeException" + e.getClass());
+        return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -45,12 +58,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(map, HttpStatus.CONFLICT);
     }
 
-//    @ExceptionHandler(NullPointerException.class)
-//    public ResponseEntity<Object> nullEx(Exception e) {
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("code", 61);
-//        map.put("message","");
-//        log.warn("null ex" + e.getClass());
-//        return new ResponseEntity<>(map, HttpStatus.CONFLICT);
-//    }
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<Object> nullEx(Exception e) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("code", 61);
+        map.put("message","");
+        log.warn("null ex" + e.getClass());
+        return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+    }
 }

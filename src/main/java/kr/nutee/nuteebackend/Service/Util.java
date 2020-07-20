@@ -71,19 +71,26 @@ public class Util {
         return result;
     }
 
-    public void saveImage(CreatePostRequest body, Post post) {
+    public List<Image> saveImage(CreatePostRequest body, Post post) {
+        List<Image> images  = new ArrayList<>();
         if(body.getImages()==null){
-            return;
+            return null;
         }
         if (body.getImages().size() != 0) {
-            body.getImages().forEach(v -> imageRepository.save(Image.builder().post(post).src(v.getSrc()).build()));
+            body.getImages().forEach(v -> images.add(imageRepository.save(Image.builder().post(post).src(v.getSrc()).build())));
         }
+        return images;
     }
 
-    public void saveImage(UpdatePostRequest body, Post post) {
-        if (body.getImages().size() != 0) {
-            body.getImages().forEach(v -> imageRepository.save(Image.builder().post(post).src(v.getSrc()).build()));
+    public List<Image> saveImage(UpdatePostRequest body, Post post) {
+        List<Image> images  = new ArrayList<>();
+        if(body.getImages()==null){
+            return null;
         }
+        if (body.getImages().size() != 0) {
+            body.getImages().forEach(v -> images.add(imageRepository.save(Image.builder().post(post).src(v.getSrc()).build())));
+        }
+        return images;
     }
 
     public Post fillPost(CreatePostRequest body, Member member) {

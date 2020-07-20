@@ -19,7 +19,7 @@ public class CreatePostRequest implements Serializable {
     @NotEmpty
     String content;
 
-    List<ImageResponse> images;
+    List<ImageRequest> images;
 
     @NotEmpty
     String category;

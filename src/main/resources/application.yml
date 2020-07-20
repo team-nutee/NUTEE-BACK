@@ -6,7 +6,7 @@ aws.bucket: nuteestorage
 #MYSQL CONFIG
 spring:
   datasource:
-    url: jdbc:mysql://192.168.99.100:3306/nutee_test?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://127.0.0.1:3306/nutee_test?useUnicode=true&characterEncoding=UTF-8
     username: root
     password: P@ssw0rd
   jpa:
@@ -19,7 +19,24 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
   main:
     allow-bean-definition-overriding: true
+  http:
+    encoding:
+      enabled: true
+      force: true
+      charset: UTF-8
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIATMO3KHNJ6YBUHJF5
+      secretKey: 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
+    s3:
+      cloudFront: d3i4mxfx1kae1d.cloudfront.net
+      bucket: nuteestorage
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false

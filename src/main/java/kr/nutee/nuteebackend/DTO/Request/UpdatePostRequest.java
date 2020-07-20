@@ -19,11 +19,11 @@ public class UpdatePostRequest implements Serializable {
     @NotEmpty
     String content;
 
-    List<ImageResponse> images;
+    List<ImageRequest> images;
 
     @Override
     public String toString() {
-        return "CreatePostRequest{" +
+        return "UpdatePostRequest{" +
                 "content='" + content + '\'' +
                 ", images=" + images +
                 '}';

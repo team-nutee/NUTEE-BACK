@@ -60,7 +60,7 @@ public class PostService {
         Post post = util.fillPost(body, member);
         post = postRepository.save(post);
         util.saveHashTag(body.getContent(), post);
-        util.saveImage(body, post);
+        post.setImages(util.saveImage(body, post));
         return util.transferPost(post);
     }
 
@@ -73,7 +73,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse updatePost(Long memberId, Long postId, UpdatePostRequest body) throws NotAllowedException {
+    public PostResponse updatePost(Long postId, Long memberId, UpdatePostRequest body) throws NotAllowedException {
         Post post = postRepository.findPostById(postId);
         if (!post.getMember().getId().equals(memberId)) {
             throw new NotAllowedException("접근 권한이 없는 유저입니다.", ErrorCode.ACCEPT_DENIED);
@@ -82,16 +82,19 @@ public class PostService {
         post.setTitle(body.getTitle());
         post.setContent(body.getContent());
 
-        postRepository.save(post);
+        post = postRepository.save(post);
         imageRepository.deleteImagesByPostId(postId);
         em.flush();
-        util.saveImage(body, post);
-        return util.transferPost(postRepository.findPostById(postId));
+        post.setImages(util.saveImage(body, post));
+        return util.transferPost(post);
     }
 
     @Transactional
-    public PostResponse deletePost(Long postId) {
+    public PostResponse deletePost(Long postId, Long memberId) {
         Post post = postRepository.findPostById(postId);
+        if (!post.getMember().getId().equals(memberId)) {
+            throw new NotAllowedException("접근 권한이 없는 유저입니다.", ErrorCode.ACCEPT_DENIED);
+        }
         post.setDeleted(true);
         post = postRepository.save(post);
         return util.transferPost(post);
