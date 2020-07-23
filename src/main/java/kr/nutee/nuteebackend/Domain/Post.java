@@ -30,8 +30,9 @@ public class Post extends LogDateTime implements Comparable<Post> {
     @Builder.Default
     private List<Image> images = new ArrayList<>();
 
-    @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
-    private final List<Likes> likes = new ArrayList<>();
+    @OneToMany (mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<PostLike> likes = new ArrayList<>();
 
     @OneToMany (mappedBy = "post", cascade = CascadeType.PERSIST)
     @Builder.Default

@@ -2,9 +2,14 @@ package kr.nutee.nuteebackend.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.nutee.nuteebackend.Controller.Common.RestDocsConfiguration;
+import kr.nutee.nuteebackend.DTO.Request.SignupDTO;
+import kr.nutee.nuteebackend.Domain.Interest;
+import kr.nutee.nuteebackend.Domain.Member;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,9 +21,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -30,17 +40,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Transactional
 public class BaseControllerTest {
 
-    protected String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZjMxMTAiLCJyb2xlIjoiUk9MRV9NQU5BR0VSIiwiaWQiOjEsImV4cCI6MTU5NTc1MjA0NSwiaWF0IjoxNTk1MTQ3MjQ1fQ.wi-xBh_Mj6gpM8zAcvoOwUf9gCR2dT0JdDa6QuvuXgIADxlFCGB9nxqKw9SETqCrBm_KUYC0TQgGHst_bx3zEA";
+    protected String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZjAwMDAiLCJyb2xlIjoiUk9MRV9NQU5BR0VSIiwiaWQiOjEsImV4cCI6MTU5NjA4Mzc5MiwiaWF0IjoxNTk1NDc4OTkyfQ.HatoW2JGrHtRlW3vyDptSxr6pxRBhGImsU5L-cnfZ1tzaUz5Qi915p9REPLyHD1Afj6_heFo-FYYKmn138UCxg";
 
     @Autowired
     protected MockMvc mockMvc;
 
     @Autowired
     protected ObjectMapper objectMapper;
-
-    @BeforeAll
-    static void setDatabase(){
-
-    }
 
 }

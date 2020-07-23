@@ -18,25 +18,36 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotAllowedException.class)
-    public ResponseEntity<Response> notAllowedException(Exception e) {
+    public ResponseEntity<Response> notAllowedException(BusinessException e) {
         Response res = Response.builder()
                 .code(51)
-                .message("권한이 없는 유저입니다.")
+                .message(e.getMessage())
                 .body(null)
                 .build();
         log.warn("NotAllowedException" + e.getClass());
-        return new ResponseEntity<>(res, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(res, e.getStatus());
+    }
+
+    @ExceptionHandler(NotExistException.class)
+    public ResponseEntity<Response> notExistException(BusinessException e) {
+        Response res = Response.builder()
+                .code(51)
+                .message(e.getMessage())
+                .body(null)
+                .build();
+        log.warn("NotExistException" + e.getClass());
+        return new ResponseEntity<>(res, e.getStatus());
     }
 
     @ExceptionHandler(EmptyAttributeException.class)
-    public ResponseEntity<Response> emptyAttributeException(Exception e) {
+    public ResponseEntity<Response> emptyAttributeException(BusinessException e) {
         Response res = Response.builder()
                 .code(52)
-                .message("제목 혹은 내용이 비어있습니다.")
+                .message(e.getMessage())
                 .body(null)
                 .build();
         log.warn("EmptyAttributeException" + e.getClass());
-        return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(res, e.getStatus());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

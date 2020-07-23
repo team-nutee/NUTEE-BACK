@@ -7,7 +7,9 @@ import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
 import kr.nutee.nuteebackend.DTO.Response.*;
 import kr.nutee.nuteebackend.Domain.*;
 import kr.nutee.nuteebackend.Enum.ErrorCode;
+import kr.nutee.nuteebackend.Exception.BusinessException;
 import kr.nutee.nuteebackend.Exception.NotAllowedException;
+import kr.nutee.nuteebackend.Exception.NotExistException;
 import kr.nutee.nuteebackend.Repository.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,9 +70,15 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse getPost(Long postId,Long memberId) {
+    public PostResponse getPost(Long postId,Long memberId) throws BusinessException {
         Member member = memberRepository.findMemberById(memberId);
         Post post = postRepository.findPostById(postId);
+        if(post == null){
+            throw new NotExistException("존재 하지 않는 글 입니다.", ErrorCode.NOT_EXIST, HttpStatus.NOT_FOUND);
+        }
+        if(post.isBlocked()){
+            throw new NotAllowedException("현재 신고로 인하여 볼 수 없는 글 입니다.",ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN);
+        }
         util.hitPost(post,member);
         return util.transferPost(post);
     }
@@ -78,7 +87,7 @@ public class PostService {
     public PostResponse updatePost(Long postId, Long memberId, UpdatePostRequest body) throws NotAllowedException {
         Post post = postRepository.findPostById(postId);
         if (!post.getMember().getId().equals(memberId)) {
-            throw new NotAllowedException("접근 권한이 없는 유저입니다.", ErrorCode.ACCEPT_DENIED);
+            throw new NotAllowedException("접근 권한이 없는 유저 입니다.", ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN);
         }
 
         post.setTitle(body.getTitle());
@@ -95,7 +104,7 @@ public class PostService {
     public Map<String,Long> deletePost(Long postId, Long memberId) {
         Post post = postRepository.findPostById(postId);
         if (!post.getMember().getId().equals(memberId)) {
-            throw new NotAllowedException("접근 권한이 없는 유저입니다.", ErrorCode.ACCEPT_DENIED);
+            throw new NotAllowedException("접근 권한이 없는 유저입 니다.", ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN);
         }
         post.setDeleted(true);
         post = postRepository.save(post);
@@ -200,27 +209,27 @@ public class PostService {
     }
 
     //해당 유저가 구독한 게시판의 글들을 가져온다.
-    public List<PostShowResponse> getPreferencePosts(Long lastId, int limit, Long memberId) {
-        List<String> preferences = new ArrayList<>();
-        List<Post> preferPosts = new ArrayList<>();
+    public List<PostShowResponse> getFavoritePosts(Long lastId, int limit, Long memberId) {
+        List<String> favorites = new ArrayList<>();
+        List<Post> favoritePosts = new ArrayList<>();
         Pageable limitP = PageRequest.of(0, limit);
         Member member = memberRepository.findMemberById(memberId);
 
-        member.getInterests().forEach(v->preferences.add(v.getInterest()));
-        member.getMajors().forEach(v->preferences.add(v.getMajor()));
-        List<Post> finalPreferPosts = preferPosts;
-        preferences.forEach(v-> {
+        member.getInterests().forEach(v->favorites.add(v.getInterest()));
+        member.getMajors().forEach(v->favorites.add(v.getMajor()));
+        List<Post> finalPreferPosts = favoritePosts;
+        favorites.forEach(v-> {
             if (lastId == 0) {
                 finalPreferPosts.addAll(postRepository.findPostsByCategory(v, limitP));
             } else {
                 finalPreferPosts.addAll(postRepository.findPostsByCategoryEqualsAndIdLessThan(v,lastId,limitP));
             }
         });
-        preferPosts = preferPosts.stream()
+        favoritePosts = favoritePosts.stream()
                 .sorted()
                 .collect(Collectors.toList());
 
-        return util.transferPosts(preferPosts).stream()
+        return util.transferPosts(favoritePosts).stream()
                 .limit(limit).collect(Collectors.toList());
     }
 

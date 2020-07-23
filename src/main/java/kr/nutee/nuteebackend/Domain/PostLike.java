@@ -10,7 +10,8 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Likes extends LogDateTime {
+public class PostLike extends LogDateTime {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "likes_id")
@@ -24,4 +25,12 @@ public class Likes extends LogDateTime {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @Override
+    public String toString() {
+        return "PostLike{" +
+                "id=" + id +
+                ", member=" + member +
+                ", post=" + post +
+                '}';
+    }
 }

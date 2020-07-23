@@ -41,19 +41,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class PostController {
 
     private final PostService postService;
-    private final GlobalExceptionHandler globalExceptionHandler;
     private final Util util;
-
-    @GetMapping(path = "/test")
-    public void test() {
-        throw new NotAllowedException("접근 권한이 없는 유저입니다.", ErrorCode.ACCEPT_DENIED);
-    }
 
     /*
         즐겨찾기 게시판 불러오기
      */
-    @GetMapping(path = "/preference")
-    public ResponseEntity<Response> getPreferencePosts(
+    @GetMapping(path = "/favorite")
+    public ResponseEntity<Response> getFavoritePosts(
             HttpServletRequest request,
             @RequestParam("lastId") int lastId,
             @RequestParam("limit") int limit
@@ -63,7 +57,7 @@ public class PostController {
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body(postService.getPreferencePosts((long)lastId,limit,memberId))
+                .body(postService.getFavoritePosts((long)lastId,limit,memberId))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -72,11 +66,11 @@ public class PostController {
     /*
         카테고리 게시판 불러오기
      */
-    @GetMapping(path = "")
+    @GetMapping(path = "/category/{category}")
     public ResponseEntity<Response> getCategoryPosts(
-            @RequestParam("category") String category,
             @RequestParam("lastId") int lastId,
-            @RequestParam("limit") int limit
+            @RequestParam("limit") int limit,
+            @PathVariable String category
     ){
         Response response = Response.builder()
                 .code(10)
@@ -99,8 +93,9 @@ public class PostController {
 
         PostResponse post = postService.createPost(id, body);
 
+
         if(body.getTitle().trim().equals("")||body.getContent().trim().equals("")){
-            throw new EmptyAttributeException("제목 혹은 내용이 비어있습니다.",ErrorCode.EMPTY_ATTRIBUTE);
+            throw new EmptyAttributeException("제목 혹은 내용이 없습니다.",ErrorCode.EMPTY_ATTRIBUTE,HttpStatus.BAD_REQUEST);
         }
 
         Response response = Response.builder()
@@ -114,6 +109,9 @@ public class PostController {
         URI createdURI = selfLinkBuilder.toUri();
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("update-post"));
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("remove-post"));
+        resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
+        resource.add(linkTo(PostController.class).slash(body.getCategory()).withRel("get-category-posts"));
+
 
         return ResponseEntity.created(createdURI).body(resource);
     }
