@@ -5,11 +5,13 @@ import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
 import kr.nutee.nuteebackend.DTO.Response.PostResponse;
 import kr.nutee.nuteebackend.DTO.Response.Response;
+import kr.nutee.nuteebackend.Domain.Post;
 import kr.nutee.nuteebackend.Enum.ErrorCode;
 import kr.nutee.nuteebackend.Exception.EmptyAttributeException;
 import kr.nutee.nuteebackend.Exception.GlobalExceptionHandler;
 import kr.nutee.nuteebackend.Exception.NotAllowedException;
 import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
+import kr.nutee.nuteebackend.Repository.PostRepository;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
@@ -41,13 +43,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class PostController {
 
     private final PostService postService;
+    private final PostRepository postRepository;
     private final Util util;
 
     /*
         즐겨찾기 게시판 불러오기
      */
     @GetMapping(path = "/favorite")
-    public ResponseEntity<Response> getFavoritePosts(
+    public ResponseEntity<ResponseResource> getFavoritePosts(
             HttpServletRequest request,
             @RequestParam("lastId") int lastId,
             @RequestParam("limit") int limit
@@ -60,7 +63,10 @@ public class PostController {
                 .body(postService.getFavoritePosts((long)lastId,limit,memberId))
                 .build();
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        ResponseResource resource = new ResponseResource(response, PostController.class);
+        resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
+
+        return ResponseEntity.ok().body(resource);
     }
 
     /*
@@ -112,7 +118,6 @@ public class PostController {
         resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
         resource.add(linkTo(PostController.class).slash(body.getCategory()).withRel("get-category-posts"));
 
-
         return ResponseEntity.created(createdURI).body(resource);
     }
 
@@ -135,7 +140,8 @@ public class PostController {
         ResponseResource resource = new ResponseResource(response, PostController.class, post.getId());
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("update-post"));
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("remove-post"));
-
+        resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
+        resource.add(linkTo(PostController.class).slash(postRepository.findPostById(post.getId()).getCategory()).withRel("get-category-posts"));
         return ResponseEntity.ok().body(resource);
     }
 
@@ -161,6 +167,8 @@ public class PostController {
         ResponseResource resource = new ResponseResource(response, PostController.class, post.getId());
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("update-post"));
         resource.add(linkTo(PostController.class).slash(post.getId()).withRel("remove-post"));
+        resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
+        resource.add(linkTo(PostController.class).slash(postRepository.findPostById(post.getId()).getCategory()).withRel("get-category-posts"));
         return ResponseEntity.ok().body(resource);
     }
 
@@ -173,14 +181,18 @@ public class PostController {
             @PathVariable String postId
     ){
         Long memberId = util.getTokenMemberId(request);
+
         Map<String, Long> post = postService.deletePost(Long.parseLong(postId), memberId);
+
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body(postService.deletePost(Long.parseLong(postId),memberId))
+                .body(post)
                 .build();
 
         ResponseResource resource = new ResponseResource(response, PostController.class, post.get("id"));
+        resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
+        resource.add(linkTo(PostController.class).slash(postRepository.findPostById(post.get("id")).getCategory()).withRel("get-category-posts"));
         return ResponseEntity.ok().body(resource);
     }
 

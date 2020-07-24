@@ -73,11 +73,11 @@ public class PostService {
     public PostResponse getPost(Long postId,Long memberId) throws BusinessException {
         Member member = memberRepository.findMemberById(memberId);
         Post post = postRepository.findPostById(postId);
-        if(post == null){
-            throw new NotExistException("존재 하지 않는 글 입니다.", ErrorCode.NOT_EXIST, HttpStatus.NOT_FOUND);
+        if(post.isDeleted()){
+            throw new NotExistException("존재 하지 않는 글 입니다.", ErrorCode.NOT_EXIST, HttpStatus.NOT_FOUND,postId);
         }
         if(post.isBlocked()){
-            throw new NotAllowedException("현재 신고로 인하여 볼 수 없는 글 입니다.",ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN);
+            throw new NotAllowedException("현재 신고로 인하여 볼 수 없는 글 입니다.",ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN,postId);
         }
         util.hitPost(post,member);
         return util.transferPost(post);
@@ -87,7 +87,7 @@ public class PostService {
     public PostResponse updatePost(Long postId, Long memberId, UpdatePostRequest body) throws NotAllowedException {
         Post post = postRepository.findPostById(postId);
         if (!post.getMember().getId().equals(memberId)) {
-            throw new NotAllowedException("접근 권한이 없는 유저 입니다.", ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN);
+            throw new NotAllowedException("접근 권한이 없는 유저 입니다.", ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN, postId);
         }
 
         post.setTitle(body.getTitle());

@@ -2,6 +2,7 @@ package kr.nutee.nuteebackend.Controller;
 
 
 import kr.nutee.nuteebackend.Controller.Common.RestDocsConfiguration;
+import kr.nutee.nuteebackend.DTO.LoginToken;
 import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
 import kr.nutee.nuteebackend.DTO.Request.ImageRequest;
 import kr.nutee.nuteebackend.DTO.Request.SignupDTO;
@@ -15,8 +16,7 @@ import kr.nutee.nuteebackend.Repository.MemberRepository;
 import kr.nutee.nuteebackend.Repository.PostRepository;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -26,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Import(RestDocsConfiguration.class)
 @ExtendWith(RestDocumentationExtension.class)
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PostControllerTest extends BaseControllerTest {
 
     @Autowired
@@ -61,15 +64,11 @@ class PostControllerTest extends BaseControllerTest {
     @Autowired
     Util util;
 
-    @Autowired
-    RestTemplate rest;
-
-    @Test
+    @Test @Order(1)
     @DisplayName("포스트 생성 이미지 X 성공")
     void createPost() throws Exception {
 
         //given
-        setDatabase();
         CreatePostRequest body = CreatePostRequest.builder()
                 .title("제목 테스트")
                 .content("내용 테스트")
@@ -117,7 +116,7 @@ class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("_links.get-category-posts").exists());
     }
 
-    @Test
+    @Test @Order(2)
     @DisplayName("포스트 생성 이미지 O 성공")
     void createPostImage() throws Exception {
 
@@ -227,7 +226,7 @@ class PostControllerTest extends BaseControllerTest {
                 ));
     }
 
-    @Test
+    @Test @Order(3)
     @DisplayName("포스트 생성 입력값 오류")
     void createPost_Bad_Request_Wrong_Input() throws Exception {
 
@@ -246,13 +245,14 @@ class PostControllerTest extends BaseControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
+    @Test @Order(4)
     @DisplayName("포스트 수정 성공")
     void updatePost() throws Exception {
         //given
         List<ImageRequest> images = new ArrayList<>();
         ImageRequest pathOfImage = new ImageRequest("pathOfImageUpdate.jpg");
         images.add(pathOfImage);
+        Long postId = 1L;
 
         UpdatePostRequest body = UpdatePostRequest.builder()
                 .title("제목 수정")
@@ -260,11 +260,11 @@ class PostControllerTest extends BaseControllerTest {
                 .images(images)
                 .build();
 
-        PostResponse post = util.transferPost(postRepository.findPostById(10L));
+        PostResponse post = util.transferPost(postRepository.findPostById(postId));
         User user = post.getUser();
 
         //when
-        MockHttpServletRequestBuilder builder = patch("/sns/post/{postId}",10L)
+        MockHttpServletRequestBuilder builder = patch("/sns/post/{postId}",postId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
                 .accept(MediaTypes.HAL_JSON_VALUE)
@@ -299,7 +299,9 @@ class PostControllerTest extends BaseControllerTest {
                         links(
                                 linkWithRel("self").description("link to self"),
                                 linkWithRel("update-post").description("link to update the post"),
-                                linkWithRel("remove-post").description("link to remove the post")
+                                linkWithRel("remove-post").description("link to remove the post"),
+                                linkWithRel("get-favorite-posts").description("link to update the post"),
+                                linkWithRel("get-category-posts").description("link to remove the post")
                         ),
                         requestHeaders(
                                 headerWithName(HttpHeaders.ACCEPT).description("accept header"),
@@ -335,13 +337,15 @@ class PostControllerTest extends BaseControllerTest {
                                 fieldWithPath("body.hits").description(" user's join number of the post"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.update-post.href").description("link to update post"),
-                                fieldWithPath("_links.remove-post.href").description("link to remove post")
+                                fieldWithPath("_links.remove-post.href").description("link to remove post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to get favorite list"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to get category list")
                         )
                 ));
 
     }
 
-    @Test
+    @Test @Order(5)
     @DisplayName("포스트 수정 입력값 오류")
     void updatePost_Bad_Request_Wrong_Input() throws Exception {
 
@@ -363,7 +367,7 @@ class PostControllerTest extends BaseControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
+    @Test @Order(6)
     @DisplayName("포스트 수정 권한 없는 사람 접근")
     void updatePost_Not_Allowed() throws Exception {
         //given
@@ -371,9 +375,10 @@ class PostControllerTest extends BaseControllerTest {
                 .title("제목 수정")
                 .content("내용 수정")
                 .build();
+        Long postId = 5L;
 
         //when
-        MockHttpServletRequestBuilder builder = patch("/sns/post/9")
+        MockHttpServletRequestBuilder builder = patch("/sns/post/{postId}",postId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
                 .content(objectMapper.writeValueAsString(body));
@@ -385,12 +390,11 @@ class PostControllerTest extends BaseControllerTest {
 
     }
 
-    @Test
+    @Test @Order(7)
     @DisplayName("포스트 읽기 성공")
     void getPost() throws Exception {
         //given
-        setPostList();
-        Long postId = 10L;
+        Long postId = 1L;
 
         //when
         MockHttpServletRequestBuilder builder = get("/sns/post/{postId}",postId)
@@ -422,7 +426,9 @@ class PostControllerTest extends BaseControllerTest {
                         links(
                                 linkWithRel("self").description("link to self"),
                                 linkWithRel("update-post").description("link to update the post"),
-                                linkWithRel("remove-post").description("link to remove the post")
+                                linkWithRel("remove-post").description("link to remove the post"),
+                                linkWithRel("get-favorite-posts").description("link to update the post"),
+                                linkWithRel("get-category-posts").description("link to remove the post")
                         ),
                         requestHeaders(
                                 headerWithName(HttpHeaders.ACCEPT).description("accept header"),
@@ -453,17 +459,18 @@ class PostControllerTest extends BaseControllerTest {
                                 fieldWithPath("body.hits").description(" user's join number of the post"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.update-post.href").description("link to update post"),
-                                fieldWithPath("_links.remove-post.href").description("link to remove post")
+                                fieldWithPath("_links.remove-post.href").description("link to remove post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to get favorite list"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to get category list")
                         )
                 ));
 
     }
 
-    @Test
+    @Test @Order(8)
     @DisplayName("포스트 읽기 실패(이미 삭제됨)")
     void getPost_Not_Exist() throws Exception {
         //given
-        setPostList();
         Long postId = 4L;
 
         //when
@@ -481,14 +488,35 @@ class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("message").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
-                .andExpect(jsonPath("_links.get-category-posts").exists());
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andDo(document("get-post",
+                links(
+                        linkWithRel("self").description("link to self"),
+                        linkWithRel("get-favorite-posts").description("link to update the post"),
+                        linkWithRel("get-category-posts").description("link to remove the post")
+                ),
+                requestHeaders(
+                        headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                        headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                ),
+                responseHeaders(
+                        headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                ),
+                responseFields(
+                        fieldWithPath("code").description("label code number"),
+                        fieldWithPath("message").description("message"),
+                        fieldWithPath("body").description("body of the response"),
+                        fieldWithPath("_links.self.href").description("link to self"),
+                        fieldWithPath("_links.get-favorite-posts.href").description("link to get favorite list"),
+                        fieldWithPath("_links.get-category-posts.href").description("link to get category list")
+                )
+        ));
     }
 
-    @Test
+    @Test @Order(9)
     @DisplayName("포스트 읽기 실패(제한됨)")
     void getPost_Blocked() throws Exception {
         //given
-        setPostList();
         Long postId = 8L;
 
         //when
@@ -505,22 +533,51 @@ class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
                 .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.update-post").exists())
+                .andExpect(jsonPath("_links.remove-post").exists())
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
-                .andExpect(jsonPath("_links.get-category-posts").exists());
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andDo(document("get-post-block",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("update-post").description("link to update the post"),
+                                linkWithRel("remove-post").description("link to remove the post"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.update-post.href").description("link to update post"),
+                                fieldWithPath("_links.remove-post.href").description("link to remove post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts")
+                        )
+                ));
     }
 
-    @Test
+    @Test @Order(10)
     @DisplayName("포스트 삭제 성공")
+    @Transactional
     void deletePost() throws Exception {
 
         //given
-        setPostList();
+        LoginToken token = login(SignupDTO.builder().userId("mf0001").password("P@ssw0rd").build());
         Long postId = 1L;
 
         //when
         MockHttpServletRequestBuilder builder = delete("/sns/post/{postId}",postId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + token.getAccessToken())
                 .accept(MediaTypes.HAL_JSON_VALUE);
 
         //then
@@ -537,7 +594,9 @@ class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("_links.get-category-posts").exists())
                 .andDo(document("delete-post",
                         links(
-                                linkWithRel("self").description("link to self")
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts")
                         ),
                         requestHeaders(
                                 headerWithName(HttpHeaders.ACCEPT).description("accept header"),
@@ -550,24 +609,24 @@ class PostControllerTest extends BaseControllerTest {
                                 fieldWithPath("code").description("label code number"),
                                 fieldWithPath("message").description("message"),
                                 fieldWithPath("body").description("body of the response"),
-                                fieldWithPath("body.id").description("id of the post"),
-                                fieldWithPath("_links.self.href").description("link to self")
+                                fieldWithPath("body.id").description("postId of deleted post"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts")
                         )
                 ));
     }
 
-    @Test
-    @DisplayName("즐겨찾기 게시판 목록 읽기")
-    void getPreferencePosts() throws Exception {
+    @Test @Order(11)
+    @DisplayName("즐겨찾기 게시판 목록 읽기 성공")
+    void getFavoritePosts() throws Exception {
         //given
-        setPostList();
 
-        Long memberId =1L;
         Long lastId = 0L;
         int limit = 10;
 
         //when
-        MockHttpServletRequestBuilder builder = get("/sns/post/preference",lastId)
+        MockHttpServletRequestBuilder builder = get("/sns/post/favorite",lastId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
                 .accept(MediaTypes.HAL_JSON_VALUE)
@@ -584,10 +643,10 @@ class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("body",hasSize(6)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
-                .andExpect(jsonPath("_links.get-category-posts").exists())
-                .andDo(document("delete-post",
+                .andDo(document("favorite-posts",
                         links(
-                                linkWithRel("self").description("link to self")
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts")
                         ),
                         requestHeaders(
                                 headerWithName(HttpHeaders.ACCEPT).description("accept header"),
@@ -600,15 +659,32 @@ class PostControllerTest extends BaseControllerTest {
                                 fieldWithPath("code").description("label code number"),
                                 fieldWithPath("message").description("message"),
                                 fieldWithPath("body").description("body of the response"),
-                                fieldWithPath("body.id").description("id of the post"),
-                                fieldWithPath("_links.self.href").description("link to self")
+                                fieldWithPath("body[].id").description("id"),
+                                fieldWithPath("body[].title").description("title"),
+                                fieldWithPath("body[].content").description("content"),
+                                fieldWithPath("body[].createdAt").description("createdAt"),
+                                fieldWithPath("body[].updatedAt").description("updatedAt"),
+                                fieldWithPath("body[].user").description("user"),
+                                fieldWithPath("body[].user.id").description("user id"),
+                                fieldWithPath("body[].user.nickname").description("user nickname"),
+                                fieldWithPath("body[].user.image").description("user image"),
+                                fieldWithPath("body[].images").description("images").optional(),
+                                fieldWithPath("body[].images[].src").description("image path").optional(),
+                                fieldWithPath("body[].likers").description("likers"),
+                                fieldWithPath("body[].commentNum").description("commentNum"),
+                                fieldWithPath("body[].retweet").description("retweet"),
+                                fieldWithPath("body[].category").description("category"),
+                                fieldWithPath("body[].hits").description("hits"),
+                                fieldWithPath("body[].blocked").description("isBlocked"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts")
                         )
                 ));
 
 
     }
 
-    @Test
+    @Test @Order(12)
     @DisplayName("카테고리 게시판 목록 읽기")
     void getCategoryPosts() throws Exception {
         //given
@@ -716,7 +792,8 @@ class PostControllerTest extends BaseControllerTest {
 
     }
 
-    void setDatabase(){
+
+    public static void setDatabase(){
         List<String> interests1 = new ArrayList<>();
         interests1.add("INTER1");
         interests1.add("INTER2");
@@ -774,20 +851,29 @@ class PostControllerTest extends BaseControllerTest {
                 .majors(majors3)
                 .build();
 
-        sendOtp();
+//        sendOtp();
         createMember(signupDTO1);
         createMember(signupDTO2);
         createMember(signupDTO3);
 
+
+
     }
 
-    public void sendOtp(){
+    public static void sendOtp() {
+        RestTemplate rest = new RestTemplate();
         Map<String,String> map = new HashMap<>();
         map.put("schoolEmail","nutee.skhu.2020@gmail.com");
-        System.out.println(rest.postForObject("http://localhost:8080/auth/sendotp", map, String.class));
+        rest.postForObject("http://localhost:8080/auth/sendotp", map, String.class);
     }
 
-    public Member createMember(SignupDTO dto){
+    public static Member createMember(SignupDTO dto) {
+        RestTemplate rest = new RestTemplate();
         return rest.postForObject("http://localhost:8080/auth/signup", dto, Member.class);
+    }
+
+    public LoginToken login(SignupDTO dto) {
+        RestTemplate rest = new RestTemplate();
+        return rest.postForObject("http://localhost:8080/auth/login", dto, LoginToken.class);
     }
 }

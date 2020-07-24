@@ -37,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @AutoConfigureRestDocs
 @ActiveProfiles("test")
 @Disabled
-@Transactional
 public class BaseControllerTest {
 
     protected String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZjAwMDAiLCJyb2xlIjoiUk9MRV9NQU5BR0VSIiwiaWQiOjEsImV4cCI6MTU5NjA4Mzc5MiwiaWF0IjoxNTk1NDc4OTkyfQ.HatoW2JGrHtRlW3vyDptSxr6pxRBhGImsU5L-cnfZ1tzaUz5Qi915p9REPLyHD1Afj6_heFo-FYYKmn138UCxg";
