@@ -1,8 +1,12 @@
 package kr.nutee.nuteebackend.DTO.Request;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProfileRequest {
     String src;
 }

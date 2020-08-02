@@ -15,13 +15,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "/sns/hashtag", consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@AllArgsConstructor
 @ResponseBody
 @Slf4j
 public class HashtagController {
 
-    private PostService postService;
+    private final PostService postService;
 
+    /*
+        해당 해시태그 게시글 목록 불러오기
+     */
     @GetMapping(path = "/{tag}")
     public ResponseEntity<Object> getHashtags(
             @PathVariable String tag,

@@ -20,7 +20,7 @@ public class RetweetResponse implements Serializable {
     private LocalDateTime updatedAt;
     private boolean isBlocked;
     private User user;
-    private List<ImageResponse> imageResponses;
+    private List<ImageResponse> images;
     private List<User> likers;
     private int commentNum;
     private String category;
@@ -29,7 +29,7 @@ public class RetweetResponse implements Serializable {
 
 
     public RetweetResponse(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
-                           boolean isBlocked, User user, List<ImageResponse> imageResponses, List<User> likers,
+                           boolean isBlocked, User user, List<ImageResponse> images, List<User> likers,
                            int commentNum, String category, int hits, boolean isDeleted) {
         this.id = id;
         this.title = title;
@@ -38,7 +38,7 @@ public class RetweetResponse implements Serializable {
         this.updatedAt = updatedAt;
         this.isBlocked = isBlocked;
         this.user = user;
-        this.imageResponses = imageResponses;
+        this.images = images;
         this.likers = likers;
         this.commentNum = commentNum;
         this.category = category;

@@ -20,13 +20,15 @@ import static java.lang.System.in;
 @RestController
 @RequestMapping(path = "/sns/upload", consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@AllArgsConstructor
 @ResponseBody
 @Slf4j
 public class ImageController {
 
-    private S3Service s3Service;
+    private final S3Service s3Service;
 
+    /*
+        이미지 S3에 업로드
+     */
     @PostMapping("")
     public List<String> uploadImages(MultipartHttpServletRequest mtfRequest) {
         List<MultipartFile> fileList = mtfRequest.getFiles("images");

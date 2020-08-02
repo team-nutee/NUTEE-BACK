@@ -18,16 +18,18 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(path = "/sns/user",consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@AllArgsConstructor
 @ResponseBody
 @Slf4j
 public class UserController {
 
-    private Util util;
-    private MemberService memberService;
-    private PostService postService;
-    private ImageService imageService;
+    private final Util util;
+    private final MemberService memberService;
+    private final PostService postService;
+    private final ImageService imageService;
 
+    /*
+        댓글 삭제
+     */
     @GetMapping(path = "/{userId}")
     public ResponseEntity<Object> getUser(
             @PathVariable String userId

@@ -1,12 +1,8 @@
 package kr.nutee.nuteebackend.Controller;
 
-
-import kr.nutee.nuteebackend.Controller.Common.RestDocsConfiguration;
+import kr.nutee.nuteebackend.Common.RestDocsConfiguration;
 import kr.nutee.nuteebackend.DTO.LoginToken;
-import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
-import kr.nutee.nuteebackend.DTO.Request.ImageRequest;
-import kr.nutee.nuteebackend.DTO.Request.SignupDTO;
-import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
+import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.DTO.Response.PostResponse;
 import kr.nutee.nuteebackend.DTO.Response.User;
 import kr.nutee.nuteebackend.Domain.Member;
@@ -19,30 +15,27 @@ import kr.nutee.nuteebackend.Service.Util;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.in;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -286,7 +279,7 @@ class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("body.images").exists())
                 .andExpect(jsonPath("body.images[0].src").value(body.getImages().get(0).getSrc()))
                 .andExpect(jsonPath("body.likers").value(post.getLikers()))
-                .andExpect(jsonPath("body.comments").value(post.getComments()))
+                .andExpect(jsonPath("body.comments",hasSize(14)))
                 .andExpect(jsonPath("body.retweet").value(post.getRetweet()))
                 .andExpect(jsonPath("body.hits").value(post.getHits()))
                 .andExpect(jsonPath("body.blocked").value(post.isBlocked()))
@@ -332,6 +325,25 @@ class PostControllerTest extends BaseControllerTest {
                                 fieldWithPath("body.images[].src").description("image paths"),
                                 fieldWithPath("body.likers").description("user who likes the post"),
                                 fieldWithPath("body.comments").description("comments of the post"),
+                                fieldWithPath("body.comments[].id").description("comment's id"),
+                                fieldWithPath("body.comments[].content").description("comment's content"),
+                                fieldWithPath("body.comments[].createdAt").description("comment's created time"),
+                                fieldWithPath("body.comments[].updatedAt").description("comment's updated time"),
+                                fieldWithPath("body.comments[].reComment").description("comment's reComment").optional(),
+                                fieldWithPath("body.comments[].reComment[].id").type(JsonFieldType.NUMBER).description("comment's reComment's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].content").type(JsonFieldType.STRING).description("comment's reComment's content").optional(),
+                                fieldWithPath("body.comments[].reComment[].createdAt").type(JsonFieldType.STRING).description("comment's reComment's created time").optional(),
+                                fieldWithPath("body.comments[].reComment[].updatedAt").type(JsonFieldType.STRING).description("comment's reComment's updated time").optional(),
+                                fieldWithPath("body.comments[].reComment[].user").type(JsonFieldType.OBJECT).description("comment's reComment's writer").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.id").type(JsonFieldType.NUMBER).description("comment's reComment's writer's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.nickname").type(JsonFieldType.STRING).description("comment's reComment's writer's nickname").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image").type(JsonFieldType.OBJECT).description("comment's reComment's writer's image").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image.src").type(JsonFieldType.STRING).description("comment's reComment's writer's image's path").optional(),
+                                fieldWithPath("body.comments[].user").description("comment's writer"),
+                                fieldWithPath("body.comments[].user.id").description("comment's writer's id"),
+                                fieldWithPath("body.comments[].user.nickname").description("comment's writer's nickname"),
+                                fieldWithPath("body.comments[].user.image").description("comment's writer's image"),
+                                fieldWithPath("body.comments[].user.image.src").type(JsonFieldType.STRING).description("comment's writer's image's path").optional(),
                                 fieldWithPath("body.retweet").description("post that sharing other post"),
                                 fieldWithPath("body.category").description("category of the post"),
                                 fieldWithPath("body.hits").description(" user's join number of the post"),
@@ -454,6 +466,25 @@ class PostControllerTest extends BaseControllerTest {
                                 fieldWithPath("body.images[].src").description("image paths").optional(),
                                 fieldWithPath("body.likers").description("user who likes the post").optional(),
                                 fieldWithPath("body.comments").description("comments of the post").optional(),
+                                fieldWithPath("body.comments[].id").description("comment's id"),
+                                fieldWithPath("body.comments[].content").description("comment's content"),
+                                fieldWithPath("body.comments[].createdAt").description("comment's created time"),
+                                fieldWithPath("body.comments[].updatedAt").description("comment's updated time"),
+                                fieldWithPath("body.comments[].reComment").description("comment's reComment").optional(),
+                                fieldWithPath("body.comments[].reComment[].id").type(JsonFieldType.NUMBER).description("comment's reComment's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].content").type(JsonFieldType.STRING).description("comment's reComment's content").optional(),
+                                fieldWithPath("body.comments[].reComment[].createdAt").type(JsonFieldType.STRING).description("comment's reComment's created time").optional(),
+                                fieldWithPath("body.comments[].reComment[].updatedAt").type(JsonFieldType.STRING).description("comment's reComment's updated time").optional(),
+                                fieldWithPath("body.comments[].reComment[].user").type(JsonFieldType.OBJECT).description("comment's reComment's writer").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.id").type(JsonFieldType.NUMBER).description("comment's reComment's writer's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.nickname").type(JsonFieldType.STRING).description("comment's reComment's writer's nickname").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image").type(JsonFieldType.OBJECT).description("comment's reComment's writer's image").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image.src").type(JsonFieldType.STRING).description("comment's reComment's writer's image's path").optional(),
+                                fieldWithPath("body.comments[].user").description("comment's writer"),
+                                fieldWithPath("body.comments[].user.id").description("comment's writer's id"),
+                                fieldWithPath("body.comments[].user.nickname").description("comment's writer's nickname"),
+                                fieldWithPath("body.comments[].user.image").description("comment's writer's image"),
+                                fieldWithPath("body.comments[].user.image.src").type(JsonFieldType.STRING).description("comment's writer's image's path").optional(),
                                 fieldWithPath("body.retweet").description("post that sharing other post").optional(),
                                 fieldWithPath("body.category").description("category of the post"),
                                 fieldWithPath("body.hits").description(" user's join number of the post"),
@@ -621,7 +652,6 @@ class PostControllerTest extends BaseControllerTest {
     @DisplayName("즐겨찾기 게시판 목록 읽기 성공")
     void getFavoritePosts() throws Exception {
         //given
-
         Long lastId = 0L;
         int limit = 10;
 
@@ -640,10 +670,10 @@ class PostControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
-                .andExpect(jsonPath("body",hasSize(6)))
+                .andExpect(jsonPath("body",hasSize(7)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
-                .andDo(document("favorite-posts",
+                .andDo(document("get-favorite-posts",
                         links(
                                 linkWithRel("self").description("link to self"),
                                 linkWithRel("get-favorite-posts").description("link to favorite posts")
@@ -670,9 +700,30 @@ class PostControllerTest extends BaseControllerTest {
                                 fieldWithPath("body[].user.image").description("user image"),
                                 fieldWithPath("body[].images").description("images").optional(),
                                 fieldWithPath("body[].images[].src").description("image path").optional(),
-                                fieldWithPath("body[].likers").description("likers"),
+                                fieldWithPath("body[].likers").description("likers").optional(),
+                                fieldWithPath("body[].likers[].id").description("likers").optional(),
+                                fieldWithPath("body[].likers[].nickname").description("likers").optional(),
+                                fieldWithPath("body[].likers[].image").description("likers").optional(),
+                                fieldWithPath("body[].likers[].image.src").type(JsonFieldType.STRING).description("likers").optional(),
                                 fieldWithPath("body[].commentNum").description("commentNum"),
-                                fieldWithPath("body[].retweet").description("retweet"),
+                                fieldWithPath("body[].retweet").type(JsonFieldType.OBJECT).description("retweet").optional(),
+                                fieldWithPath("body[].retweet.id").description("retweet"),
+                                fieldWithPath("body[].retweet.title").description("retweet"),
+                                fieldWithPath("body[].retweet.content").description("retweet"),
+                                fieldWithPath("body[].retweet.createdAt").description("retweet"),
+                                fieldWithPath("body[].retweet.updatedAt").description("retweet"),
+                                fieldWithPath("body[].retweet.user").description("retweet"),
+                                fieldWithPath("body[].retweet.user.id").description("retweet"),
+                                fieldWithPath("body[].retweet.user.nickname").description("retweet"),
+                                fieldWithPath("body[].retweet.user.image").description("retweet"),
+                                fieldWithPath("body[].retweet.images").description("retweet"),
+                                fieldWithPath("body[].retweet.images[].src").description("retweet"),
+                                fieldWithPath("body[].retweet.likers").description("retweet"),
+                                fieldWithPath("body[].retweet.commentNum").description("retweet"),
+                                fieldWithPath("body[].retweet.category").description("retweet"),
+                                fieldWithPath("body[].retweet.hits").description("retweet"),
+                                fieldWithPath("body[].retweet.blocked").description("retweet"),
+                                fieldWithPath("body[].retweet.deleted").description("retweet"),
                                 fieldWithPath("body[].category").description("category"),
                                 fieldWithPath("body[].hits").description("hits"),
                                 fieldWithPath("body[].blocked").description("isBlocked"),
@@ -688,11 +739,920 @@ class PostControllerTest extends BaseControllerTest {
     @DisplayName("카테고리 게시판 목록 읽기")
     void getCategoryPosts() throws Exception {
         //given
+        Long lastId = 0L;
+        int limit = 10;
+        String category = "INTER2";
+
+        //when
+        MockHttpServletRequestBuilder builder = get("/sns/post/category/{category}",category)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .param("lastId", String.valueOf(lastId))
+                .param("limit", String.valueOf(limit));
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body",hasSize(3)))
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andDo(document("get-category-posts",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body[].id").description("id"),
+                                fieldWithPath("body[].title").description("title"),
+                                fieldWithPath("body[].content").description("content"),
+                                fieldWithPath("body[].createdAt").description("createdAt"),
+                                fieldWithPath("body[].updatedAt").description("updatedAt"),
+                                fieldWithPath("body[].user").description("user"),
+                                fieldWithPath("body[].user.id").description("user id"),
+                                fieldWithPath("body[].user.nickname").description("user nickname"),
+                                fieldWithPath("body[].user.image").description("user image"),
+                                fieldWithPath("body[].images").description("images").optional(),
+                                fieldWithPath("body[].images[].src").description("image path").optional(),
+                                fieldWithPath("body[].likers").description("likers").optional(),
+                                fieldWithPath("body[].likers[].id").description("likers"),
+                                fieldWithPath("body[].likers[].nickname").description("likers"),
+                                fieldWithPath("body[].likers[].image").description("likers"),
+                                fieldWithPath("body[].likers[].image.src").type(JsonFieldType.STRING).description("likers").optional(),
+                                fieldWithPath("body[].commentNum").description("commentNum"),
+                                fieldWithPath("body[].retweet").description("retweet"),
+                                fieldWithPath("body[].category").description("category"),
+                                fieldWithPath("body[].hits").description("hits"),
+                                fieldWithPath("body[].blocked").description("isBlocked"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts")
+                        )
+                ));
+
+    }
+
+    @Test @Order(13)
+    @DisplayName("게시글 신고 성공")
+    void reportPost() throws Exception {
+        //given
+        Long postId = 1L;
+        ReportRequest body = ReportRequest.builder()
+                .content("역겨운 게시물이라 신고했습니다.")
+                .build();
+
+        //when
+        MockHttpServletRequestBuilder builder = post("/sns/post/{postId}/report",postId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(body));
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("body.id").exists())
+                .andExpect(jsonPath("body.title").exists())
+                .andExpect(jsonPath("body.content").exists())
+                .andExpect(jsonPath("body.category").exists())
+                .andExpect(jsonPath("body.user").exists())
+                .andExpect(jsonPath("body.hits").exists())
+                .andExpect(jsonPath("body.blocked").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.update-post").exists())
+                .andExpect(jsonPath("_links.remove-post").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andDo(document("report-post",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("update-post").description("link to update the post"),
+                                linkWithRel("remove-post").description("link to remove the post"),
+                                linkWithRel("get-favorite-posts").description("link to update the post"),
+                                linkWithRel("get-category-posts").description("link to remove the post")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id of the post"),
+                                fieldWithPath("body.title").description("title of the post"),
+                                fieldWithPath("body.content").description("description of the post"),
+                                fieldWithPath("body.createdAt").description("created time of the post"),
+                                fieldWithPath("body.updatedAt").description("updated time of the post"),
+                                fieldWithPath("body.blocked").description("blocking flag of the post"),
+                                fieldWithPath("body.user").description("author of the post"),
+                                fieldWithPath("body.user.id").description("author's id number"),
+                                fieldWithPath("body.user.nickname").description("author's nickname"),
+                                fieldWithPath("body.user.image").description("author's profile image path"),
+                                fieldWithPath("body.images[].src").description("image paths").optional(),
+                                fieldWithPath("body.likers").description("user who likes the post").optional(),
+                                fieldWithPath("body.comments").description("comments of the post").optional(),
+                                fieldWithPath("body.comments[].id").description("comment's id"),
+                                fieldWithPath("body.comments[].content").description("comment's content"),
+                                fieldWithPath("body.comments[].createdAt").description("comment's created time"),
+                                fieldWithPath("body.comments[].updatedAt").description("comment's updated time"),
+                                fieldWithPath("body.comments[].reComment").description("comment's reComment").optional(),
+                                fieldWithPath("body.comments[].reComment[].id").type(JsonFieldType.NUMBER).description("comment's reComment's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].content").type(JsonFieldType.STRING).description("comment's reComment's content").optional(),
+                                fieldWithPath("body.comments[].reComment[].createdAt").type(JsonFieldType.STRING).description("comment's reComment's created time").optional(),
+                                fieldWithPath("body.comments[].reComment[].updatedAt").type(JsonFieldType.STRING).description("comment's reComment's updated time").optional(),
+                                fieldWithPath("body.comments[].reComment[].user").type(JsonFieldType.OBJECT).description("comment's reComment's writer").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.id").type(JsonFieldType.NUMBER).description("comment's reComment's writer's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.nickname").type(JsonFieldType.STRING).description("comment's reComment's writer's nickname").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image").type(JsonFieldType.OBJECT).description("comment's reComment's writer's image").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image.src").type(JsonFieldType.STRING).description("comment's reComment's writer's image's path").optional(),
+                                fieldWithPath("body.comments[].user").description("comment's writer"),
+                                fieldWithPath("body.comments[].user.id").description("comment's writer's id"),
+                                fieldWithPath("body.comments[].user.nickname").description("comment's writer's nickname"),
+                                fieldWithPath("body.comments[].user.image").description("comment's writer's image"),
+                                fieldWithPath("body.comments[].user.image.src").type(JsonFieldType.STRING).description("comment's writer's image's path").optional(),
+
+                                fieldWithPath("body.comments").description("comments of the post").optional(),
+                                fieldWithPath("body.retweet").description("post that sharing other post").optional(),
+                                fieldWithPath("body.category").description("category of the post"),
+                                fieldWithPath("body.hits").description(" user's join number of the post"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.update-post.href").description("link to update post"),
+                                fieldWithPath("_links.remove-post.href").description("link to remove post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to get favorite list"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to get category list")
+                        )
+                ));
+
+    }
+
+    @Test @Order(14)
+    @DisplayName("게시글 신고 실패 (이미 신고 누른 게시물)")
+    void reportPost_alreadyReport() throws Exception {
+        //given
+        Long postId = 1L;
+        ReportRequest body = ReportRequest.builder()
+                .content("역겨운 게시물이라 신고했습니다.")
+                .build();
+
+        //when
+        MockHttpServletRequestBuilder builder = post("/sns/post/{postId}/report",postId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(body));
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("body.id").exists())
+                .andExpect(jsonPath("body.title").exists())
+                .andExpect(jsonPath("body.content").exists())
+                .andExpect(jsonPath("body.category").exists())
+                .andExpect(jsonPath("body.user").exists())
+                .andExpect(jsonPath("body.hits").exists())
+                .andExpect(jsonPath("body.blocked").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.update-post").exists())
+                .andExpect(jsonPath("_links.remove-post").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andDo(document("report-post",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("update-post").description("link to update the post"),
+                                linkWithRel("remove-post").description("link to remove the post"),
+                                linkWithRel("get-favorite-posts").description("link to update the post"),
+                                linkWithRel("get-category-posts").description("link to remove the post")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id of the post"),
+                                fieldWithPath("body.title").description("title of the post"),
+                                fieldWithPath("body.content").description("description of the post"),
+                                fieldWithPath("body.createdAt").description("created time of the post"),
+                                fieldWithPath("body.updatedAt").description("updated time of the post"),
+                                fieldWithPath("body.blocked").description("blocking flag of the post"),
+                                fieldWithPath("body.user").description("author of the post"),
+                                fieldWithPath("body.user.id").description("author's id number"),
+                                fieldWithPath("body.user.nickname").description("author's nickname"),
+                                fieldWithPath("body.user.image").description("author's profile image path"),
+                                fieldWithPath("body.images[].src").description("image paths").optional(),
+                                fieldWithPath("body.likers").description("user who likes the post").optional(),
+                                fieldWithPath("body.comments").description("comments of the post").optional(),
+                                fieldWithPath("body.comments[].id").description("comment's id"),
+                                fieldWithPath("body.comments[].content").description("comment's content"),
+                                fieldWithPath("body.comments[].createdAt").description("comment's created time"),
+                                fieldWithPath("body.comments[].updatedAt").description("comment's updated time"),
+                                fieldWithPath("body.comments[].reComment").description("comment's reComment").optional(),
+                                fieldWithPath("body.comments[].reComment[].id").type(JsonFieldType.NUMBER).description("comment's reComment's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].content").type(JsonFieldType.STRING).description("comment's reComment's content").optional(),
+                                fieldWithPath("body.comments[].reComment[].createdAt").type(JsonFieldType.STRING).description("comment's reComment's created time").optional(),
+                                fieldWithPath("body.comments[].reComment[].updatedAt").type(JsonFieldType.STRING).description("comment's reComment's updated time").optional(),
+                                fieldWithPath("body.comments[].reComment[].user").type(JsonFieldType.OBJECT).description("comment's reComment's writer").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.id").type(JsonFieldType.NUMBER).description("comment's reComment's writer's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.nickname").type(JsonFieldType.STRING).description("comment's reComment's writer's nickname").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image").type(JsonFieldType.OBJECT).description("comment's reComment's writer's image").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image.src").type(JsonFieldType.STRING).description("comment's reComment's writer's image's path").optional(),
+                                fieldWithPath("body.comments[].user").description("comment's writer"),
+                                fieldWithPath("body.comments[].user.id").description("comment's writer's id"),
+                                fieldWithPath("body.comments[].user.nickname").description("comment's writer's nickname"),
+                                fieldWithPath("body.comments[].user.image").description("comment's writer's image"),
+                                fieldWithPath("body.comments[].user.image.src").type(JsonFieldType.STRING).description("comment's writer's image's path").optional(),
+                                fieldWithPath("body.retweet").description("post that sharing other post").optional(),
+                                fieldWithPath("body.category").description("category of the post"),
+                                fieldWithPath("body.hits").description(" user's join number of the post"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.update-post.href").description("link to update post"),
+                                fieldWithPath("_links.remove-post.href").description("link to remove post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to get favorite list"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to get category list")
+                        )
+                ));
+
+
+    }
+
+    @Test @Order(15)
+    @DisplayName("게시글 신고 실패 (존재하지 않는 게시물)")
+    void reportPost_isNull() throws Exception {
+        //given
+
 
         //when
 
+
         //then
 
+
+    }
+
+    @Test @Order(16)
+    @DisplayName("댓글 목록 읽기 성공")
+    void getComments() throws Exception {
+        //given
+        Long postId = 1L;
+        Long lastId = 0L;
+        int limit = 10;
+
+        //when
+        MockHttpServletRequestBuilder builder = get("/sns/post/{postId}/comments",postId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .param("lastId", String.valueOf(lastId))
+                .param("limit", String.valueOf(limit));
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body",hasSize(14)))
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andDo(document("get-comments",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-post").description("link to favorite posts"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts"),
+                                linkWithRel("get-comments").description("link to favorite posts")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body[].id").description("id"),
+                                fieldWithPath("body[].content").description("content"),
+                                fieldWithPath("body[].createdAt").description("createdAt"),
+                                fieldWithPath("body[].updatedAt").description("updatedAt"),
+                                fieldWithPath("body[].reComment").description("comment's reComment").optional(),
+                                fieldWithPath("body[].reComment[].id").type(JsonFieldType.NUMBER).description("comment's reComment's id").optional(),
+                                fieldWithPath("body[].reComment[].content").type(JsonFieldType.STRING).description("comment's reComment's content").optional(),
+                                fieldWithPath("body[].reComment[].createdAt").type(JsonFieldType.STRING).description("comment's reComment's created time").optional(),
+                                fieldWithPath("body[].reComment[].updatedAt").type(JsonFieldType.STRING).description("comment's reComment's updated time").optional(),
+                                fieldWithPath("body[].reComment[].user").type(JsonFieldType.OBJECT).description("comment's reComment's writer").optional(),
+                                fieldWithPath("body[].reComment[].user.id").type(JsonFieldType.NUMBER).description("comment's reComment's writer's id").optional(),
+                                fieldWithPath("body[].reComment[].user.nickname").type(JsonFieldType.STRING).description("comment's reComment's writer's nickname").optional(),
+                                fieldWithPath("body[].reComment[].user.image").type(JsonFieldType.OBJECT).description("comment's reComment's writer's image").optional(),
+                                fieldWithPath("body[].reComment[].user.image.src").type(JsonFieldType.STRING).description("comment's reComment's writer's image's path").optional(),
+                                fieldWithPath("body[].user").description("user"),
+                                fieldWithPath("body[].user.id").description("user id"),
+                                fieldWithPath("body[].user.nickname").description("user nickname"),
+                                fieldWithPath("body[].user.image").description("user image"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-post.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts"),
+                                fieldWithPath("_links.get-comments.href").description("link to category posts")
+                        )
+                ));
+
+
+    }
+
+    @Test @Order(17)
+    @DisplayName("댓글 작성 성공")
+    void createComment() throws Exception {
+        //given
+        Long postId = 1L;
+        CommentRequest body = CommentRequest.builder()
+                .content("포스트 1에 댓글 새로 작성.")
+                .build();
+
+        //when
+        MockHttpServletRequestBuilder builder = post("/sns/post/{postId}/comment",postId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(body));
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.get-post").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andExpect(jsonPath("_links.get-comments").exists())
+                .andDo(document("create-comment",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-post").description("link to post"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts"),
+                                linkWithRel("get-comments").description("link to comment list")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id"),
+                                fieldWithPath("body.content").description("content"),
+                                fieldWithPath("body.createdAt").description("createdAt"),
+                                fieldWithPath("body.updatedAt").description("updatedAt"),
+                                fieldWithPath("body.reComment").description("reComment"),
+                                fieldWithPath("body.user").description("user"),
+                                fieldWithPath("body.user.id").description("user id"),
+                                fieldWithPath("body.user.nickname").description("user nickname"),
+                                fieldWithPath("body.user.image").description("user image"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-post.href").description("link to post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts"),
+                                fieldWithPath("_links.get-comments.href").description("link to category posts")
+                        )
+                ));
+    }
+
+    @Test @Order(18)
+    @DisplayName("댓글 수정 성공")
+    void updateComment() throws Exception {
+        //given
+        Long postId = 1L;
+        Long commentId = 1L;
+        CommentRequest body = CommentRequest.builder()
+                .content("포스트 1에 있는 댓글 수정.")
+                .build();
+
+        //when
+        MockHttpServletRequestBuilder builder = patch("/sns/post/{postId}/comment/{commentId}",postId,commentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(body));
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.get-post").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andExpect(jsonPath("_links.get-comments").exists())
+                .andDo(document("update-comment",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-post").description("link to post"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts"),
+                                linkWithRel("get-comments").description("link to comment list")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id"),
+                                fieldWithPath("body.content").description("content"),
+                                fieldWithPath("body.createdAt").description("createdAt"),
+                                fieldWithPath("body.updatedAt").description("updatedAt"),
+                                fieldWithPath("body.reComment").type(JsonFieldType.ARRAY).description("reComment").optional(),
+                                fieldWithPath("body.reComment[].id").type(JsonFieldType.NUMBER).description("reComment").optional(),
+                                fieldWithPath("body.reComment[].content").type(JsonFieldType.STRING).description("reComment").optional(),
+                                fieldWithPath("body.reComment[].createdAt").type(JsonFieldType.STRING).description("reComment").optional(),
+                                fieldWithPath("body.reComment[].updatedAt").type(JsonFieldType.STRING).description("reComment").optional(),
+                                fieldWithPath("body.reComment[].user").type(JsonFieldType.OBJECT).description("reComment").optional(),
+                                fieldWithPath("body.reComment[].user.id").type(JsonFieldType.NUMBER).description("reComment").optional(),
+                                fieldWithPath("body.reComment[].user.nickname").type(JsonFieldType.STRING).description("reComment").optional(),
+                                fieldWithPath("body.reComment[].user.image").type(JsonFieldType.OBJECT).description("reComment").optional(),
+                                fieldWithPath("body.reComment[].user.image.src").type(JsonFieldType.STRING).description("reComment").optional(),
+                                fieldWithPath("body.user").description("user"),
+                                fieldWithPath("body.user.id").description("user id"),
+                                fieldWithPath("body.user.nickname").description("user nickname"),
+                                fieldWithPath("body.user.image").description("user image"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-post.href").description("link to post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts"),
+                                fieldWithPath("_links.get-comments.href").description("link to category posts")
+                        )
+                ));
+    }
+
+    @Test @Order(19)
+    @DisplayName("답글 생성 성공")
+    void createReComment() throws Exception {
+        //given
+        Long postId = 1L;
+        Long parentId = 1L;
+        CommentRequest body = CommentRequest.builder()
+                .content("포스트 1에 댓글1에 답글 새로 작성.")
+                .build();
+
+        //when
+        MockHttpServletRequestBuilder builder = post("/sns/post/{postId}/comment/{parentId}",postId,parentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(body));
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.get-post").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andExpect(jsonPath("_links.get-comments").exists())
+                .andDo(document("create-reComment",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-post").description("link to post"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts"),
+                                linkWithRel("get-comments").description("link to comment list")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id"),
+                                fieldWithPath("body.content").description("content"),
+                                fieldWithPath("body.createdAt").description("createdAt"),
+                                fieldWithPath("body.updatedAt").description("updatedAt"),
+                                fieldWithPath("body.reComment").description("reComment"),
+                                fieldWithPath("body.user").description("user"),
+                                fieldWithPath("body.user.id").description("user id"),
+                                fieldWithPath("body.user.nickname").description("user nickname"),
+                                fieldWithPath("body.user.image").description("user image"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-post.href").description("link to post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts"),
+                                fieldWithPath("_links.get-comments.href").description("link to category posts")
+                        )
+                ));
+
+
+    }
+
+    @Test @Order(20)
+    @DisplayName("댓글 삭제 성공")
+    void deleteComment() throws Exception {
+        //given
+        Long postId = 1L;
+        Long commentId = 1L;
+
+        //when
+        MockHttpServletRequestBuilder builder = delete("/sns/post/{postId}/comment/{commentId}",postId,commentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE);
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.get-post").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andExpect(jsonPath("_links.get-comments").exists())
+                .andDo(document("delete-comment",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-post").description("link to post"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts"),
+                                linkWithRel("get-comments").description("link to comment list")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body[].id").description("id"),
+                                fieldWithPath("body[].content").description("content"),
+                                fieldWithPath("body[].createdAt").description("createdAt"),
+                                fieldWithPath("body[].updatedAt").description("updatedAt"),
+                                fieldWithPath("body[].reComment").description("reComment"),
+                                fieldWithPath("body[].user").description("user"),
+                                fieldWithPath("body[].user.id").description("user id"),
+                                fieldWithPath("body[].user.nickname").description("user nickname"),
+                                fieldWithPath("body[].user.image").description("user image"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-post.href").description("link to post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts"),
+                                fieldWithPath("_links.get-comments.href").description("link to category posts")
+                        )
+                ));
+
+    }
+
+    @Test @Order(21)
+    @DisplayName("게시글 좋아요 성공")
+    void postLike() throws Exception {
+        //given
+        Long postId = 1L;
+
+        //when
+        MockHttpServletRequestBuilder builder = post("/sns/post/{postId}/like",postId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE);
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.get-post").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andExpect(jsonPath("_links.get-comments").exists())
+                .andDo(document("like-post",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-post").description("link to post"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts"),
+                                linkWithRel("get-comments").description("link to comment list")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id of the post"),
+                                fieldWithPath("body.title").description("title of the post"),
+                                fieldWithPath("body.content").description("description of the post"),
+                                fieldWithPath("body.createdAt").description("created time of the post"),
+                                fieldWithPath("body.updatedAt").description("updated time of the post"),
+                                fieldWithPath("body.blocked").description("blocking flag of the post"),
+                                fieldWithPath("body.user").description("author of the post"),
+                                fieldWithPath("body.user.id").description("author's id number"),
+                                fieldWithPath("body.user.nickname").description("author's nickname"),
+                                fieldWithPath("body.user.image").description("author's profile image path"),
+                                fieldWithPath("body.images[].src").description("image paths"),
+                                fieldWithPath("body.likers").description("user who likes the post"),
+                                fieldWithPath("body.likers[].id").description("user who likes the post"),
+                                fieldWithPath("body.likers[].nickname").description("user who likes the post"),
+                                fieldWithPath("body.likers[].image").description("user who likes the post"),
+                                fieldWithPath("body.likers[].image.src").type(JsonFieldType.STRING).description("user who likes the post").optional(),
+                                fieldWithPath("body.comments").description("comments of the post"),
+                                fieldWithPath("body.comments[].id").description("comment's id"),
+                                fieldWithPath("body.comments[].content").description("comment's content"),
+                                fieldWithPath("body.comments[].createdAt").description("comment's created time"),
+                                fieldWithPath("body.comments[].updatedAt").description("comment's updated time"),
+                                fieldWithPath("body.comments[].reComment").description("comment's reComment").optional(),
+                                fieldWithPath("body.comments[].reComment[].id").type(JsonFieldType.NUMBER).description("comment's reComment's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].content").type(JsonFieldType.STRING).description("comment's reComment's content").optional(),
+                                fieldWithPath("body.comments[].reComment[].createdAt").type(JsonFieldType.STRING).description("comment's reComment's created time").optional(),
+                                fieldWithPath("body.comments[].reComment[].updatedAt").type(JsonFieldType.STRING).description("comment's reComment's updated time").optional(),
+                                fieldWithPath("body.comments[].reComment[].user").type(JsonFieldType.OBJECT).description("comment's reComment's writer").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.id").type(JsonFieldType.NUMBER).description("comment's reComment's writer's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.nickname").type(JsonFieldType.STRING).description("comment's reComment's writer's nickname").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image").type(JsonFieldType.OBJECT).description("comment's reComment's writer's image").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image.src").type(JsonFieldType.STRING).description("comment's reComment's writer's image's path").optional(),
+                                fieldWithPath("body.comments[].user").description("comment's writer"),
+                                fieldWithPath("body.comments[].user.id").description("comment's writer's id"),
+                                fieldWithPath("body.comments[].user.nickname").description("comment's writer's nickname"),
+                                fieldWithPath("body.comments[].user.image").description("comment's writer's image"),
+                                fieldWithPath("body.comments[].user.image.src").type(JsonFieldType.STRING).description("comment's writer's image's path").optional(),
+                                fieldWithPath("body.retweet").description("post that sharing other post"),
+                                fieldWithPath("body.category").description("category of the post"),
+                                fieldWithPath("body.hits").description(" user's join number of the post"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-post.href").description("link to post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts"),
+                                fieldWithPath("_links.get-comments.href").description("link to category posts")
+                        )
+                ));
+
+    }
+
+    @Test @Order(22)
+    @DisplayName("게시글 좋아요 취소 성공")
+    void postUnlike() throws Exception {
+        //given
+        Long postId = 2L;
+
+
+        //when
+        MockHttpServletRequestBuilder builder = delete("/sns/post/{postId}/like",postId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE);
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.get-post").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andExpect(jsonPath("_links.get-comments").exists())
+                .andDo(document("unlike-post",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-post").description("link to post"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts"),
+                                linkWithRel("get-comments").description("link to comment list")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id of the post"),
+                                fieldWithPath("body.title").description("title of the post"),
+                                fieldWithPath("body.content").description("description of the post"),
+                                fieldWithPath("body.createdAt").description("created time of the post"),
+                                fieldWithPath("body.updatedAt").description("updated time of the post"),
+                                fieldWithPath("body.blocked").description("blocking flag of the post"),
+                                fieldWithPath("body.user").description("author of the post"),
+                                fieldWithPath("body.user.id").description("author's id number"),
+                                fieldWithPath("body.user.nickname").description("author's nickname"),
+                                fieldWithPath("body.user.image").description("author's profile image path"),
+                                fieldWithPath("body.images[].src").description("image paths"),
+                                fieldWithPath("body.likers").type(JsonFieldType.OBJECT).description("user who likes the post").optional(),
+                                fieldWithPath("body.likers[].id").type(JsonFieldType.NUMBER).description("user who likes the post").optional(),
+                                fieldWithPath("body.likers[].nickname").type(JsonFieldType.STRING).description("user who likes the post").optional(),
+                                fieldWithPath("body.likers[].image").type(JsonFieldType.OBJECT).description("user who likes the post").optional(),
+                                fieldWithPath("body.likers[].image.src").type(JsonFieldType.STRING).type(JsonFieldType.STRING).description("user who likes the post").optional(),
+                                fieldWithPath("body.comments").description("comments of the post"),
+                                fieldWithPath("body.comments[].id").description("comment's id"),
+                                fieldWithPath("body.comments[].content").description("comment's content"),
+                                fieldWithPath("body.comments[].createdAt").description("comment's created time"),
+                                fieldWithPath("body.comments[].updatedAt").description("comment's updated time"),
+                                fieldWithPath("body.comments[].reComment").description("comment's reComment").optional(),
+                                fieldWithPath("body.comments[].reComment[].id").type(JsonFieldType.NUMBER).description("comment's reComment's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].content").type(JsonFieldType.STRING).description("comment's reComment's content").optional(),
+                                fieldWithPath("body.comments[].reComment[].createdAt").type(JsonFieldType.STRING).description("comment's reComment's created time").optional(),
+                                fieldWithPath("body.comments[].reComment[].updatedAt").type(JsonFieldType.STRING).description("comment's reComment's updated time").optional(),
+                                fieldWithPath("body.comments[].reComment[].user").type(JsonFieldType.OBJECT).description("comment's reComment's writer").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.id").type(JsonFieldType.NUMBER).description("comment's reComment's writer's id").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.nickname").type(JsonFieldType.STRING).description("comment's reComment's writer's nickname").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image").type(JsonFieldType.OBJECT).description("comment's reComment's writer's image").optional(),
+                                fieldWithPath("body.comments[].reComment[].user.image.src").type(JsonFieldType.STRING).description("comment's reComment's writer's image's path").optional(),
+                                fieldWithPath("body.comments[].user").description("comment's writer"),
+                                fieldWithPath("body.comments[].user.id").description("comment's writer's id"),
+                                fieldWithPath("body.comments[].user.nickname").description("comment's writer's nickname"),
+                                fieldWithPath("body.comments[].user.image").description("comment's writer's image"),
+                                fieldWithPath("body.comments[].user.image.src").type(JsonFieldType.STRING).description("comment's writer's image's path").optional(),
+                                fieldWithPath("body.retweet").description("post that sharing other post"),
+                                fieldWithPath("body.category").description("category of the post"),
+                                fieldWithPath("body.hits").description(" user's join number of the post"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-post.href").description("link to post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts"),
+                                fieldWithPath("_links.get-comments.href").description("link to category posts")
+                        )
+                ));
+
+
+    }
+
+    @Test @Order(16)
+    @DisplayName("게시글 리트윗 성공")
+    void createRetweet() throws Exception {
+        //given
+        Long postId = 1L;
+        RetweetRequest body = RetweetRequest.builder()
+                .title("포스트 1의 리트윗2의 제목입니다.")
+                .content("포스트 1의 리트윗2의 내용입니다.")
+                .category("INTER1")
+                .build();
+
+
+        //when
+        MockHttpServletRequestBuilder builder = post("/sns/post/{postId}/retweet",postId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(body));
+
+        //then
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+                .andExpect(jsonPath("code").exists())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.get-post").exists())
+                .andExpect(jsonPath("_links.get-favorite-posts").exists())
+                .andExpect(jsonPath("_links.get-category-posts").exists())
+                .andExpect(jsonPath("_links.get-comments").exists())
+                .andDo(document("retweet-post",
+                        links(
+                                linkWithRel("self").description("link to self"),
+                                linkWithRel("get-post").description("link to post"),
+                                linkWithRel("get-favorite-posts").description("link to favorite posts"),
+                                linkWithRel("get-category-posts").description("link to category posts"),
+                                linkWithRel("get-comments").description("link to comment list")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("label code number"),
+                                fieldWithPath("message").description("message"),
+                                fieldWithPath("body").description("body of the response"),
+                                fieldWithPath("body.id").description("id of the post"),
+                                fieldWithPath("body.title").description("title of the post"),
+                                fieldWithPath("body.content").description("description of the post"),
+                                fieldWithPath("body.createdAt").description("created time of the post"),
+                                fieldWithPath("body.updatedAt").description("updated time of the post"),
+                                fieldWithPath("body.blocked").description("blocking flag of the post"),
+                                fieldWithPath("body.user").description("author of the post"),
+                                fieldWithPath("body.user.id").description("author's id number"),
+                                fieldWithPath("body.user.nickname").description("author's nickname"),
+                                fieldWithPath("body.user.image").description("author's profile image path"),
+                                fieldWithPath("body.likers").description("user who likes the post"),
+                                fieldWithPath("body.images").description("author's profile image path"),
+                                fieldWithPath("body.comments").description("comments of the post"),fieldWithPath("body.retweet").description("post that sharing other post"),
+                                fieldWithPath("body.retweet.id").description("retweet"),
+                                fieldWithPath("body.retweet.title").description("retweet"),
+                                fieldWithPath("body.retweet.content").description("retweet"),
+                                fieldWithPath("body.retweet.createdAt").description("retweet"),
+                                fieldWithPath("body.retweet.updatedAt").description("retweet"),
+                                fieldWithPath("body.retweet.user").description("retweet"),
+                                fieldWithPath("body.retweet.user.id").description("retweet"),
+                                fieldWithPath("body.retweet.user.nickname").description("retweet"),
+                                fieldWithPath("body.retweet.user.image").description("retweet"),
+                                fieldWithPath("body.retweet.images").description("retweet"),
+                                fieldWithPath("body.retweet.images[].src").description("retweet"),
+                                fieldWithPath("body.retweet.likers").description("retweet"),
+                                fieldWithPath("body.retweet.commentNum").description("retweet"),
+                                fieldWithPath("body.retweet.category").description("retweet"),
+                                fieldWithPath("body.retweet.hits").description("retweet"),
+                                fieldWithPath("body.retweet.blocked").description("retweet"),
+                                fieldWithPath("body.retweet.deleted").description("retweet"),
+                                fieldWithPath("body.category").description("category of the post"),
+                                fieldWithPath("body.hits").description(" user's join number of the post"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.get-post.href").description("link to post"),
+                                fieldWithPath("_links.get-favorite-posts.href").description("link to favorite posts"),
+                                fieldWithPath("_links.get-category-posts.href").description("link to category posts"),
+                                fieldWithPath("_links.get-comments.href").description("link to category posts")
+                        )
+                ));
     }
 
     void setPostList(){
@@ -790,6 +1750,41 @@ class PostControllerTest extends BaseControllerTest {
         post8.setBlocked(true);
         postRepository.save(post8);
 
+        //given
+        Long memberId = 1L;
+        Long postId1 = 1L;
+        Long postId2 = 2L;
+        Long parentId1 = 1L;
+
+        //1번 글 댓글 12개 달기
+        postService.createComment(memberId,postId1,"댓글 1입니다.");
+        postService.createComment(memberId,postId1,"댓글 2입니다.");
+        postService.createComment(memberId,postId1,"댓글 3입니다.");
+        postService.createComment(memberId,postId1,"댓글 4입니다.");
+        postService.createComment(memberId,postId1,"댓글 5입니다.");
+        postService.createComment(memberId,postId1,"댓글 6입니다.");
+        postService.createComment(memberId,postId1,"댓글 7입니다.");
+        postService.createComment(memberId,postId1,"댓글 8입니다.");
+        postService.createComment(memberId,postId1,"댓글 9입니다.");
+        postService.createComment(memberId,postId1,"댓글 10입니다.");
+        postService.createComment(memberId,postId1,"댓글 11입니다.");
+        postService.createComment(memberId,postId1,"댓글 12입니다.");
+
+        //2번 글 댓글 3개 달기
+        postService.createComment(memberId,postId2,"댓글 1입니다.");
+        postService.createComment(memberId,postId2,"댓글 2입니다.");
+        postService.createComment(memberId,postId2,"댓글 3입니다.");
+
+        //1번 글 댓글 2개 달기
+        postService.createComment(memberId,postId1,"댓글 13입니다.");
+        postService.createComment(memberId,postId1,"댓글 14입니다.");
+
+        //1번 글 대댓글 2개 달기
+        postService.createReComment(memberId,parentId1,postId1,"댓글1의 답글 1입니다.");
+        postService.createReComment(memberId,parentId1,postId1,"댓글1의 답글 2입니다.");
+
+        //1번 글 좋아요 누르기
+        postService.likePost(2L,1L);
     }
 
 

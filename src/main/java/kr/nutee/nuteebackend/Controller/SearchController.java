@@ -12,13 +12,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "/sns/search",consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@AllArgsConstructor
 @ResponseBody
 @Slf4j
 public class SearchController {
 
-    private PostService postService;
+    private final PostService postService;
 
+    /*
+        검색 된 글 목록 가져오기
+     */
     @GetMapping(path = "/{text}")
     public ResponseEntity<Object> searchPosts(
             @PathVariable String text,

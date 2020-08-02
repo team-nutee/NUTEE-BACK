@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotAllowedException.class)
     public ResponseEntity<ResponseResource> notAllowedException(BusinessException e) {
         Response response = Response.builder()
-                .code(51)
+                .code(21)
                 .message(e.getMessage())
                 .body(null)
                 .build();
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotExistException.class)
     public ResponseEntity<ResponseResource> notExistException(BusinessException e) {
         Response response = Response.builder()
-                .code(52)
+                .code(22)
                 .message(e.getMessage())
                 .body(null)
                 .build();
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmptyAttributeException.class)
     public ResponseEntity<Response> emptyAttributeException(BusinessException e) {
         Response res = Response.builder()
-                .code(52)
+                .code(23)
                 .message(e.getMessage())
                 .body(null)
                 .build();
@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class, MissingServletRequestParameterException.class})
     public ResponseEntity<Object> paramsEx(Exception e) {
         Map<String, Object> map = new HashMap<>();
-        map.put("code", 51);
+        map.put("code", 52);
         map.put("message","");
         log.warn("params ex: "+ e.getClass());
         return new ResponseEntity<>(map, HttpStatus.CONFLICT);
@@ -86,7 +86,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<Object> nullEx(Exception e) {
         Map<String, Object> map = new HashMap<>();
-        map.put("code", 61);
+        map.put("code", 53);
         map.put("message","");
         log.warn("null ex" + e.getClass());
         return new ResponseEntity<>(map, HttpStatus.CONFLICT);

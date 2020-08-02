@@ -15,15 +15,15 @@ public class CommentResponse implements Serializable {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<ReCommentResponse> reCommentResponses;
+    private List<ReCommentResponse> reComment;
     User user;
 
-    public CommentResponse(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, List<ReCommentResponse> reCommentResponses, User user) {
+    public CommentResponse(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, List<ReCommentResponse> reComment, User user) {
         this.id = id;
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.reCommentResponses = reCommentResponses;
+        this.reComment = reComment;
         this.user = user;
     }
 }
