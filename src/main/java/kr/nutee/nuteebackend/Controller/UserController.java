@@ -1,19 +1,22 @@
 package kr.nutee.nuteebackend.Controller;
 
 import kr.nutee.nuteebackend.DTO.Request.*;
+import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
+import kr.nutee.nuteebackend.DTO.Response.PostShowResponse;
+import kr.nutee.nuteebackend.DTO.Response.Response;
+import kr.nutee.nuteebackend.DTO.Response.UserData;
 import kr.nutee.nuteebackend.Service.ImageService;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/sns/user",consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -31,92 +34,135 @@ public class UserController {
         댓글 삭제
      */
     @GetMapping(path = "/{userId}")
-    public ResponseEntity<Object> getUser(
+    public ResponseEntity<ResponseResource> getUser(
             @PathVariable String userId
-    ){
-        return new ResponseEntity<>(
-                memberService.getUserData(Long.parseLong(userId)), HttpStatus.OK
-        );
+    ) {
+        UserData user = memberService.getUserData(Long.parseLong(userId));
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body(user)
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, UserController.class, user.getId());
+        return ResponseEntity.ok().body(resource);
     }
 
     @GetMapping(path = "/{userId}/posts")
-    public ResponseEntity<Object> getUserPosts(
+    public ResponseEntity<ResponseResource> getUserPosts(
             @PathVariable String userId,
             @RequestParam("lastId") int lastId,
             @RequestParam("limit") int limit
     ){
-        return new ResponseEntity<>(
-                postService.getUserPosts(Long.parseLong(userId),limit,(long)lastId), HttpStatus.OK
-        );
+        List<PostShowResponse> posts = postService.getUserPosts(Long.parseLong(userId), limit, (long)lastId);
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body(posts)
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, UserController.class);
+        return ResponseEntity.ok().body(resource);
     }
 
     @PatchMapping(path = "/nickname")
-    public ResponseEntity<Object> updateNickname(
+    public ResponseEntity<ResponseResource> updateNickname(
             HttpServletRequest request,
             @RequestBody @Valid NicknameUpdateRequest body
     ){
         Long memberId = util.getTokenMemberId(request);
-        return new ResponseEntity<>(
-                memberService.updateNickname(memberId,body.getNickname()), HttpStatus.OK
-        );
+        UserData user = memberService.updateNickname(memberId, body.getNickname());
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body(user)
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, UserController.class, user.getId());
+        return ResponseEntity.ok().body(resource);
     }
 
     @PostMapping(path = "/pwchange")
-    public ResponseEntity<Object> passwordChange(
+    public ResponseEntity<ResponseResource> passwordChange(
             HttpServletRequest request,
             @RequestBody @Valid PasswordUpdateRequest body
     ){
         Long memberId = util.getTokenMemberId(request);
-        memberService.updatePassword(memberId,body.getPassword());
-        return new ResponseEntity<>(
-                "비밀번호 변경에 성공하였습니다.", HttpStatus.OK
-        );
+        memberService.updatePassword(memberId, body.getPassword());
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body("비밀번호 변경에 성공하였습니다.")
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, UserController.class);
+        return ResponseEntity.ok().body(resource);
     }
 
     @PostMapping(path = "/profile")
-    public ResponseEntity<Object> uploadProfileImage(
+    public ResponseEntity<ResponseResource> uploadProfileImage(
             HttpServletRequest request,
             @RequestBody @Valid ProfileRequest body
     ){
         Long memberId = util.getTokenMemberId(request);
         imageService.uploadProfile(memberId,body.getSrc());
-        return new ResponseEntity<>(
-                "프로필 이미지 등록에 성공하였습니다.", HttpStatus.OK
-        );
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body("프로필 이미지 등록에 성공하였습니다.")
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, UserController.class);
+        return ResponseEntity.ok().body(resource);
     }
 
     @DeleteMapping(path = "/profile")
-    public ResponseEntity<Object> deleteProfileImage(
+    public ResponseEntity<ResponseResource> deleteProfileImage(
             HttpServletRequest request
     ){
         Long memberId = util.getTokenMemberId(request);
         imageService.deleteProfile(memberId);
-        return new ResponseEntity<>(
-                "프로필 이미지 삭제에 성공하였습니다.", HttpStatus.OK
-        );
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body("프로필 이미지 삭제에 성공하였습니다.")
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, UserController.class);
+        return ResponseEntity.ok().body(resource);
     }
 
     @PatchMapping(path = "/interests")
-    public ResponseEntity<Object> updateInterests(
+    public ResponseEntity<ResponseResource> updateInterests(
             HttpServletRequest request,
             @RequestBody InterestsUpdateRequest body
     ){
         Long memberId = util.getTokenMemberId(request);
-        memberService.updateInterests(memberId,body.getInterests());
-        return new ResponseEntity<>(
-                "관심사 변경에 성공하였습니다.", HttpStatus.OK
-        );
+        memberService.updateInterests(memberId, body.getInterests());
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body("관심 분야 변경에 성공하였습니다.")
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, UserController.class);
+        return ResponseEntity.ok().body(resource);
     }
 
     @PatchMapping(path = "/majors")
-    public ResponseEntity<Object> updateMajors(
+    public ResponseEntity<ResponseResource> updateMajors(
             HttpServletRequest request,
             @RequestBody MajorsUpdateRequest body
     ){
         Long memberId = util.getTokenMemberId(request);
-        memberService.updateMajors(memberId,body.getMajors());
-        return new ResponseEntity<>(
-                "전공 변경에 성공하였습니다.", HttpStatus.OK
-        );
+        memberService.updateMajors(memberId, body.getMajors());
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body("전공 변경에 성공하였습니다.")
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, UserController.class);
+        return ResponseEntity.ok().body(resource);
     }
 }
