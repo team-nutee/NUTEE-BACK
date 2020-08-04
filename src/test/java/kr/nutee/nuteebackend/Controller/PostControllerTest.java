@@ -61,6 +61,7 @@ class PostControllerTest extends BaseControllerTest {
     @DisplayName("포스트 생성 이미지 X 성공")
     void createPost() throws Exception {
 
+
         //given
         CreatePostRequest body = CreatePostRequest.builder()
                 .title("제목 테스트")
@@ -1785,10 +1786,17 @@ class PostControllerTest extends BaseControllerTest {
 
         //1번 글 좋아요 누르기
         postService.likePost(2L,1L);
+
+        //1번 글 리트윗 실행
+        RetweetRequest body = RetweetRequest.builder()
+                .category("INTER1")
+                .content("1번 글을 리트윗합니다.")
+                .title("1번글을 리트윗합니다.")
+                .build();
+        postService.createRetweet(1L,1L,body);
     }
 
-
-    public static void setDatabase(){
+    void setDatabase(){
         List<String> interests1 = new ArrayList<>();
         interests1.add("INTER1");
         interests1.add("INTER2");
@@ -1855,14 +1863,14 @@ class PostControllerTest extends BaseControllerTest {
 
     }
 
-    public static void sendOtp() {
+    void sendOtp() {
         RestTemplate rest = new RestTemplate();
         Map<String,String> map = new HashMap<>();
         map.put("schoolEmail","nutee.skhu.2020@gmail.com");
         rest.postForObject("http://localhost:8080/auth/sendotp", map, String.class);
     }
 
-    public static Member createMember(SignupDTO dto) {
+    public Member createMember(SignupDTO dto) {
         RestTemplate rest = new RestTemplate();
         return rest.postForObject("http://localhost:8080/auth/signup", dto, Member.class);
     }
