@@ -11,12 +11,16 @@ import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping(path = "/sns/user",consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -31,7 +35,7 @@ public class UserController {
     private final ImageService imageService;
 
     /*
-        댓글 삭제
+        유저 데이터 호출
      */
     @GetMapping(path = "/{userId}")
     public ResponseEntity<ResponseResource> getUser(
@@ -44,10 +48,13 @@ public class UserController {
                 .body(user)
                 .build();
 
-        ResponseResource resource = new ResponseResource(response, UserController.class, user.getId());
+        ResponseResource resource = new ResponseResource(response, UserController.class, Long.parseLong(userId));
         return ResponseEntity.ok().body(resource);
     }
 
+    /*
+        유저가 작성한 게시글 호출
+     */
     @GetMapping(path = "/{userId}/posts")
     public ResponseEntity<ResponseResource> getUserPosts(
             @PathVariable String userId,
@@ -61,10 +68,14 @@ public class UserController {
                 .body(posts)
                 .build();
 
-        ResponseResource resource = new ResponseResource(response, UserController.class);
+        ResponseResource resource = new ResponseResource(response, UserController.class,Long.parseLong(userId),"posts");
+
         return ResponseEntity.ok().body(resource);
     }
 
+    /*
+        유저의 닉네임 변경
+    */
     @PatchMapping(path = "/nickname")
     public ResponseEntity<ResponseResource> updateNickname(
             HttpServletRequest request,
@@ -82,6 +93,9 @@ public class UserController {
         return ResponseEntity.ok().body(resource);
     }
 
+    /*
+        유저의 비밀번호 변경
+    */
     @PostMapping(path = "/pwchange")
     public ResponseEntity<ResponseResource> passwordChange(
             HttpServletRequest request,
@@ -99,6 +113,9 @@ public class UserController {
         return ResponseEntity.ok().body(resource);
     }
 
+    /*
+        유저 프로필 이미지 변경
+    */
     @PostMapping(path = "/profile")
     public ResponseEntity<ResponseResource> uploadProfileImage(
             HttpServletRequest request,
@@ -116,6 +133,9 @@ public class UserController {
         return ResponseEntity.ok().body(resource);
     }
 
+    /*
+        유저의 프로필 이미지 삭제
+    */
     @DeleteMapping(path = "/profile")
     public ResponseEntity<ResponseResource> deleteProfileImage(
             HttpServletRequest request
@@ -132,6 +152,9 @@ public class UserController {
         return ResponseEntity.ok().body(resource);
     }
 
+    /*
+        유저 흥미 목록 변경
+    */
     @PatchMapping(path = "/interests")
     public ResponseEntity<ResponseResource> updateInterests(
             HttpServletRequest request,
@@ -149,6 +172,9 @@ public class UserController {
         return ResponseEntity.ok().body(resource);
     }
 
+    /*
+        유저 전공 변경
+    */
     @PatchMapping(path = "/majors")
     public ResponseEntity<ResponseResource> updateMajors(
             HttpServletRequest request,
