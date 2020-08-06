@@ -72,6 +72,15 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("body.id").exists())
+                .andExpect(jsonPath("body.nickname").exists())
+                .andExpect(jsonPath("body.image").isEmpty())
+                .andExpect(jsonPath("body.interests").exists())
+                .andExpect(jsonPath("body.majors").exists())
+                .andExpect(jsonPath("body.postNum").exists())
+                .andExpect(jsonPath("body.commentNum").exists())
+                .andExpect(jsonPath("body.likeNum").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("get-user",
                         links(
@@ -127,6 +136,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("get-user-posts",
                         links(
@@ -212,6 +222,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("patch-nickname",
                         links(
@@ -265,6 +276,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("change-password",
                         links(
@@ -311,6 +323,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("update-profile",
                         links(
@@ -350,6 +363,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("delete-profile",
                         links(
@@ -399,6 +413,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("update-interests",
                         links(
@@ -448,6 +463,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("update-majors",
                         links(

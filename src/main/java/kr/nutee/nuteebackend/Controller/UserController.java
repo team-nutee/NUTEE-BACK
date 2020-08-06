@@ -68,7 +68,7 @@ public class UserController {
                 .body(posts)
                 .build();
 
-        ResponseResource resource = new ResponseResource(response, UserController.class,Long.parseLong(userId),"posts");
+        ResponseResource resource = new ResponseResource(response, UserController.class, Long.parseLong(userId),"posts");
 
         return ResponseEntity.ok().body(resource);
     }
@@ -89,7 +89,7 @@ public class UserController {
                 .body(user)
                 .build();
 
-        ResponseResource resource = new ResponseResource(response, UserController.class, user.getId());
+        ResponseResource resource = new ResponseResource(response, UserController.class, "nickname");
         return ResponseEntity.ok().body(resource);
     }
 
@@ -109,7 +109,7 @@ public class UserController {
                 .body("비밀번호 변경에 성공하였습니다.")
                 .build();
 
-        ResponseResource resource = new ResponseResource(response, UserController.class);
+        ResponseResource resource = new ResponseResource(response, UserController.class, "pwchange");
         return ResponseEntity.ok().body(resource);
     }
 
@@ -126,10 +126,10 @@ public class UserController {
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body("프로필 이미지 등록에 성공하였습니다.")
+                .body(body.getSrc())
                 .build();
 
-        ResponseResource resource = new ResponseResource(response, UserController.class);
+        ResponseResource resource = new ResponseResource(response, UserController.class, "profile");
         return ResponseEntity.ok().body(resource);
     }
 
@@ -148,7 +148,7 @@ public class UserController {
                 .body("프로필 이미지 삭제에 성공하였습니다.")
                 .build();
 
-        ResponseResource resource = new ResponseResource(response, UserController.class);
+        ResponseResource resource = new ResponseResource(response, UserController.class, "profile");
         return ResponseEntity.ok().body(resource);
     }
 
@@ -165,10 +165,10 @@ public class UserController {
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body("관심 분야 변경에 성공하였습니다.")
+                .body(body.getInterests())
                 .build();
 
-        ResponseResource resource = new ResponseResource(response, UserController.class);
+        ResponseResource resource = new ResponseResource(response, UserController.class, "interests");
         return ResponseEntity.ok().body(resource);
     }
 
@@ -185,10 +185,10 @@ public class UserController {
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body("전공 변경에 성공하였습니다.")
+                .body(body.getMajors())
                 .build();
 
-        ResponseResource resource = new ResponseResource(response, UserController.class);
+        ResponseResource resource = new ResponseResource(response, UserController.class, "majors");
         return ResponseEntity.ok().body(resource);
     }
 }
