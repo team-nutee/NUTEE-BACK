@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
@@ -136,7 +137,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
-                .andExpect(jsonPath("body").exists())
+                .andExpect(jsonPath("body",hasSize(5)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("get-user-posts",
                         links(

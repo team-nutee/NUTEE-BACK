@@ -5,6 +5,8 @@ import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
 import kr.nutee.nuteebackend.DTO.Response.PostShowResponse;
 import kr.nutee.nuteebackend.DTO.Response.Response;
 import kr.nutee.nuteebackend.DTO.Response.UserData;
+import kr.nutee.nuteebackend.Domain.Image;
+import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Service.ImageService;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
@@ -122,11 +124,11 @@ public class UserController {
             @RequestBody @Valid ProfileRequest body
     ){
         Long memberId = util.getTokenMemberId(request);
-        imageService.uploadProfile(memberId,body.getSrc());
+        Image image = imageService.uploadProfile(memberId,body.getSrc());
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body(body.getSrc())
+                .body(image.getSrc())
                 .build();
 
         ResponseResource resource = new ResponseResource(response, UserController.class, "profile");
@@ -161,11 +163,11 @@ public class UserController {
             @RequestBody InterestsUpdateRequest body
     ){
         Long memberId = util.getTokenMemberId(request);
-        memberService.updateInterests(memberId, body.getInterests());
+        Member member = memberService.updateInterests(memberId, body.getInterests());
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body(body.getInterests())
+                .body(member.getInterests())
                 .build();
 
         ResponseResource resource = new ResponseResource(response, UserController.class, "interests");
@@ -181,11 +183,11 @@ public class UserController {
             @RequestBody MajorsUpdateRequest body
     ){
         Long memberId = util.getTokenMemberId(request);
-        memberService.updateMajors(memberId, body.getMajors());
+        Member member = memberService.updateMajors(memberId, body.getMajors());
         Response response = Response.builder()
                 .code(10)
                 .message("SUCCESS")
-                .body(body.getMajors())
+                .body(member.getMajors())
                 .build();
 
         ResponseResource resource = new ResponseResource(response, UserController.class, "majors");
