@@ -67,21 +67,21 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateInterests(Long memberId, List<String> interests){
+    public Member updateInterests(Long memberId, List<String> interests){
         Member member = memberRepository.findMemberById(memberId);
         List<Interest> interestList = new ArrayList<>();
         interests.forEach(v-> interestList.add(interestRepository.save(Interest.builder().interest(v).member(member).build())));
         member.setInterests(interestList);
-        memberRepository.save(member);
+        return memberRepository.save(member);
     }
 
     @Transactional
-    public void updateMajors(Long memberId, List<String> majors){
+    public Member updateMajors(Long memberId, List<String> majors){
         Member member = memberRepository.findMemberById(memberId);
         List<Major> majorList = new ArrayList<>();
         majors.forEach(v-> majorList.add(majorRepository.save(Major.builder().major(v).member(member).build())));
         member.setMajors(majorList);
-        memberRepository.save(member);
+        return memberRepository.save(member);
     }
 
     private UserData fillUserData(Member member, int commentNum, int postNum, int likeNum) {

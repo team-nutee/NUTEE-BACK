@@ -19,11 +19,11 @@ public class ImageService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void uploadProfile(Long memberId, String src){
+    public Image uploadProfile(Long memberId, String src){
         //해당 멤버 없음
         Member member = memberRepository.findMemberById(memberId);
         Image image = Image.builder().member(member).src(src).build();
-        imageRepository.save(image);
+        return imageRepository.save(image);
     }
 
     @Transactional
