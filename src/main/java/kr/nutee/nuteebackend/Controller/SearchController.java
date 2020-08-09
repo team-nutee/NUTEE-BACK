@@ -1,10 +1,10 @@
 package kr.nutee.nuteebackend.Controller;
 
+import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
+import kr.nutee.nuteebackend.DTO.Response.Response;
 import kr.nutee.nuteebackend.Service.PostService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +22,19 @@ public class SearchController {
         검색 된 글 목록 가져오기
      */
     @GetMapping(path = "/{text}")
-    public ResponseEntity<Object> searchPosts(
+    public ResponseEntity<ResponseResource> searchPosts(
             @PathVariable String text,
             @RequestParam("lastId") int lastId,
             @RequestParam("limit") int limit
     ){
-        return new ResponseEntity<>(postService.searchPost((long)lastId,limit,text), HttpStatus.OK);
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body(postService.searchPost((long)lastId, limit, text))
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, SearchController.class, text);
+
+        return ResponseEntity.ok().body(resource);
     }
 }

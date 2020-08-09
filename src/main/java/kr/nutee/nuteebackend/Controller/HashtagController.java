@@ -1,13 +1,10 @@
 package kr.nutee.nuteebackend.Controller;
 
-import kr.nutee.nuteebackend.Repository.HashtagRepository;
+import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
+import kr.nutee.nuteebackend.DTO.Response.Response;
 import kr.nutee.nuteebackend.Service.PostService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +27,14 @@ public class HashtagController {
             @RequestParam("lastId") int lastId,
             @RequestParam("limit") int limit
     ){
-        return new ResponseEntity<>(postService.getHashtagPosts((long)lastId,limit,tag), HttpStatus.OK);
+        Response response = Response.builder()
+                .code(10)
+                .message("SUCCESS")
+                .body(postService.getHashtagPosts((long)lastId,limit,tag))
+                .build();
+
+        ResponseResource resource = new ResponseResource(response, HashtagController.class, tag);
+
+        return ResponseEntity.ok().body(resource);
     }
 }
