@@ -1,6 +1,8 @@
 package kr.nutee.nuteebackend.Controller;
 
 import kr.nutee.nuteebackend.Common.RestDocsConfiguration;
+import kr.nutee.nuteebackend.DTO.API.LoginRequest;
+import kr.nutee.nuteebackend.DTO.API.LoginResponse;
 import kr.nutee.nuteebackend.DTO.LoginToken;
 import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.DTO.Response.PostResponse;
@@ -10,10 +12,13 @@ import kr.nutee.nuteebackend.Domain.Post;
 import kr.nutee.nuteebackend.Enum.Category;
 import kr.nutee.nuteebackend.Repository.MemberRepository;
 import kr.nutee.nuteebackend.Repository.PostRepository;
+import kr.nutee.nuteebackend.Service.AuthService;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
@@ -30,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
@@ -600,15 +607,13 @@ class PostControllerTest extends BaseControllerTest {
     @DisplayName("포스트 삭제 성공")
     @Transactional
     void deletePost() throws Exception {
-
         //given
-        LoginToken token = login(SignupDTO.builder().userId("mf0001").password("P@ssw0rd").build());
         Long postId = 1L;
 
         //when
         MockHttpServletRequestBuilder builder = delete("/sns/post/{postId}",postId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + token.getAccessToken())
+                .header("Authorization", "Bearer " + token)
                 .accept(MediaTypes.HAL_JSON_VALUE);
 
         //then
@@ -1872,10 +1877,5 @@ class PostControllerTest extends BaseControllerTest {
     public Member createMember(SignupDTO dto) {
         RestTemplate rest = new RestTemplate();
         return rest.postForObject("http://localhost:8080/auth/signup", dto, Member.class);
-    }
-
-    public LoginToken login(SignupDTO dto) {
-        RestTemplate rest = new RestTemplate();
-        return rest.postForObject("http://localhost:8080/auth/login", dto, LoginToken.class);
     }
 }
