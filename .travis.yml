@@ -20,3 +20,6 @@ notifications:
     recipients:
       - nutee.skhu.2020@gmail.com
       - mf311110@gmail.com
+
+before_install:
+  - chmod +x gradlew
