@@ -13,11 +13,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@SpringBootTest
+@SpringBootTest(
+        properties = "spring.config.location=" +
+        "classpath:/application.yml"
+)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
 @Disabled
 public class BaseControllerTest {
 

@@ -13,6 +13,7 @@ import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
+@RefreshScope
 @RequestMapping(path = "/sns/user",consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @ResponseBody

@@ -4,12 +4,14 @@ import kr.nutee.nuteebackend.Service.PostService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RefreshScope
 @RequestMapping(path = "/sns/search",consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @ResponseBody

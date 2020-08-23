@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,7 @@ import java.util.Map;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
+@RefreshScope
 @RequestMapping(path = "/sns/post", consumes = MediaType.APPLICATION_JSON_VALUE)
 @ResponseBody
 @RequiredArgsConstructor

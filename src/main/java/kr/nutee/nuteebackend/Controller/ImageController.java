@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,7 @@ import static java.lang.System.in;
 
 
 @RestController
+@RefreshScope
 @RequestMapping(path = "/sns/upload", consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @ResponseBody
