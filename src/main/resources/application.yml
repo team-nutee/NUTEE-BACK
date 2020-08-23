@@ -1,0 +1,47 @@
+jwt:
+  secret: $JWT_SECRET
+
+spring:
+  profiles:
+    active: dev
+  #MYSQL CONFIG
+  datasource:
+    url: $NUTEE_RDS
+    username: $RDS_USERNAME
+    password: $RDS_PASSWORD
+  jpa:
+    hibernate:
+      #      배포시 설정
+      ddl-auto: update
+    #      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  main:
+    allow-bean-definition-overriding: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+cloud:
+  aws:
+    credentials:
+      accessKey: $AWS_ACCESS_KEY
+      secretKey: $AWS_SECRET_KEY
+    s3:
+      cloudFront: $CLOUD_FRONT
+      bucket: nuteestorage
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+server:
+  port: 9425
+  servlet:
+    encoding:
+      enabled: true
+      force: true
+      charset: UTF-8
