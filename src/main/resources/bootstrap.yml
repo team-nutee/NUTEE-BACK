@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: back
+  profiles:
+    active: dev
+  cloud:
+    config:
+      uri: http://13.124.232.115:8888
