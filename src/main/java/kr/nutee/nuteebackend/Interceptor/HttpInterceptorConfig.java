@@ -15,6 +15,6 @@ public class HttpInterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(httpInterceptor)
-                .addPathPatterns("/**");
+                .addPathPatterns("/sns/**");
     }
 }
