@@ -5,4 +5,4 @@ spring:
     active: dev
   cloud:
     config:
-      uri: http://13.124.232.115:8888
+      uri: http://3.34.210.128:8888
