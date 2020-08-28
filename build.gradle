@@ -7,8 +7,8 @@ plugins {
 
 group = 'kr.nutee'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
 description = 'nutee-backend'
+sourceCompatibility = '11'
 
 configurations {
     compileOnly {
