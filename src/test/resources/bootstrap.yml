@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: back
   profiles:
     active: dev
   cloud:
