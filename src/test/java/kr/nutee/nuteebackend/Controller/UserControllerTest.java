@@ -37,21 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserControllerTest extends BaseControllerTest {
 
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    MemberService memberService;
-
-    @Autowired
-    PostService postService;
-
-    @Autowired
-    ImageService imageService;
-
-    @Autowired
-    Util util;
-
     // 유저 한 명 조회
     @Test
     @Order(1)
