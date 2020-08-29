@@ -49,28 +49,4 @@ public class BaseControllerTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @Autowired
-    MajorRepository majorRepository;
-
-    @Autowired
-    InterestRepository interestRepository;
-
-    @Autowired
-    MemberService memberService;
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    PostRepository postRepository;
-
-    @Autowired
-    PostService postService;
-
-    @Autowired
-    Util util;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
 }

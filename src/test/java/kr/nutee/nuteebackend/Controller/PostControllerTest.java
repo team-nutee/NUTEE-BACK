@@ -61,6 +61,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PostControllerTest extends BaseControllerTest {
+    @Autowired
+    MajorRepository majorRepository;
+
+    @Autowired
+    InterestRepository interestRepository;
+
+    @Autowired
+    MemberService memberService;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    PostRepository postRepository;
+
+    @Autowired
+    PostService postService;
+
+    @Autowired
+    Util util;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @BeforeAll
     void setPostList(){

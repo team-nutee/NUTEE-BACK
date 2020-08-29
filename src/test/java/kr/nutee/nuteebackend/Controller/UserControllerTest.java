@@ -7,7 +7,10 @@ import kr.nutee.nuteebackend.Domain.Major;
 import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Domain.Post;
 import kr.nutee.nuteebackend.Enum.Category;
+import kr.nutee.nuteebackend.Repository.InterestRepository;
+import kr.nutee.nuteebackend.Repository.MajorRepository;
 import kr.nutee.nuteebackend.Repository.MemberRepository;
+import kr.nutee.nuteebackend.Repository.PostRepository;
 import kr.nutee.nuteebackend.Service.ImageService;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
@@ -21,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
@@ -42,6 +46,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserControllerTest extends BaseControllerTest {
+
+    @Autowired
+    MajorRepository majorRepository;
+
+    @Autowired
+    InterestRepository interestRepository;
+
+    @Autowired
+    MemberService memberService;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    PostRepository postRepository;
+
+    @Autowired
+    PostService postService;
+
+    @Autowired
+    Util util;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @BeforeAll
     void setPostList(){
