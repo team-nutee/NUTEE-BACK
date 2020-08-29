@@ -11,6 +11,7 @@ import kr.nutee.nuteebackend.Repository.InterestRepository;
 import kr.nutee.nuteebackend.Repository.MajorRepository;
 import kr.nutee.nuteebackend.Repository.MemberRepository;
 import kr.nutee.nuteebackend.Repository.PostRepository;
+import kr.nutee.nuteebackend.Service.ImageService;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
@@ -26,16 +27,15 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -46,30 +46,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserControllerTest extends BaseControllerTest {
-
-    @Autowired
-    MajorRepository majorRepository;
-
-    @Autowired
-    InterestRepository interestRepository;
-
-    @Autowired
-    MemberService memberService;
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    PostRepository postRepository;
-
-    @Autowired
-    PostService postService;
-
-    @Autowired
-    Util util;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @BeforeAll
     void setPostList(){
@@ -393,6 +369,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body",hasSize(5)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("get-user-posts",
                         links(
@@ -677,6 +654,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body", hasSize(2)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("update-interests",
                         links(
@@ -728,6 +706,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body", hasSize(2)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("update-majors",
                         links(

@@ -1,6 +1,9 @@
 package kr.nutee.nuteebackend.Controller;
 
 import kr.nutee.nuteebackend.Common.RestDocsConfiguration;
+import kr.nutee.nuteebackend.DTO.API.LoginRequest;
+import kr.nutee.nuteebackend.DTO.API.LoginResponse;
+import kr.nutee.nuteebackend.DTO.LoginToken;
 import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.DTO.Response.PostResponse;
 import kr.nutee.nuteebackend.DTO.Response.User;
@@ -9,15 +12,19 @@ import kr.nutee.nuteebackend.Domain.Major;
 import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Domain.Post;
 import kr.nutee.nuteebackend.Enum.Category;
+import kr.nutee.nuteebackend.Enum.RoleType;
 import kr.nutee.nuteebackend.Repository.InterestRepository;
 import kr.nutee.nuteebackend.Repository.MajorRepository;
 import kr.nutee.nuteebackend.Repository.MemberRepository;
 import kr.nutee.nuteebackend.Repository.PostRepository;
+import kr.nutee.nuteebackend.Service.AuthService;
 import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
@@ -28,10 +35,17 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
@@ -47,29 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PostControllerTest extends BaseControllerTest {
-    @Autowired
-    MajorRepository majorRepository;
 
-    @Autowired
-    InterestRepository interestRepository;
-
-    @Autowired
-    MemberService memberService;
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    PostRepository postRepository;
-
-    @Autowired
-    PostService postService;
-
-    @Autowired
-    Util util;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @BeforeAll
     void setPostList(){
@@ -530,6 +522,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("body.images").exists())
                 .andExpect(jsonPath("body.images[0].src").value(body.getImages().get(0).getSrc()))
                 .andExpect(jsonPath("body.likers").value(post.getLikers()))
+                .andExpect(jsonPath("body.comments",hasSize(14)))
                 .andExpect(jsonPath("body.retweet").value(post.getRetweet()))
                 .andExpect(jsonPath("body.hits").value(post.getHits()))
                 .andExpect(jsonPath("body.blocked").value(post.isBlocked()))
@@ -918,6 +911,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body",hasSize(7)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
                 .andDo(document("get-favorite-posts",
@@ -1005,6 +999,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body",hasSize(3)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
                 .andExpect(jsonPath("_links.get-category-posts").exists())
@@ -1294,6 +1289,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("body",hasSize(14)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
                 .andExpect(jsonPath("_links.get-category-posts").exists())

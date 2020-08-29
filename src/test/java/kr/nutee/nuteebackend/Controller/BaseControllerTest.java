@@ -41,6 +41,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Disabled
 public class BaseControllerTest {
 
+    @Autowired
+    MajorRepository majorRepository;
+
+    @Autowired
+    InterestRepository interestRepository;
+
+    @Autowired
+    MemberService memberService;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    PostRepository postRepository;
+
+    @Autowired
+    PostService postService;
+
+    @Autowired
+    Util util;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     protected String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZjAwMDEiLCJyb2xlIjoiUk9MRV9NQU5BR0VSIiwiaWQiOjEsImV4cCI6MTkxMjA2NDU4NiwiaWF0IjoxNTk2NzA0NTg2fQ.VmpRq6R0NhyteAp2ToaPPbjAANcSfZTMKvrXxCd3iFBcm3gVLn9GYd6lJQ07gRIyk_U38x4t7VEpzA2qcbMAgA";
 
     @Autowired
