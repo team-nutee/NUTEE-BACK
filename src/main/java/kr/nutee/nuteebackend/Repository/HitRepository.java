@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public interface HitRepository extends JpaRepository<Hit, Long> {
     void countHitsByPostId(Long postId);
     List<Hit> findHitsByPostId(Long postId);

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public interface PostHashtagRepository extends JpaRepository<PostHashtag,Long>{
     List<PostHashtag> findPostHashtagsByHashtagId(Long hashtagId);
 }
