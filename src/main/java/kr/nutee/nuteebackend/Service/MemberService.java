@@ -5,6 +5,7 @@ import kr.nutee.nuteebackend.Domain.Interest;
 import kr.nutee.nuteebackend.Domain.Major;
 import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Domain.Post;
+import kr.nutee.nuteebackend.Enum.RoleType;
 import kr.nutee.nuteebackend.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -97,8 +99,15 @@ public class MemberService {
                 .build();
     }
 
-
-
-
+    @Transactional
+    public Member insertUser(Member member){
+        member.setAccessedAt((LocalDateTime.now()));
+        if(member.getSchoolEmail().equals("nutee.skhu.2020@gmail.com")){
+            member.setRole(RoleType.MANAGER);
+        }else{
+            member.setRole(RoleType.USER);
+        }
+        return memberRepository.save(member);
+    }
 
 }

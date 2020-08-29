@@ -7,12 +7,18 @@ import kr.nutee.nuteebackend.DTO.LoginToken;
 import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.DTO.Response.PostResponse;
 import kr.nutee.nuteebackend.DTO.Response.User;
+import kr.nutee.nuteebackend.Domain.Interest;
+import kr.nutee.nuteebackend.Domain.Major;
 import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Domain.Post;
 import kr.nutee.nuteebackend.Enum.Category;
+import kr.nutee.nuteebackend.Enum.RoleType;
+import kr.nutee.nuteebackend.Repository.InterestRepository;
+import kr.nutee.nuteebackend.Repository.MajorRepository;
 import kr.nutee.nuteebackend.Repository.MemberRepository;
 import kr.nutee.nuteebackend.Repository.PostRepository;
 import kr.nutee.nuteebackend.Service.AuthService;
+import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
 import org.junit.jupiter.api.*;
@@ -26,9 +32,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +58,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(RestDocsConfiguration.class)
 @ExtendWith(RestDocumentationExtension.class)
 @Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class PostControllerTest extends BaseControllerTest {
+public class PostControllerTest extends BaseControllerTest {
+
+    @Autowired
+    MajorRepository majorRepository;
+
+    @Autowired
+    InterestRepository interestRepository;
+
+    @Autowired
+    MemberService memberService;
 
     @Autowired
     MemberRepository memberRepository;
@@ -63,6 +82,9 @@ class PostControllerTest extends BaseControllerTest {
 
     @Autowired
     Util util;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Test @Order(1)
     @DisplayName("포스트 생성 이미지 X 성공")
@@ -1660,11 +1682,111 @@ class PostControllerTest extends BaseControllerTest {
                 ));
     }
 
+    @BeforeAll
     void setPostList(){
         //given
-        Member member1 = memberRepository.findMemberById(1L);
-        Member member2 = memberRepository.findMemberById(2L);
-        Member member3 = memberRepository.findMemberById(3L);
+        //멤버 3명 디비에 생성
+        Member member1 = Member.builder()
+                .id(1L)
+                .userId("mf0001")
+                .nickname("moon1")
+                .schoolEmail("mf0001@gmail.com")
+                .isDeleted(false)
+                .isBlocked(false)
+                .password(passwordEncoder.encode("P@ssw0rd"))
+                .build();
+
+        Member member2 = Member.builder()
+                .id(2L)
+                .userId("mf0002")
+                .nickname("moon2")
+                .schoolEmail("mf0002@gmail.com")
+                .isDeleted(false)
+                .isBlocked(false)
+                .password(passwordEncoder.encode("P@ssw0rd"))
+                .build();
+
+        Member member3 = Member.builder()
+                .id(3L)
+                .userId("mf0003")
+                .nickname("moon3")
+                .schoolEmail("mf0003@gmail.com")
+                .isDeleted(false)
+                .isBlocked(false)
+                .password(passwordEncoder.encode("P@ssw0rd"))
+                .build();
+
+        memberService.insertUser(member1);
+        memberService.insertUser(member2);
+        memberService.insertUser(member3);
+
+        Member finalMember1 = member1;
+        Member finalMember2 = member2;
+        Member finalMember3 = member3;
+
+        //흥미,전공 등록
+        List<String> interests1 = new ArrayList<>();
+        interests1.add("INTER1");
+        interests1.add("INTER2");
+        interests1.add("INTER3");
+        interests1.add("INTER4");
+        interests1.forEach(v -> interestRepository.save(
+                Interest.builder()
+                        .interest(v)
+                        .member(finalMember1)
+                        .build()
+        ));
+
+        List<String> interests2 = new ArrayList<>();
+        interests2.add("INTER1");
+        interests2.add("INTER3");
+        interests2.forEach(v -> interestRepository.save(
+                Interest.builder()
+                        .interest(v)
+                        .member(finalMember2)
+                        .build()
+        ));
+
+        List<String> interests3 = new ArrayList<>();
+        interests3.add("INTER3");
+        interests3.add("INTER4");
+        interests3.add("INTER5");
+        interests3.forEach(v -> interestRepository.save(
+                Interest.builder()
+                        .interest(v)
+                        .member(finalMember3)
+                        .build()
+        ));
+
+        List<String> majors1 = new ArrayList<>();
+        majors1.add("MAJOR1");
+        majors1.add("MAJOR2");
+        majors1.forEach(v -> majorRepository.save(
+                Major.builder()
+                        .major(v)
+                        .member(finalMember1)
+                        .build()
+        ));
+
+        List<String> majors2 = new ArrayList<>();
+        majors2.add("MAJOR2");
+        majors2.add("MAJOR3");
+        majors2.forEach(v -> majorRepository.save(
+                Major.builder()
+                        .major(v)
+                        .member(finalMember2)
+                        .build()
+        ));
+
+        List<String> majors3 = new ArrayList<>();
+        majors3.add("MAJOR1");
+        majors3.add("MAJOR3");
+        majors3.forEach(v -> majorRepository.save(
+                Major.builder()
+                        .major(v)
+                        .member(finalMember3)
+                        .build()
+        ));
 
         List<ImageRequest> list1 = new ArrayList<>();
         list1.add(ImageRequest.builder().src("image1Path(1).jpg").build());
@@ -1797,74 +1919,8 @@ class PostControllerTest extends BaseControllerTest {
                 .content("1번 글을 리트윗합니다.")
                 .title("1번글을 리트윗합니다.")
                 .build();
+
         postService.createRetweet(1L,1L,body);
-    }
-
-    void setDatabase(){
-        List<String> interests1 = new ArrayList<>();
-        interests1.add("INTER1");
-        interests1.add("INTER2");
-        interests1.add("INTER3");
-        interests1.add("INTER4");
-
-        List<String> interests2 = new ArrayList<>();
-        interests2.add("INTER1");
-        interests2.add("INTER3");
-
-        List<String> interests3 = new ArrayList<>();
-        interests3.add("INTER3");
-        interests3.add("INTER4");
-        interests3.add("INTER5");
-
-        List<String> majors1 = new ArrayList<>();
-        majors1.add("MAJOR1");
-        majors1.add("MAJOR2");
-
-        List<String> majors2 = new ArrayList<>();
-        majors2.add("MAJOR2");
-        majors2.add("MAJOR3");
-
-        List<String> majors3 = new ArrayList<>();
-        majors3.add("MAJOR1");
-        majors3.add("MAJOR3");
-
-        SignupDTO signupDTO1 = SignupDTO.builder()
-                .userId("mf0001")
-                .nickname("moon1")
-                .schoolEmail("nutee.skhu.2020@gmail.com")
-                .password("P@ssw0rd")
-                .otp("000000")
-                .interests(interests1)
-                .majors(majors1)
-                .build();
-
-        SignupDTO signupDTO2 = SignupDTO.builder()
-                .userId("mf0002")
-                .nickname("moon2")
-                .schoolEmail("nutee.skhu.2020@gmail.com")
-                .password("P@ssw0rd")
-                .otp("000000")
-                .interests(interests2)
-                .majors(majors2)
-                .build();
-
-        SignupDTO signupDTO3 = SignupDTO.builder()
-                .userId("mf0003")
-                .nickname("moon3")
-                .schoolEmail("nutee.skhu.2020@gmail.com")
-                .password("P@ssw0rd")
-                .otp("000000")
-                .interests(interests3)
-                .majors(majors3)
-                .build();
-
-//        sendOtp();
-        createMember(signupDTO1);
-        createMember(signupDTO2);
-        createMember(signupDTO3);
-
-
-
     }
 
     void sendOtp() {
@@ -1874,8 +1930,4 @@ class PostControllerTest extends BaseControllerTest {
         rest.postForObject("http://localhost:8080/auth/sendotp", map, String.class);
     }
 
-    public Member createMember(SignupDTO dto) {
-        RestTemplate rest = new RestTemplate();
-        return rest.postForObject("http://localhost:8080/auth/signup", dto, Member.class);
-    }
 }
