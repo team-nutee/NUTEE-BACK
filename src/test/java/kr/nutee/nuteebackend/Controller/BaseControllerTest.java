@@ -44,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(RestDocumentationExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BaseControllerTest {
 
     @Autowired
