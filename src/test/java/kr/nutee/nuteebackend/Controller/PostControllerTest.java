@@ -55,7 +55,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PostControllerTest extends BaseControllerTest {
 
     @Test @Order(1)
