@@ -42,8 +42,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Disabled
 public class BaseControllerTest {
 
-
-
     @Autowired
     MajorRepository majorRepository;
 
