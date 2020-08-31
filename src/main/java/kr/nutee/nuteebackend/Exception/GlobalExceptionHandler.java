@@ -91,6 +91,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(map, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(AssertionError.class)
+    public ResponseEntity<Object> assertionEx(Exception e) {
+        log.warn("!!!!!!!" + e.getClass());
+        log.warn("!!!!!!!" + e.getMessage());
+        log.warn("!!!!!!!" + e.toString());
+        return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+    }
+
     private ResponseResource getResponseResource(BusinessException e, Response response) {
         ResponseResource resource = new ResponseResource(response, PostController.class, e.getPostId());
         if(e.getErrorCode() != ErrorCode.NOT_EXIST){
