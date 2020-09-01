@@ -1,6 +1,7 @@
 #!/bin/bash
 
 REPOSITORY=/home/ec2-user/NUTEE/back
+DEPLOY=/home/ec2-user/NUTEE/back-jar
 
 echo "> 현재 구동중인 애플리케이션 pid 확인"
 
@@ -20,12 +21,10 @@ echo "> 새 어플리케이션 배포"
 
 echo "> Build 파일 복사"
 
-mkdir $REPOSITORY/jar/
+cp $REPOSITORY/build/build/libs/*.jar $DEPLOY/
 
-cp $REPOSITORY/build/build/libs/*.jar $REPOSITORY/jar/
-
-JAR_NAME=$(ls $REPOSITORY/jar/ |grep 'nutee-back' | tail -n 1)
+JAR_NAME=$(ls $DEPLOY/ |grep 'nutee-back' | tail -n 1)
 
 echo "> JAR Name: $JAR_NAME"
 
-nohup java -jar $REPOSITORY/jar/$JAR_NAME &
+nohup java -jar $DEPLOY/$JAR_NAME &
