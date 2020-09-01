@@ -9,6 +9,10 @@ on:
   pull_request:
     branches: [ master, develop ]
 
+env:
+  S3_BUCKET_NAME: nutee-storage
+  PROJECT_NAME: nutee-back
+
 jobs:
   build:
 
@@ -17,16 +21,33 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      
+
     - name: Set up JDK 11
       uses: actions/setup-java@v1
       with:
         java-version: 11.0.8
-        
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       shell: bash
-      
+
     - name: Build with Gradle
       run: ./gradlew build
       shell: bash
+
+    - name: Make zip file
+      run: zip -r ./$GITHUB_SHA.zip .
+      shell: bash
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ap-northeast-2
+
+    - name: Upload to S3
+      run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://nutee-storage/nutee-back/$GITHUB_SHA.zip
+
+    - name: Code Deploy
+      run : aws deploy create-deployment
