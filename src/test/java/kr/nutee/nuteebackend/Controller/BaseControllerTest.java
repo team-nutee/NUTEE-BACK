@@ -79,6 +79,7 @@ public class BaseControllerTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @BeforeAll
     void setData(){
         //given
         //멤버 3명 디비에 생성

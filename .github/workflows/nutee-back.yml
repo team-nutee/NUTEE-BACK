@@ -50,4 +50,4 @@ jobs:
       run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://nutee-storage/nutee-back/$GITHUB_SHA.zip
 
     - name: Code Deploy
-      run : aws deploy create-deployment
+      run : aws deploy create-deployment --application-name nutee-back --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name nutee --s3-location bucket=nutee-storage,bundleType=zip,key=nutee-back/$GITHUB_SHA.zip
