@@ -6,8 +6,8 @@ plugins {
 }
 
 group = 'kr.nutee'
-version = '0.0.1-SNAPSHOT'
-description = 'nutee-backend'
+version = '0.0.1'
+description = 'nutee-back'
 sourceCompatibility = '11'
 
 configurations {
