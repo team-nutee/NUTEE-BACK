@@ -21,7 +21,7 @@ echo "> 새 어플리케이션 배포"
 
 echo "> Build 파일 복사"
 
-cp $REPOSITORY/build/libs/*.jar $DEPLOY/nutee-back.jar
+cp $REPOSITORY/build/libs/*.jar $DEPLOY/
 
 JAR_NAME=$(ls $DEPLOY/ |grep 'nutee-back' | tail -n 1)
 
