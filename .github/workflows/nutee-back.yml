@@ -51,3 +51,6 @@ jobs:
 
     - name: Code Deploy
       run : aws deploy create-deployment --application-name nutee-back --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name nutee --s3-location bucket=nutee-storage,bundleType=zip,key=nutee-back/$GITHUB_SHA.zip
+
+    - name: Start Application
+      run : /home/ec2-user/NUTEE/back/execute-deploy.sh
