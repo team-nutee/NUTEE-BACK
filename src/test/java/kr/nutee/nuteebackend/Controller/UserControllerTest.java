@@ -477,5 +477,65 @@ public class UserControllerTest extends BaseControllerTest {
                 ));
 
     }
+
+    // 본인 조회
+    @Test
+    @Order(9)
+    @DisplayName("유저 조회 성공")
+    void getMe() throws Exception {
+        //given
+
+        //when
+        MockHttpServletRequestBuilder builder = get("/sns/user/me")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaTypes.HAL_JSON_VALUE);
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body").exists())
+            .andExpect(jsonPath("body.id").exists())
+            .andExpect(jsonPath("body.nickname").exists())
+            .andExpect(jsonPath("body.image").isEmpty())
+            .andExpect(jsonPath("body.interests").exists())
+            .andExpect(jsonPath("body.majors").exists())
+            .andExpect(jsonPath("body.postNum").exists())
+            .andExpect(jsonPath("body.commentNum").exists())
+            .andExpect(jsonPath("body.likeNum").exists())
+            .andExpect(jsonPath("_links.self").exists())
+            .andDo(document("get-me",
+                links(
+                    linkWithRel("self").description("link to self")
+                ),
+                requestHeaders(
+                    headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                    headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                ),
+                responseHeaders(
+                    headerWithName(HttpHeaders.CONTENT_TYPE).description("contentType header")
+                ),
+                responseFields(
+                    fieldWithPath("code").description("label code number"),
+                    fieldWithPath("message").description("message"),
+                    fieldWithPath("body").description("body of the response"),
+                    fieldWithPath("body.id").description("id of user"),
+                    fieldWithPath("body.nickname").description("nickname of user"),
+                    fieldWithPath("body.image").description("profile image of user"),
+                    fieldWithPath("body.interests").description("interests of user"),
+                    fieldWithPath("body.majors").description("majors of user"),
+                    fieldWithPath("body.postNum").description("posts of user"),
+                    fieldWithPath("body.commentNum").description("comments of user"),
+                    fieldWithPath("body.likeNum").description("favorite posts of user"),
+                    fieldWithPath("_links.self.href").description("link to self")
+
+                )
+            ));
+
+    }
 }
 

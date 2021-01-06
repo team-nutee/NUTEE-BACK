@@ -5,7 +5,14 @@ files:
     destination: /home/ec2-user/NUTEE/back/
     overwrite: yes
 
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user
+
 hooks:
-  ApplicationInstall: # 배포가 끝나면 아래 명령어를 실행
-    - location: /home/ec2-user/NUTEE/back/scripts/execute-deploy.sh
-      timeout: 180
+  AfterInstall: # 배포가 끝나면 아래 명령어를 실행
+    - location: scripts/deploy.sh
+        timeout: 180
+        runas: ec2-user

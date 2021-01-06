@@ -31,7 +31,6 @@ public class Util {
 
     public void hitPost(Post post, Member member) {
         Hit hit = Hit.builder().member(member).post(post).build();
-        System.out.println(post.getHits());
         List<Hit> memberHits = post.getHits().stream()
                 .filter(v -> v.getMember().getId().equals(member.getId()))
                 .collect(Collectors.toList());
