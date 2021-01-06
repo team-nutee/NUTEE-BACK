@@ -1,10 +1,10 @@
 package kr.nutee.nuteebackend.Exception;
 
-import kr.nutee.nuteebackend.Controller.PostController;
 import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
 import kr.nutee.nuteebackend.DTO.Response.Response;
 import kr.nutee.nuteebackend.Enum.ErrorCode;
 import kr.nutee.nuteebackend.Repository.PostRepository;
+import kr.nutee.nuteebackend.Controller.PostController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -89,6 +89,14 @@ public class GlobalExceptionHandler {
         map.put("message","");
         log.warn("null ex" + e.getClass());
         return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AssertionError.class)
+    public ResponseEntity<Object> assertionEx(Exception e) {
+        log.warn("!!!!!!!" + e.getClass());
+        log.warn("!!!!!!!" + e.getMessage());
+        log.warn("!!!!!!!" + e.toString());
+        return new ResponseEntity<>(null, HttpStatus.CONFLICT);
     }
 
     private ResponseResource getResponseResource(BusinessException e, Response response) {

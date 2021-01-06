@@ -1,42 +1,26 @@
 package kr.nutee.nuteebackend.Controller;
 
-import kr.nutee.nuteebackend.Common.RestDocsConfiguration;
-import kr.nutee.nuteebackend.DTO.API.LoginRequest;
-import kr.nutee.nuteebackend.DTO.API.LoginResponse;
-import kr.nutee.nuteebackend.DTO.LoginToken;
 import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.DTO.Response.PostResponse;
 import kr.nutee.nuteebackend.DTO.Response.User;
+import kr.nutee.nuteebackend.Domain.Interest;
+import kr.nutee.nuteebackend.Domain.Major;
 import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Domain.Post;
 import kr.nutee.nuteebackend.Enum.Category;
-import kr.nutee.nuteebackend.Repository.MemberRepository;
-import kr.nutee.nuteebackend.Repository.PostRepository;
-import kr.nutee.nuteebackend.Service.AuthService;
-import kr.nutee.nuteebackend.Service.PostService;
-import kr.nutee.nuteebackend.Service.Util;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
@@ -46,23 +30,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Import(RestDocsConfiguration.class)
-@ExtendWith(RestDocumentationExtension.class)
-@Transactional
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class PostControllerTest extends BaseControllerTest {
 
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    PostRepository postRepository;
-
-    @Autowired
-    PostService postService;
-
-    @Autowired
-    Util util;
+public class PostControllerTest extends BaseControllerTest {
 
     @Test @Order(1)
     @DisplayName("포스트 생성 이미지 X 성공")
@@ -1658,224 +1627,5 @@ class PostControllerTest extends BaseControllerTest {
                                 fieldWithPath("_links.get-comments.href").description("link to comments")
                         )
                 ));
-    }
-
-    void setPostList(){
-        //given
-        Member member1 = memberRepository.findMemberById(1L);
-        Member member2 = memberRepository.findMemberById(2L);
-        Member member3 = memberRepository.findMemberById(3L);
-
-        List<ImageRequest> list1 = new ArrayList<>();
-        list1.add(ImageRequest.builder().src("image1Path(1).jpg").build());
-        list1.add(ImageRequest.builder().src("image1Path(2).jpg").build());
-        list1.add(ImageRequest.builder().src("image1Path(3).jpg").build());
-
-        List<ImageRequest> list2 = new ArrayList<>();
-        list2.add(ImageRequest.builder().src("image2Path(1).jpg").build());
-        list2.add(ImageRequest.builder().src("image2Path(2).jpg").build());
-
-        postService.createPost(member1.getId(),
-                CreatePostRequest.builder()
-                        .title("제목1")
-                        .content("내용1")
-                        .category(Category.INTER1.getCategory())
-                        .images(list1)
-                        .build()
-        );
-
-        postService.createPost(member1.getId(),
-                CreatePostRequest.builder()
-                        .title("제목2")
-                        .content("내용2")
-                        .category(Category.INTER2.getCategory())
-                        .images(list2)
-                        .build()
-        );
-
-        postService.createPost(member1.getId(),
-                CreatePostRequest.builder()
-                        .title("제목3")
-                        .content("내용3")
-                        .category(Category.INTER3.getCategory())
-                        .images(null)
-                        .build()
-        );
-
-        postService.createPost(member1.getId(),
-                CreatePostRequest.builder()
-                        .title("제목4")
-                        .content("내용4")
-                        .category(Category.INTER4.getCategory())
-                        .images(null)
-                        .build()
-        );
-
-        postService.createPost(member2.getId(),
-                CreatePostRequest.builder()
-                        .title("제목5")
-                        .content("내용5")
-                        .category(Category.INTER2.getCategory())
-                        .images(null)
-                        .build()
-        );
-
-        postService.createPost(member3.getId(),
-                CreatePostRequest.builder()
-                        .title("제목6")
-                        .content("내용6")
-                        .category(Category.INTER5.getCategory())
-                        .images(null)
-                        .build()
-        );
-
-        postService.createPost(member2.getId(),
-                CreatePostRequest.builder()
-                        .title("제목7")
-                        .content("내용7")
-                        .category(Category.INTER3.getCategory())
-                        .images(null)
-                        .build()
-        );
-
-        postService.createPost(member1.getId(),
-                CreatePostRequest.builder()
-                        .title("제목8")
-                        .content("내용8")
-                        .category(Category.INTER2.getCategory())
-                        .images(null)
-                        .build()
-        );
-
-        //4번 글 삭제
-        postService.deletePost(4L,1L);
-
-        //8번 글 블락
-        Post post8 = postRepository.findPostById(8L);
-        post8.setBlocked(true);
-        postRepository.save(post8);
-
-        //given
-        Long memberId = 1L;
-        Long postId1 = 1L;
-        Long postId2 = 2L;
-        Long parentId1 = 1L;
-
-        //1번 글 댓글 12개 달기
-        postService.createComment(memberId,postId1,"댓글 1입니다.");
-        postService.createComment(memberId,postId1,"댓글 2입니다.");
-        postService.createComment(memberId,postId1,"댓글 3입니다.");
-        postService.createComment(memberId,postId1,"댓글 4입니다.");
-        postService.createComment(memberId,postId1,"댓글 5입니다.");
-        postService.createComment(memberId,postId1,"댓글 6입니다.");
-        postService.createComment(memberId,postId1,"댓글 7입니다.");
-        postService.createComment(memberId,postId1,"댓글 8입니다.");
-        postService.createComment(memberId,postId1,"댓글 9입니다.");
-        postService.createComment(memberId,postId1,"댓글 10입니다.");
-        postService.createComment(memberId,postId1,"댓글 11입니다.");
-        postService.createComment(memberId,postId1,"댓글 12입니다.");
-
-        //2번 글 댓글 3개 달기
-        postService.createComment(memberId,postId2,"댓글 1입니다.");
-        postService.createComment(memberId,postId2,"댓글 2입니다.");
-        postService.createComment(memberId,postId2,"댓글 3입니다.");
-
-        //1번 글 댓글 2개 달기
-        postService.createComment(memberId,postId1,"댓글 13입니다.");
-        postService.createComment(memberId,postId1,"댓글 14입니다.");
-
-        //1번 글 대댓글 2개 달기
-        postService.createReComment(memberId,parentId1,postId1,"댓글1의 답글 1입니다.");
-        postService.createReComment(memberId,parentId1,postId1,"댓글1의 답글 2입니다.");
-
-        //1번 글 좋아요 누르기
-        postService.likePost(2L,1L);
-
-        //1번 글 리트윗 실행
-        RetweetRequest body = RetweetRequest.builder()
-                .category("INTER1")
-                .content("1번 글을 리트윗합니다.")
-                .title("1번글을 리트윗합니다.")
-                .build();
-        postService.createRetweet(1L,1L,body);
-    }
-
-    void setDatabase(){
-        List<String> interests1 = new ArrayList<>();
-        interests1.add("INTER1");
-        interests1.add("INTER2");
-        interests1.add("INTER3");
-        interests1.add("INTER4");
-
-        List<String> interests2 = new ArrayList<>();
-        interests2.add("INTER1");
-        interests2.add("INTER3");
-
-        List<String> interests3 = new ArrayList<>();
-        interests3.add("INTER3");
-        interests3.add("INTER4");
-        interests3.add("INTER5");
-
-        List<String> majors1 = new ArrayList<>();
-        majors1.add("MAJOR1");
-        majors1.add("MAJOR2");
-
-        List<String> majors2 = new ArrayList<>();
-        majors2.add("MAJOR2");
-        majors2.add("MAJOR3");
-
-        List<String> majors3 = new ArrayList<>();
-        majors3.add("MAJOR1");
-        majors3.add("MAJOR3");
-
-        SignupDTO signupDTO1 = SignupDTO.builder()
-                .userId("mf0001")
-                .nickname("moon1")
-                .schoolEmail("nutee.skhu.2020@gmail.com")
-                .password("P@ssw0rd")
-                .otp("000000")
-                .interests(interests1)
-                .majors(majors1)
-                .build();
-
-        SignupDTO signupDTO2 = SignupDTO.builder()
-                .userId("mf0002")
-                .nickname("moon2")
-                .schoolEmail("nutee.skhu.2020@gmail.com")
-                .password("P@ssw0rd")
-                .otp("000000")
-                .interests(interests2)
-                .majors(majors2)
-                .build();
-
-        SignupDTO signupDTO3 = SignupDTO.builder()
-                .userId("mf0003")
-                .nickname("moon3")
-                .schoolEmail("nutee.skhu.2020@gmail.com")
-                .password("P@ssw0rd")
-                .otp("000000")
-                .interests(interests3)
-                .majors(majors3)
-                .build();
-
-//        sendOtp();
-        createMember(signupDTO1);
-        createMember(signupDTO2);
-        createMember(signupDTO3);
-
-
-
-    }
-
-    void sendOtp() {
-        RestTemplate rest = new RestTemplate();
-        Map<String,String> map = new HashMap<>();
-        map.put("schoolEmail","nutee.skhu.2020@gmail.com");
-        rest.postForObject("http://localhost:8080/auth/sendotp", map, String.class);
-    }
-
-    public Member createMember(SignupDTO dto) {
-        RestTemplate rest = new RestTemplate();
-        return rest.postForObject("http://localhost:8080/auth/signup", dto, Member.class);
     }
 }
