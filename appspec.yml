@@ -12,7 +12,7 @@ permissions:
     group: ec2-user
 
 hooks:
-  AfterInstall: # 배포가 끝나면 아래 명령어를 실행
+  ApplicationStart: # 배포가 끝나면 아래 명령어를 실행
     - location: scripts/deploy.sh
-        timeout: 180
-        runas: ec2-user
+      timeout: 180
+      runas: ec2-user
