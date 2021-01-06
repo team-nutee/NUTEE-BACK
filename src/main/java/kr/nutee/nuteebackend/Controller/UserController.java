@@ -20,10 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RefreshScope
@@ -37,6 +35,25 @@ public class UserController {
     private final MemberService memberService;
     private final PostService postService;
     private final ImageService imageService;
+
+    /*
+        내 데이터 호출
+     */
+    @GetMapping(path = "/me")
+    public ResponseEntity<ResponseResource> getMe(
+        HttpServletRequest request
+    ) {
+        Long memberId = util.getTokenMemberId(request);
+        UserData user = memberService.getUserData(memberId);
+        Response response = Response.builder()
+            .code(10)
+            .message("SUCCESS")
+            .body(user)
+            .build();
+
+        ResponseResource resource = new ResponseResource(response, UserController.class, memberId);
+        return ResponseEntity.ok().body(resource);
+    }
 
     /*
         유저 데이터 호출
