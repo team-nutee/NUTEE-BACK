@@ -15,12 +15,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.System.in;
-
-
 @RestController
 @RefreshScope
-@RequestMapping(path = "/sns/upload", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/sns/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 @RequiredArgsConstructor
 @ResponseBody
 @Slf4j
