@@ -14,10 +14,12 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @Order(1)
-public class WebConfig {
+public class WebConfig implements WebMvcConfigurer {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -31,5 +33,12 @@ public class WebConfig {
                 .setReadTimeout(Duration.ofMillis(20000)) // read-timeout
                 .additionalMessageConverters(new StringHttpMessageConverter(StandardCharsets.UTF_8))
                 .build();
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") //모든 요청에 대해서
+            .allowedOrigins("http://localhost:80")
+            .allowedOrigins("http://3.34.61.71:80");
     }
 }
