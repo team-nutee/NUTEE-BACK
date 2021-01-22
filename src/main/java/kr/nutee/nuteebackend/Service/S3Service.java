@@ -48,8 +48,8 @@ public class S3Service {
     }
 
     public String upload(MultipartFile file) throws IOException {
-        if(file.getSize()<=1024*1024){
-            //파일 사이즈 제한
+        if(file.getSize()>1024*1024){
+            //Todo:파일 사이즈 제한 예외 처리하기
         }
         String fileName = file.getOriginalFilename();
         String safeFile = System.currentTimeMillis() + "_" + fileName;
