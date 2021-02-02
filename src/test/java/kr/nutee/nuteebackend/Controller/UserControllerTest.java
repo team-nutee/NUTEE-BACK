@@ -1,18 +1,12 @@
 package kr.nutee.nuteebackend.Controller;
 
 import kr.nutee.nuteebackend.DTO.Request.*;
-import kr.nutee.nuteebackend.Domain.Interest;
-import kr.nutee.nuteebackend.Domain.Major;
-import kr.nutee.nuteebackend.Domain.Member;
-import kr.nutee.nuteebackend.Domain.Post;
-import kr.nutee.nuteebackend.Enum.Category;
 import org.junit.jupiter.api.*;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +27,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     // 유저 한 명 조회
     @Test
+    @Deprecated
     @Order(1)
     @DisplayName("유저 조회 성공")
     void getUser() throws Exception {
@@ -180,6 +175,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     // 닉네임 변경
     @Test @Order(3)
+    @Deprecated
     @DisplayName("닉네임 변경 성공")
     void updateNickname() throws Exception {
 
@@ -242,6 +238,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     // 패스워드 변경
     @Test @Order(4)
+    @Deprecated
     @DisplayName("패스워드 변경 성공")
     void passwordChange() throws Exception {
 
@@ -289,6 +286,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     // 프로필 이미지 등록
     @Test @Order(5)
+    @Deprecated
     @DisplayName("프로필 이미지 등록 성공")
     void uploadProfileImage() throws Exception {
 
@@ -335,6 +333,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     // 프로필 이미지 삭제
     @Test @Order(6)
+    @Deprecated
     @DisplayName("프로필 이미지 삭제 성공")
     void deleteProfileImage() throws Exception {
 
@@ -375,6 +374,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     // 관심 분야 변경
     @Test @Order(7)
+    @Deprecated
     @DisplayName("관심 분야 변경 성공")
     void updateInterests() throws Exception {
 
@@ -427,6 +427,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     // 전공 변경
     @Test @Order(8)
+    @Deprecated
     @DisplayName("전공 변경 성공")
     void updateMajors() throws Exception {
 
@@ -481,6 +482,7 @@ public class UserControllerTest extends BaseControllerTest {
     // 본인 조회
     @Test
     @Order(9)
+    @Deprecated
     @DisplayName("유저 조회 성공")
     void getMe() throws Exception {
         //given

@@ -1,6 +1,8 @@
 package kr.nutee.nuteebackend.Service;
 
+import kr.nutee.nuteebackend.DTO.MessageQueue.MemberDTO;
 import kr.nutee.nuteebackend.DTO.Response.UserData;
+import kr.nutee.nuteebackend.Domain.Image;
 import kr.nutee.nuteebackend.Domain.Interest;
 import kr.nutee.nuteebackend.Domain.Major;
 import kr.nutee.nuteebackend.Domain.Member;
@@ -100,14 +102,40 @@ public class MemberService {
     }
 
     @Transactional
-    public Member insertUser(Member member){
-        member.setAccessedAt((LocalDateTime.now()));
-        if(member.getSchoolEmail().equals("nutee.skhu.2020@gmail.com")){
-            member.setRole(RoleType.MANAGER);
-        }else{
-            member.setRole(RoleType.USER);
-        }
-        return memberRepository.save(member);
+    public void createUser(MemberDTO memberDTO){
+        Member member = Member.builder()
+            .id(memberDTO.getId())
+            .userId(memberDTO.getUserId())
+            .nickname(memberDTO.getNickname())
+            .schoolEmail(memberDTO.getSchoolEmail())
+            .password(memberDTO.getPassword())
+            .accessedAt(memberDTO.getAccessedAt())
+            .isDeleted(memberDTO.isDeleted())
+            .isBlocked(memberDTO.isBlocked())
+            .role(memberDTO.getRole())
+            .build();
+        member.setCreatedAt(memberDTO.getCreatedAt());
+        member.setUpdatedAt(memberDTO.getUpdatedAt());
+        member = memberRepository.save(member);
+
+        Member finalMember = member;
+        memberDTO.getInterests().forEach(
+            v->interestRepository.save(
+                Interest.builder().interest(v).member(finalMember).build()
+            )
+        );
+
+        memberDTO.getInterests().forEach(
+            v->majorRepository.save(
+                Major.builder().major(v).member(finalMember).build()
+            )
+        );
+    }
+
+    @Transactional
+    public void deleteUser(MemberDTO memberDTO){
+        long memberId = memberDTO.getId();
+        memberRepository.deleteById(memberId);
     }
 
 }

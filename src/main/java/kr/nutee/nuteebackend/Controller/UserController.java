@@ -27,7 +27,6 @@ import java.util.List;
 @RefreshScope
 @RequestMapping(path = "/sns/user",consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@ResponseBody
 @Slf4j
 public class UserController {
 

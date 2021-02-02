@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/sns/hashtag", consumes = MediaType.APPLICATION_JSON_VALUE)
 @RefreshScope
 @RequiredArgsConstructor
-@ResponseBody
 @Slf4j
 public class HashtagController {
 

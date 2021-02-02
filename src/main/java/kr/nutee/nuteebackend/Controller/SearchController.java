@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RefreshScope
 @RequestMapping(path = "/sns/search",consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@ResponseBody
 @Slf4j
 public class SearchController {
 

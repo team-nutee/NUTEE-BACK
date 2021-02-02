@@ -19,7 +19,6 @@ import java.util.List;
 @RefreshScope
 @RequestMapping(path = "/sns/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 @RequiredArgsConstructor
-@ResponseBody
 @Slf4j
 public class ImageController {
 

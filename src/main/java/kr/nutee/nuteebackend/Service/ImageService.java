@@ -20,8 +20,8 @@ public class ImageService {
 
     @Transactional
     public Image uploadProfile(Long memberId, String src){
-        //해당 멤버 없음
         Member member = memberRepository.findMemberById(memberId);
+        //Todo:해당 멤버 없을 시 예외
         Image image = Image.builder().member(member).src(src).build();
         return imageRepository.save(image);
     }
