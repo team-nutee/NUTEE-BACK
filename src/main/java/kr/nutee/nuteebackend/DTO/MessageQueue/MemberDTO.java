@@ -4,13 +4,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Id;
-import kr.nutee.nuteebackend.Domain.Image;
-import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Enum.RoleType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class MemberDTO {
 

@@ -1,5 +1,8 @@
 package kr.nutee.nuteebackend.Controller;
 
+import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
+import kr.nutee.nuteebackend.DTO.Response.PostShowResponse;
+import kr.nutee.nuteebackend.DTO.Response.Response;
 import kr.nutee.nuteebackend.Service.S3Service;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -28,7 +32,7 @@ public class ImageController {
         이미지 S3에 업로드
      */
     @PostMapping("")
-    public List<String> uploadImages(MultipartHttpServletRequest mtfRequest) {
+    public ResponseEntity<ResponseResource> uploadImages(MultipartHttpServletRequest mtfRequest) {
         List<MultipartFile> fileList = mtfRequest.getFiles("images");
         List<String> srcList = new ArrayList<>();
         for (MultipartFile files : fileList) {
@@ -41,7 +45,15 @@ public class ImageController {
 
             }
         }
-        return srcList;
+
+        Response response = Response.builder()
+            .code(10)
+            .message("SUCCESS")
+            .body(srcList)
+            .build();
+
+        ResponseResource resource = new ResponseResource(response, ImageController.class);
+        return ResponseEntity.ok().body(resource);
     }
 
 }

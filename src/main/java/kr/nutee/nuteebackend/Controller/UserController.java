@@ -93,122 +93,122 @@ public class UserController {
         return ResponseEntity.ok().body(resource);
     }
 
-    /*
-        유저의 닉네임 변경
-    */
-    @PatchMapping(path = "/nickname")
-    public ResponseEntity<ResponseResource> updateNickname(
-            HttpServletRequest request,
-            @RequestBody @Valid NicknameUpdateRequest body
-    ){
-        Long memberId = util.getTokenMemberId(request);
-        UserData user = memberService.updateNickname(memberId, body.getNickname());
-        Response response = Response.builder()
-                .code(10)
-                .message("SUCCESS")
-                .body(user)
-                .build();
-
-        ResponseResource resource = new ResponseResource(response, UserController.class, "nickname");
-        return ResponseEntity.ok().body(resource);
-    }
-
-    /*
-        유저의 비밀번호 변경
-    */
-    @PostMapping(path = "/pwchange")
-    public ResponseEntity<ResponseResource> passwordChange(
-            HttpServletRequest request,
-            @RequestBody @Valid PasswordUpdateRequest body
-    ){
-        Long memberId = util.getTokenMemberId(request);
-        memberService.updatePassword(memberId, body.getPassword());
-        Response response = Response.builder()
-                .code(10)
-                .message("SUCCESS")
-                .body("비밀번호 변경에 성공하였습니다.")
-                .build();
-
-        ResponseResource resource = new ResponseResource(response, UserController.class, "pwchange");
-        return ResponseEntity.ok().body(resource);
-    }
-
-    /*
-        유저 프로필 이미지 변경
-    */
-    @PostMapping(path = "/profile")
-    public ResponseEntity<ResponseResource> uploadProfileImage(
-            HttpServletRequest request,
-            @RequestBody @Valid ProfileRequest body
-    ){
-        Long memberId = util.getTokenMemberId(request);
-        Image image = imageService.uploadProfile(memberId,body.getSrc());
-        Response response = Response.builder()
-                .code(10)
-                .message("SUCCESS")
-                .body(image.getSrc())
-                .build();
-
-        ResponseResource resource = new ResponseResource(response, UserController.class, "profile");
-        return ResponseEntity.ok().body(resource);
-    }
-
-    /*
-        유저의 프로필 이미지 삭제
-    */
-    @DeleteMapping(path = "/profile")
-    public ResponseEntity<ResponseResource> deleteProfileImage(
-            HttpServletRequest request
-    ){
-        Long memberId = util.getTokenMemberId(request);
-        imageService.deleteProfile(memberId);
-        Response response = Response.builder()
-                .code(10)
-                .message("SUCCESS")
-                .body("프로필 이미지 삭제에 성공하였습니다.")
-                .build();
-
-        ResponseResource resource = new ResponseResource(response, UserController.class, "profile");
-        return ResponseEntity.ok().body(resource);
-    }
-
-    /*
-        유저 흥미 목록 변경
-    */
-    @PatchMapping(path = "/interests")
-    public ResponseEntity<ResponseResource> updateInterests(
-            HttpServletRequest request,
-            @RequestBody InterestsUpdateRequest body
-    ){
-        Long memberId = util.getTokenMemberId(request);
-        Member member = memberService.updateInterests(memberId, body.getInterests());
-        Response response = Response.builder()
-                .code(10)
-                .message("SUCCESS")
-                .body(member.getInterests())
-                .build();
-
-        ResponseResource resource = new ResponseResource(response, UserController.class, "interests");
-        return ResponseEntity.ok().body(resource);
-    }
-
-    /*
-        유저 전공 변경
-    */
-    @PatchMapping(path = "/majors")
-    public ResponseEntity<ResponseResource> updateMajors(
-            HttpServletRequest request,
-            @RequestBody MajorsUpdateRequest body
-    ){
-        Long memberId = util.getTokenMemberId(request);
-        Member member = memberService.updateMajors(memberId, body.getMajors());
-        Response response = Response.builder()
-                .code(10)
-                .message("SUCCESS")
-                .body(member.getMajors())
-                .build();
-
-        ResponseResource resource = new ResponseResource(response, UserController.class, "majors");
-        return ResponseEntity.ok().body(resource);
-    }
+//    /*
+//        유저의 닉네임 변경
+//    */
+//    @PatchMapping(path = "/nickname")
+//    public ResponseEntity<ResponseResource> updateNickname(
+//            HttpServletRequest request,
+//            @RequestBody @Valid NicknameUpdateRequest body
+//    ){
+//        Long memberId = util.getTokenMemberId(request);
+//        UserData user = memberService.updateNickname(memberId, body.getNickname());
+//        Response response = Response.builder()
+//                .code(10)
+//                .message("SUCCESS")
+//                .body(user)
+//                .build();
+//
+//        ResponseResource resource = new ResponseResource(response, UserController.class, "nickname");
+//        return ResponseEntity.ok().body(resource);
+//    }
+//
+//    /*
+//        유저의 비밀번호 변경
+//    */
+//    @PostMapping(path = "/pwchange")
+//    public ResponseEntity<ResponseResource> passwordChange(
+//            HttpServletRequest request,
+//            @RequestBody @Valid PasswordUpdateRequest body
+//    ){
+//        Long memberId = util.getTokenMemberId(request);
+//        memberService.updatePassword(memberId, body.getPassword());
+//        Response response = Response.builder()
+//                .code(10)
+//                .message("SUCCESS")
+//                .body("비밀번호 변경에 성공하였습니다.")
+//                .build();
+//
+//        ResponseResource resource = new ResponseResource(response, UserController.class, "pwchange");
+//        return ResponseEntity.ok().body(resource);
+//    }
+//
+//    /*
+//        유저 프로필 이미지 변경
+//    */
+//    @PostMapping(path = "/profile")
+//    public ResponseEntity<ResponseResource> uploadProfileImage(
+//            HttpServletRequest request,
+//            @RequestBody @Valid ProfileRequest body
+//    ){
+//        Long memberId = util.getTokenMemberId(request);
+//        Image image = imageService.uploadProfile(memberId,body.getSrc());
+//        Response response = Response.builder()
+//                .code(10)
+//                .message("SUCCESS")
+//                .body(image.getSrc())
+//                .build();
+//
+//        ResponseResource resource = new ResponseResource(response, UserController.class, "profile");
+//        return ResponseEntity.ok().body(resource);
+//    }
+//
+//    /*
+//        유저의 프로필 이미지 삭제
+//    */
+//    @DeleteMapping(path = "/profile")
+//    public ResponseEntity<ResponseResource> deleteProfileImage(
+//            HttpServletRequest request
+//    ){
+//        Long memberId = util.getTokenMemberId(request);
+//        imageService.deleteProfile(memberId);
+//        Response response = Response.builder()
+//                .code(10)
+//                .message("SUCCESS")
+//                .body("프로필 이미지 삭제에 성공하였습니다.")
+//                .build();
+//
+//        ResponseResource resource = new ResponseResource(response, UserController.class, "profile");
+//        return ResponseEntity.ok().body(resource);
+//    }
+//
+//    /*
+//        유저 흥미 목록 변경
+//    */
+//    @PatchMapping(path = "/interests")
+//    public ResponseEntity<ResponseResource> updateInterests(
+//            HttpServletRequest request,
+//            @RequestBody InterestsUpdateRequest body
+//    ){
+//        Long memberId = util.getTokenMemberId(request);
+//        Member member = memberService.updateInterests(memberId, body.getInterests());
+//        Response response = Response.builder()
+//                .code(10)
+//                .message("SUCCESS")
+//                .body(member.getInterests())
+//                .build();
+//
+//        ResponseResource resource = new ResponseResource(response, UserController.class, "interests");
+//        return ResponseEntity.ok().body(resource);
+//    }
+//
+//    /*
+//        유저 전공 변경
+//    */
+//    @PatchMapping(path = "/majors")
+//    public ResponseEntity<ResponseResource> updateMajors(
+//            HttpServletRequest request,
+//            @RequestBody MajorsUpdateRequest body
+//    ){
+//        Long memberId = util.getTokenMemberId(request);
+//        Member member = memberService.updateMajors(memberId, body.getMajors());
+//        Response response = Response.builder()
+//                .code(10)
+//                .message("SUCCESS")
+//                .body(member.getMajors())
+//                .build();
+//
+//        ResponseResource resource = new ResponseResource(response, UserController.class, "majors");
+//        return ResponseEntity.ok().body(resource);
+//    }
 }

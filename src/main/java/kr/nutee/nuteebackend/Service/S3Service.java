@@ -48,13 +48,16 @@ public class S3Service {
     }
 
     public String upload(MultipartFile file) throws IOException {
+        System.out.println("!!");
         if(file.getSize()>1024*1024){
             //Todo:파일 사이즈 제한 예외 처리하기
         }
         String fileName = file.getOriginalFilename();
         String safeFile = System.currentTimeMillis() + "_" + fileName;
+        System.out.println("!!!!");
         s3Client.putObject(new PutObjectRequest(bucket, safeFile, file.getInputStream(), null)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
+        System.out.println("!!!!!!!!");
         return "https://"+S3cloudFront+"/"+safeFile;
     }
 }

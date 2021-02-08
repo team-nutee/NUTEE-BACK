@@ -93,9 +93,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AssertionError.class)
     public ResponseEntity<Object> assertionEx(Exception e) {
-        log.warn("!!!!!!!" + e.getClass());
-        log.warn("!!!!!!!" + e.getMessage());
-        log.warn("!!!!!!!" + e.toString());
         return new ResponseEntity<>(null, HttpStatus.CONFLICT);
     }
 
