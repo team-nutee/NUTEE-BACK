@@ -23,6 +23,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
+
     public Map<String,Object> getTokenInfo(HttpServletRequest request){
         Map<String,Object> map = new HashMap<>();
         String token = request.getHeader("Authorization").split(" ")[1];

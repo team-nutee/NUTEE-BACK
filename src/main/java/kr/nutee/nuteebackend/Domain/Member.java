@@ -13,8 +13,8 @@ import java.util.List;
 @Getter @Setter
 @Builder @NoArgsConstructor @AllArgsConstructor
 public class Member extends LogDateTime {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 

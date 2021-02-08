@@ -15,7 +15,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RestController
 @RefreshScope
 @RequestMapping(path = "/sns",consumes = MediaType.APPLICATION_JSON_VALUE)
-@ResponseBody
 @RequiredArgsConstructor
 @Slf4j
 public class IndexController {
