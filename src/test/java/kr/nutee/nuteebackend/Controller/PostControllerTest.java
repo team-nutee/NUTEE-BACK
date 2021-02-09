@@ -388,7 +388,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
                 .accept(MediaTypes.HAL_JSON_VALUE)
-                .content("12345")
+                .content("{}")
                 .param("lastId", String.valueOf(lastId))
                 .param("limit", String.valueOf(limit));
 
