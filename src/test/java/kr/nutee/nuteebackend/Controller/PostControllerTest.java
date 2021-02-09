@@ -399,7 +399,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
-                .andExpect(jsonPath("body",hasSize(7)))
+                .andExpect(jsonPath("body",hasSize(10)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
                 .andDo(document("get-favorite-posts"));
