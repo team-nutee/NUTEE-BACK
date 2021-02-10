@@ -72,6 +72,9 @@ public class PostService {
     @Transactional
     public PostResponse getPost(Long postId,Long memberId) throws BusinessException {
         Member member = memberRepository.findMemberById(memberId);
+        if (member==null) {
+            throw new NotExistException("존재하지 않는 사용자 입니다.", ErrorCode.NOT_EXIST, HttpStatus.NOT_FOUND,memberId);
+        }
         Post post = postRepository.findPostById(postId);
         if(post.isDeleted()){
             throw new NotExistException("존재 하지 않는 글 입니다.", ErrorCode.NOT_EXIST, HttpStatus.NOT_FOUND,postId);
