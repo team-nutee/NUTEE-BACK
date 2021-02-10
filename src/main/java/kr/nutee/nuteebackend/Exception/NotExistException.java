@@ -9,7 +9,7 @@ public class NotExistException extends BusinessException {
     public NotExistException(String msg, ErrorCode errorCode, HttpStatus status) {
         super(msg,errorCode,status);
     }
-    public NotExistException(String msg, ErrorCode errorCode, HttpStatus status, Long postId) {
-        super(msg,errorCode,status,postId);
+    public NotExistException(String msg, ErrorCode errorCode, HttpStatus status, Long id) {
+        super(msg,errorCode,status,id);
     }
 }

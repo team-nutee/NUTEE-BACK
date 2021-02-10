@@ -88,6 +88,7 @@ public class GlobalExceptionHandler {
         map.put("code", 53);
         map.put("message","");
         log.warn("null ex" + e.getClass());
+        e.printStackTrace();
         return new ResponseEntity<>(map, HttpStatus.CONFLICT);
     }
 
