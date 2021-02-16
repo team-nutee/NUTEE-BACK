@@ -9,20 +9,13 @@ import org.junit.jupiter.api.*;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -435,6 +428,34 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
                 .andExpect(jsonPath("_links.get-category-posts").exists())
                 .andDo(document("get-category-posts"));
+
+    }
+
+    @Test @Order(12)
+    @DisplayName("카테고리 게시판 목록 읽기")
+    void getAllPosts() throws Exception {
+        //given
+        Long lastId = 0L;
+        int limit = 10;
+
+        //when
+        MockHttpServletRequestBuilder builder = get("/sns/post/all")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaTypes.HAL_JSON_VALUE)
+            .param("lastId", String.valueOf(lastId))
+            .param("limit", String.valueOf(limit));
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body",hasSize(8)))
+            .andExpect(jsonPath("_links.self").exists())
+            .andDo(document("get-all-posts"));
 
     }
 

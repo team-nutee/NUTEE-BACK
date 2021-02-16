@@ -141,6 +141,21 @@ include::{snippets}/get-category-posts/http-response.adoc[]
 
 
 
+[[resources-get-all-posts]]
+=== 모든 글 목록 조회
+
+`GET` 요청을 사용하여 정해진 구간의 모든 글 목록 포스트를 조회할 수 있다.
+
+[[http-request]]
+==== http-request
+include::{snippets}/get-all-posts/http-request.adoc[]
+
+[[http-response]]
+==== http-response
+include::{snippets}/get-all-posts/http-response.adoc[]
+
+
+
 [[resources-get-post]]
 === 포스트 조회
 

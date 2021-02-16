@@ -95,6 +95,25 @@ public class PostController {
     }
 
     /*
+        모든 게시물 불러오기
+     */
+    @GetMapping(path = "/all")
+    public ResponseEntity<ResponseResource> getAllPosts(
+        @RequestParam("lastId") int lastId,
+        @RequestParam("limit") int limit
+    ) {
+        Response response = Response.builder()
+            .code(10)
+            .message("SUCCESS")
+            .body(postService.getAllPosts((long) lastId, limit))
+            .build();
+
+        ResponseResource resource = new ResponseResource(response, PostController.class);
+
+        return ResponseEntity.ok().body(resource);
+    }
+
+    /*
         글 작성
      */
     @PostMapping(path = "")
