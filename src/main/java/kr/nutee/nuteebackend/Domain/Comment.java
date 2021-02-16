@@ -21,6 +21,16 @@ public class Comment extends LogDateTime {
 
     private boolean isDeleted;
 
+    private boolean isBlocked;
+
+    @OneToMany (mappedBy = "comment", cascade = CascadeType.PERSIST)
+    @Builder.Default
+    private List<CommentReport> commentReports = new ArrayList<>();
+
+    @OneToMany (mappedBy = "comment", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CommentLike> likes = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -36,4 +46,6 @@ public class Comment extends LogDateTime {
     @OneToMany(mappedBy = "parent")
     @Builder.Default
     private List<Comment> child = new ArrayList<>();
+
+
 }
