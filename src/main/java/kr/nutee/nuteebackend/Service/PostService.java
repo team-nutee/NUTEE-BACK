@@ -42,9 +42,10 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final PostReportRepository postReportRepository;
+    private final PostLikeRepository postLikeRepository;
     private final CommentReportRepository commentReportRepository;
     private final CommentRepository commentRepository;
-    private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final Util util;
 
     private static final int REPORT_COUNT = 5;
@@ -395,6 +396,45 @@ public class PostService {
             commentRepository.save(comment);
         }
         return util.transferCommentResponse(comment);
+    }
+
+    @Transactional
+    public CommentResponse likeComment(Long commentId, Long memberId){
+        Comment comment = commentRepository.findCommentById(commentId);
+        Member member = memberRepository.findMemberById(memberId);
+        List<CommentLike> likes = comment.getLikes().stream()
+            .filter(v->v.getMember().getId().equals(memberId))
+            .collect(Collectors.toList());
+        if(likes.size()==0){
+            CommentLike commentLike = CommentLike.builder()
+                .member(member)
+                .comment(comment)
+                .build();
+            comment.getLikes().add(commentLikeRepository.save(commentLike));
+            commentRepository.save(comment);
+        }else{
+            //이미 좋아요 누름
+        }
+        Comment changedComment = commentRepository.findCommentById(commentId);
+        return util.transferCommentResponse(changedComment);
+    }
+
+    @Transactional
+    public CommentResponse unlikeComment(Long commentId, Long memberId){
+        Comment comment = commentRepository.findCommentById(commentId);
+        List<CommentLike> likes = comment.getLikes().stream()
+            .filter(v->v.getMember().getId().equals(memberId))
+            .collect(Collectors.toList());
+        if(likes.size()!=0){
+            comment.getLikes().remove(likes.get(0));
+            commentRepository.save(comment);
+            commentLikeRepository.delete(likes.get(0));
+            em.flush();
+        }else{
+            //이미 좋아요 없어진 상태
+        }
+        Comment changedComment = commentRepository.findCommentById(commentId);
+        return util.transferCommentResponse(changedComment);
     }
 
 }

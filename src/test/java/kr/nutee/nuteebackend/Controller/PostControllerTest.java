@@ -747,6 +747,60 @@ public class PostControllerTest extends BaseControllerTest {
     }
 
     @Test @Order(21)
+    @DisplayName("댓글 좋아요 성공")
+    void commentLike() throws Exception {
+        //given
+        Long postId = 1L;
+        Long commentId = 1L;
+
+        //when
+        MockHttpServletRequestBuilder builder = post("/sns/post/{postId}/comment/{commentId}/like",postId,commentId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaTypes.HAL_JSON_VALUE);
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body").exists())
+            .andExpect(jsonPath("_links.self").exists())
+            .andDo(document("like-comment"));
+
+    }
+
+    @Test @Order(22)
+    @DisplayName("게시글 좋아요 취소 성공")
+    void commentUnlike() throws Exception {
+        //given
+        Long postId = 1L;
+        Long commentId = 1L;
+
+
+        //when
+        MockHttpServletRequestBuilder builder = delete("/sns/post/{postId}/comment/{commentId}/unlike",postId,commentId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaTypes.HAL_JSON_VALUE);
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body").exists())
+            .andExpect(jsonPath("_links.self").exists())
+            .andDo(document("unlike-comment"));
+
+
+    }
+
+    @Test @Order(23)
     @DisplayName("게시글 좋아요 성공")
     void postLike() throws Exception {
         //given
@@ -775,15 +829,15 @@ public class PostControllerTest extends BaseControllerTest {
 
     }
 
-    @Test @Order(22)
+    @Test @Order(24)
     @DisplayName("게시글 좋아요 취소 성공")
     void postUnlike() throws Exception {
         //given
-        Long postId = 2L;
+        Long postId = 1L;
 
 
         //when
-        MockHttpServletRequestBuilder builder = delete("/sns/post/{postId}/like",postId)
+        MockHttpServletRequestBuilder builder = delete("/sns/post/{postId}/unlike",postId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
                 .accept(MediaTypes.HAL_JSON_VALUE);
@@ -806,7 +860,7 @@ public class PostControllerTest extends BaseControllerTest {
 
     }
 
-    @Test @Order(16)
+    @Test @Order(25)
     @DisplayName("게시글 리트윗 성공")
     void createRetweet() throws Exception {
         //given

@@ -244,6 +244,56 @@ public class PostController {
     }
 
     /*
+        게시글 좋아요
+     */
+    @PostMapping(path = "/{postId}/like")
+    public ResponseEntity<ResponseResource> likePost(
+        @PathVariable String postId,
+        HttpServletRequest request
+    ) {
+        Long memberId = util.getTokenMemberId(request);
+        PostResponse post = postService.likePost(Long.parseLong(postId), memberId);
+        String category = post.getCategory();
+        Response response = Response.builder()
+            .code(10)
+            .message("SUCCESS")
+            .body(post)
+            .build();
+
+        ResponseResource resource = new ResponseResource(response, PostController.class, Long.parseLong(postId));
+        resource.add(linkTo(PostController.class).slash(Long.parseLong(postId)).withRel("get-post"));
+        resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
+        resource.add(linkTo(PostController.class).slash("category").slash(category).withRel("get-category-posts"));
+        resource.add(linkTo(PostController.class).slash(Long.parseLong(postId)).slash("comments").withRel("get-comments"));
+
+        return ResponseEntity.ok().body(resource);
+    }
+
+    /*
+        게시글 좋아요 취소
+     */
+    @DeleteMapping(path = "/{postId}/unlike")
+    public ResponseEntity<ResponseResource> unlikePost(
+        @PathVariable String postId,
+        HttpServletRequest request
+    ) {
+        Long memberId = util.getTokenMemberId(request);
+        PostResponse post = postService.unlikePost(Long.parseLong(postId), memberId);
+        Response response = Response.builder()
+            .code(10)
+            .message("SUCCESS")
+            .body(post)
+            .build();
+        ResponseResource resource = new ResponseResource(response, PostController.class, Long.parseLong(postId));
+        resource.add(linkTo(PostController.class).slash(Long.parseLong(postId)).withRel("get-post"));
+        resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
+        resource.add(linkTo(PostController.class).slash("category").slash(post.getCategory()).withRel("get-category-posts"));
+        resource.add(linkTo(PostController.class).slash(Long.parseLong(postId)).slash("comments").withRel("get-comments"));
+
+        return ResponseEntity.ok().body(resource);
+    }
+
+    /*
         댓글목록 읽기
      */
     @GetMapping(path = "/{postId}/comments")
@@ -421,54 +471,49 @@ public class PostController {
     }
 
     /*
-        게시글 좋아요
+        댓글 좋아요
      */
-    @PostMapping(path = "/{postId}/like")
-    public ResponseEntity<ResponseResource> likePost(
-            @PathVariable String postId,
-            HttpServletRequest request
-    ) {
+    @PostMapping(path = "/{postId}/comment/{commentId}/like")
+    public ResponseEntity<ResponseResource> likeComment(
+        @PathVariable String postId,
+        @PathVariable String commentId,
+        HttpServletRequest request
+        ) {
         Long memberId = util.getTokenMemberId(request);
-        PostResponse post = postService.likePost(Long.parseLong(postId), memberId);
-        String category = post.getCategory();
+        CommentResponse comment = postService.likeComment(Long.parseLong(commentId), memberId);
         Response response = Response.builder()
-                .code(10)
-                .message("SUCCESS")
-                .body(post)
-                .build();
+            .code(10)
+            .message("SUCCESS")
+            .body(comment)
+            .build();
 
         ResponseResource resource = new ResponseResource(response, PostController.class, Long.parseLong(postId));
-        resource.add(linkTo(PostController.class).slash(Long.parseLong(postId)).withRel("get-post"));
-        resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
-        resource.add(linkTo(PostController.class).slash("category").slash(category).withRel("get-category-posts"));
-        resource.add(linkTo(PostController.class).slash(Long.parseLong(postId)).slash("comments").withRel("get-comments"));
 
         return ResponseEntity.ok().body(resource);
     }
 
     /*
-        게시글 좋아요 취소
+        댓글 좋아요 취소
      */
-    @DeleteMapping(path = "/{postId}/like")
-    public ResponseEntity<ResponseResource> unlikePost(
-            @PathVariable String postId,
-            HttpServletRequest request
+    @DeleteMapping(path = "/{postId}/comment/{commentId}/unlike")
+    public ResponseEntity<ResponseResource> unlikeComment(
+        @PathVariable String postId,
+        @PathVariable String commentId,
+        HttpServletRequest request
     ) {
         Long memberId = util.getTokenMemberId(request);
-        PostResponse post = postService.unlikePost(Long.parseLong(postId), memberId);
+        CommentResponse comment = postService.unlikeComment(Long.parseLong(commentId), memberId);
         Response response = Response.builder()
-                .code(10)
-                .message("SUCCESS")
-                .body(post)
-                .build();
+            .code(10)
+            .message("SUCCESS")
+            .body(comment)
+            .build();
         ResponseResource resource = new ResponseResource(response, PostController.class, Long.parseLong(postId));
-        resource.add(linkTo(PostController.class).slash(Long.parseLong(postId)).withRel("get-post"));
-        resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
-        resource.add(linkTo(PostController.class).slash("category").slash(post.getCategory()).withRel("get-category-posts"));
-        resource.add(linkTo(PostController.class).slash(Long.parseLong(postId)).slash("comments").withRel("get-comments"));
 
         return ResponseEntity.ok().body(resource);
     }
+
+
 
     /*
         게시글 리트윗

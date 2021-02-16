@@ -306,6 +306,36 @@ include::{snippets}/delete-comment/http-response.adoc[]
 
 
 
+[[resources-like-comment]]
+=== 댓글 좋아요
+
+`POST` 요청을 사용해서 댓글을 좋아요할 수 있다.
+
+[[http-request]]
+==== http-request
+include::{snippets}/like-comment/http-request.adoc[]
+
+[[http-response]]
+==== http-response
+include::{snippets}/like-comment/http-response.adoc[]
+
+
+
+[[resources-unlike-comment]]
+=== 댓글 좋아요 취소
+
+`POST` 요청을 사용해서 댓글을 좋아요 취소 할 수 있다.
+
+[[http-request]]
+==== http-request
+include::{snippets}/unlike-comment/http-request.adoc[]
+
+[[http-response]]
+==== http-response
+include::{snippets}/unlike-comment/http-response.adoc[]
+
+
+
 [[resources-report-comment]]
 === 댓글 신고
 

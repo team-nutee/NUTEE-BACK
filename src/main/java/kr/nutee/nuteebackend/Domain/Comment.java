@@ -46,4 +46,6 @@ public class Comment extends LogDateTime {
     @OneToMany(mappedBy = "parent")
     @Builder.Default
     private List<Comment> child = new ArrayList<>();
+
+
 }

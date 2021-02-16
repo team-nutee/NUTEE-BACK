@@ -9,21 +9,14 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class CommentResponse implements Serializable {
     private Long id;
     private String content;
+    private List<User> likers;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<ReCommentResponse> reComment;
     User user;
-
-    public CommentResponse(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, List<ReCommentResponse> reComment, User user) {
-        this.id = id;
-        this.content = content;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.reComment = reComment;
-        this.user = user;
-    }
 }
