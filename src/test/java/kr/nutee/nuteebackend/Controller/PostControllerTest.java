@@ -432,7 +432,7 @@ public class PostControllerTest extends BaseControllerTest {
     }
 
     @Test @Order(12)
-    @DisplayName("카테고리 게시판 목록 읽기")
+    @DisplayName("모든 게시물 목록 읽기")
     void getAllPosts() throws Exception {
         //given
         Long lastId = 0L;

@@ -1,23 +1,13 @@
 package kr.nutee.nuteebackend.Controller;
 
-import kr.nutee.nuteebackend.DTO.Request.*;
 import org.junit.jupiter.api.*;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -25,9 +15,119 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class UserControllerTest extends BaseControllerTest {
 
-    // 유저 한 명 조회
-    @Test
-    @Order(1)
+    @Test @Order(1)
+    @DisplayName("내 조회 성공")
+    void getMe() throws Exception {
+        //given
+
+        //when
+        MockHttpServletRequestBuilder builder = get("/sns/user/me")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaTypes.HAL_JSON_VALUE);
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body").exists())
+            .andExpect(jsonPath("body.id").exists())
+            .andExpect(jsonPath("body.nickname").exists())
+            .andExpect(jsonPath("body.image").isEmpty())
+            .andExpect(jsonPath("body.interests").exists())
+            .andExpect(jsonPath("body.majors").exists())
+            .andExpect(jsonPath("body.postNum").exists())
+            .andExpect(jsonPath("body.commentNum").exists())
+            .andExpect(jsonPath("body.likeNum").exists())
+            .andExpect(jsonPath("_links.self").exists())
+            .andDo(document("get-me"));
+    }
+
+    @Test @Order(2)
+    @DisplayName("내가 작성한 게시글 호출 성공")
+    void getMyPosts() throws Exception {
+        //given
+        Long lastId = 0L;
+        int limit = 10;
+
+        //when
+        MockHttpServletRequestBuilder builder = get("/sns/user/me/posts")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaTypes.HAL_JSON_VALUE)
+            .param("lastId", String.valueOf(lastId))
+            .param("limit", String.valueOf(limit));
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body",hasSize(5)))
+            .andExpect(jsonPath("_links.self").exists())
+            .andDo(document("get-my-posts"));
+    }
+
+    @Test @Order(3)
+    @DisplayName("내가 댓글 작성한 게시글 호출 성공")
+    void getMyCommentPosts() throws Exception {
+        //given
+        Long lastId = 0L;
+        int limit = 10;
+
+        //when
+        MockHttpServletRequestBuilder builder = get("/sns/user/me/comment/posts")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaTypes.HAL_JSON_VALUE)
+            .param("lastId", String.valueOf(lastId))
+            .param("limit", String.valueOf(limit));
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body",hasSize(2)))
+            .andExpect(jsonPath("_links.self").exists())
+            .andDo(document("get-my-comment-posts"));
+    }
+
+    @Test @Order(4)
+    @DisplayName("내가 포스트 좋아요 누른 게시글 호출 성공")
+    void getMyLikePosts() throws Exception {
+        //given
+        Long lastId = 0L;
+        int limit = 10;
+
+        //when
+        MockHttpServletRequestBuilder builder = get("/sns/user/me/like/posts")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaTypes.HAL_JSON_VALUE)
+            .param("lastId", String.valueOf(lastId))
+            .param("limit", String.valueOf(limit));
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body",hasSize(1)))
+            .andExpect(jsonPath("_links.self").exists())
+            .andDo(document("get-my-like-posts"));
+    }
+
+    @Test @Order(5)
     @DisplayName("유저 조회 성공")
     void getUser() throws Exception {
         //given
@@ -60,9 +160,8 @@ public class UserControllerTest extends BaseControllerTest {
 
     }
 
-    // 유저 한 명 포스트 조회
-    @Test
-    @Order(2)
+
+    @Test @Order(6)
     @DisplayName("유저 포스트 조회 성공")
     void getUserPosts() throws Exception {
         //given
@@ -282,38 +381,5 @@ public class UserControllerTest extends BaseControllerTest {
 //                .andDo(document("update-majors"));
 //
 //    }
-
-    // 본인 조회
-    @Test
-    @Order(9)
-    @DisplayName("유저 조회 성공")
-    void getMe() throws Exception {
-        //given
-
-        //when
-        MockHttpServletRequestBuilder builder = get("/sns/user/me")
-            .contentType(MediaType.APPLICATION_JSON)
-            .header("Authorization", "Bearer " + token)
-            .accept(MediaTypes.HAL_JSON_VALUE);
-
-        //then
-        mockMvc.perform(builder)
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
-            .andExpect(jsonPath("code").exists())
-            .andExpect(jsonPath("message").exists())
-            .andExpect(jsonPath("body").exists())
-            .andExpect(jsonPath("body.id").exists())
-            .andExpect(jsonPath("body.nickname").exists())
-            .andExpect(jsonPath("body.image").isEmpty())
-            .andExpect(jsonPath("body.interests").exists())
-            .andExpect(jsonPath("body.majors").exists())
-            .andExpect(jsonPath("body.postNum").exists())
-            .andExpect(jsonPath("body.commentNum").exists())
-            .andExpect(jsonPath("body.likeNum").exists())
-            .andExpect(jsonPath("_links.self").exists())
-            .andDo(document("get-me"));
-    }
 }
 
