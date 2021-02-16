@@ -223,11 +223,11 @@ include::{snippets}/delete-post/http-response.adoc[]
 
 [[http-request]]
 ==== http-request
-include::{snippets}/postReport-post/http-request.adoc[]
+include::{snippets}/report-post/http-request.adoc[]
 
 [[http-response]]
 ==== http-response
-include::{snippets}/postReport-post/http-response.adoc[]
+include::{snippets}/report-post/http-response.adoc[]
 
 
 
@@ -303,6 +303,21 @@ include::{snippets}/delete-comment/http-request.adoc[]
 [[http-response]]
 ==== http-response
 include::{snippets}/delete-comment/http-response.adoc[]
+
+
+
+[[resources-report-comment]]
+=== 댓글 신고
+
+`POST` 요청을 사용해서 댓글을 신고할 수 있다.
+
+[[http-request]]
+==== http-request
+include::{snippets}/report-comment/http-request.adoc[]
+
+[[http-response]]
+==== http-response
+include::{snippets}/report-comment/http-response.adoc[]
 
 
 

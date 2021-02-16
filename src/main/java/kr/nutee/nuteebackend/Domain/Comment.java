@@ -27,6 +27,10 @@ public class Comment extends LogDateTime {
     @Builder.Default
     private List<CommentReport> commentReports = new ArrayList<>();
 
+    @OneToMany (mappedBy = "comment", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CommentLike> likes = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
