@@ -79,6 +79,7 @@ public class BaseControllerTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    //유사시에 테스트 데이터베이스가 리셋되었을 시 데이터를 밀어넣기 위한 쿼리가 담긴 코드이므로 절대 삭제하지 말것
 //    void setData(){
 //        //given
 //        //멤버 3명 디비에 생성

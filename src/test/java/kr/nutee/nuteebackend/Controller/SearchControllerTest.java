@@ -41,7 +41,7 @@ public class SearchControllerTest extends BaseControllerTest{
             .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
             .andExpect(jsonPath("code").exists())
             .andExpect(jsonPath("message").exists())
-            .andExpect(jsonPath("body",hasSize(8)))
+            .andExpect(jsonPath("body",hasSize(7)))
             .andExpect(jsonPath("_links.self").exists())
             .andDo(document("get-search-posts"));
 
