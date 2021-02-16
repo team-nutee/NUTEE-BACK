@@ -11,8 +11,6 @@ import kr.nutee.nuteebackend.Exception.BusinessException;
 import kr.nutee.nuteebackend.Exception.NotAllowedException;
 import kr.nutee.nuteebackend.Exception.NotExistException;
 import kr.nutee.nuteebackend.Repository.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -43,10 +41,13 @@ public class PostService {
     private final HashtagRepository hashtagRepository;
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
-    private final ReportRepository reportRepository;
+    private final PostReportRepository postReportRepository;
+    private final CommentReportRepository commentReportRepository;
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
     private final Util util;
+
+    private static final int REPORT_COUNT = 5;
 
     public List<PostShowResponse> getCategoryPosts(Long lastId, int limit, String category) {
         List<Post> posts;
@@ -167,21 +168,21 @@ public class PostService {
     public PostResponse reportPost(Long postId, Long memberId, String content) {
         Member member = memberRepository.findMemberById(memberId);
         Post post = postRepository.findPostById(postId);
-        List<Report> reports = reportRepository.findReportsByPostId(postId);
-        if (reports.stream().anyMatch(v -> v.getMember().getId().equals(memberId))) {
+        List<PostReport> postReports = postReportRepository.findPostReportsByPostId(postId);
+        if (postReports.stream().anyMatch(v -> v.getMember().getId().equals(memberId))) {
             //이미 신고한 글 예외처리
         }
 
         //신고 등록
-        Report report = Report.builder()
+        PostReport postReport = PostReport.builder()
                 .content(content)
                 .member(member)
                 .post(post)
                 .build();
-        reportRepository.save(report);
+        postReportRepository.save(postReport);
 
         //포스트 신고카운트
-        Query query = em.createQuery("SELECT COUNT(r) FROM Report r where r.post.id = :postId", Long.class)
+        Query query = em.createQuery("SELECT COUNT(r) FROM PostReport r where r.post.id = :postId", Long.class)
                 .setParameter("postId", postId);
         Object count = query.getSingleResult();
 
@@ -364,6 +365,36 @@ public class PostService {
         }
         List<Comment> comments = commentRepository.findAllCommentsByPostId(postId);
         return util.transferCommentsResponse(comments);
+    }
+
+    @Transactional
+    public CommentResponse reportComment(Long commentId, Long memberId, String content) {
+        Member member = memberRepository.findMemberById(memberId);
+        Comment comment = commentRepository.findCommentById(commentId);
+        List<CommentReport> commentReports = commentReportRepository.findCommentReportsByCommentId(commentId);
+        if (commentReports.stream().anyMatch(v -> v.getMember().getId().equals(memberId))) {
+            //이미 신고한 댓글 예외처리
+        }
+
+        //신고 등록
+        CommentReport commentReport = CommentReport.builder()
+            .content(content)
+            .member(member)
+            .comment(comment)
+            .build();
+        commentReportRepository.save(commentReport);
+
+        //댓글 신고카운트
+        Query query = em.createQuery("SELECT COUNT(r) FROM CommentReport r where r.comment.id = :commentId", Long.class)
+            .setParameter("commentId", commentId);
+        Object count = query.getSingleResult();
+
+        //신고횟수 넘을 시 코멘트 블락
+        if ((Long) count >= REPORT_COUNT) {
+            comment.setBlocked(true);
+            commentRepository.save(comment);
+        }
+        return util.transferCommentResponse(comment);
     }
 
 }

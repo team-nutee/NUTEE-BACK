@@ -1,6 +1,5 @@
 package kr.nutee.nuteebackend.Controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
 import kr.nutee.nuteebackend.DTO.Response.CommentResponse;
@@ -9,21 +8,12 @@ import kr.nutee.nuteebackend.DTO.Response.Response;
 import kr.nutee.nuteebackend.Domain.Post;
 import kr.nutee.nuteebackend.Enum.ErrorCode;
 import kr.nutee.nuteebackend.Exception.EmptyAttributeException;
-import kr.nutee.nuteebackend.Exception.GlobalExceptionHandler;
-import kr.nutee.nuteebackend.Exception.NotAllowedException;
-import kr.nutee.nuteebackend.Interceptor.HttpInterceptor;
 import kr.nutee.nuteebackend.Repository.PostRepository;
-import kr.nutee.nuteebackend.Service.MemberService;
 import kr.nutee.nuteebackend.Service.PostService;
 import kr.nutee.nuteebackend.Service.Util;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -233,7 +223,7 @@ public class PostController {
     public ResponseEntity<ResponseResource> reportPost(
             @PathVariable String postId,
             HttpServletRequest request,
-            @RequestBody @Valid ReportRequest body
+            @RequestBody @Valid ReportPostRequest body
     ) {
         Long memberId = util.getTokenMemberId(request);
 
@@ -401,6 +391,31 @@ public class PostController {
         resource.add(linkTo(PostController.class).slash("favorite").withRel("get-favorite-posts"));
         resource.add(linkTo(PostController.class).slash("category").slash(category).withRel("get-category-posts"));
         resource.add(linkTo(PostController.class).slash(Long.parseLong(postId)).slash("comments").withRel("get-comments"));
+
+        return ResponseEntity.ok().body(resource);
+    }
+
+    /*
+        댓글 신고
+     */
+    @PostMapping(path = "/{postId}/comment/{commentId}/report")
+    public ResponseEntity<ResponseResource> reportComment(
+        @PathVariable String postId,
+        @PathVariable String commentId,
+        @RequestBody ReportCommentRequest body,
+        HttpServletRequest request
+    ) {
+        Long memberId = util.getTokenMemberId(request);
+
+        CommentResponse comment = postService.reportComment(memberId, Long.parseLong(commentId), body.getContent());
+
+        Response response = Response.builder()
+            .code(10)
+            .message("SUCCESS")
+            .body(comment)
+            .build();
+
+        ResponseResource resource = new ResponseResource(response, PostController.class, Long.parseLong(postId));
 
         return ResponseEntity.ok().body(resource);
     }

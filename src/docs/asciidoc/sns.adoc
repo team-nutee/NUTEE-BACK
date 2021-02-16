@@ -216,18 +216,18 @@ include::{snippets}/delete-post/http-response.adoc[]
 
 
 
-[[resources-report-post]]
+[[resources-postReport-post]]
 === 포스트 신고
 
 `POST` 요청을 사용해서 기존 포스트를 신고할 수 있다.
 
 [[http-request]]
 ==== http-request
-include::{snippets}/report-post/http-request.adoc[]
+include::{snippets}/postReport-post/http-request.adoc[]
 
 [[http-response]]
 ==== http-response
-include::{snippets}/report-post/http-response.adoc[]
+include::{snippets}/postReport-post/http-response.adoc[]
 
 
 

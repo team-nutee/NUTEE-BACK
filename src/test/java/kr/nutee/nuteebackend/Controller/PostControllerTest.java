@@ -464,7 +464,7 @@ public class PostControllerTest extends BaseControllerTest {
     void reportPost() throws Exception {
         //given
         Long postId = 1L;
-        ReportRequest body = ReportRequest.builder()
+        ReportPostRequest body = ReportPostRequest.builder()
                 .content("역겨운 게시물이라 신고했습니다.")
                 .build();
 
@@ -504,7 +504,7 @@ public class PostControllerTest extends BaseControllerTest {
     void reportPost_alreadyReport() throws Exception {
         //given
         Long postId = 1L;
-        ReportRequest body = ReportRequest.builder()
+        ReportPostRequest body = ReportPostRequest.builder()
                 .content("역겨운 게시물이라 신고했습니다.")
                 .build();
 
@@ -714,6 +714,36 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("_links.get-comments").exists())
                 .andDo(document("delete-comment"));
 
+    }
+
+    @Test @Order(20)
+    @DisplayName("댓글 신고 성공")
+    void reportComment() throws Exception {
+        //given
+        Long postId = 1L;
+        Long commentId = 1L;
+        String content = "역겨운 댓글입니다.";
+        ReportCommentRequest body = ReportCommentRequest.builder()
+            .content(content)
+            .build();
+
+        //when
+        MockHttpServletRequestBuilder builder = post("/sns/post/{postId}/comment/{commentId}/report",postId,commentId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .content(objectMapper.writeValueAsString(body))
+            .accept(MediaTypes.HAL_JSON_VALUE);
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body").exists())
+            .andExpect(jsonPath("_links.self").exists())
+            .andDo(document("report-comment"));
     }
 
     @Test @Order(21)

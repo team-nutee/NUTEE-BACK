@@ -7,6 +7,6 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportRequest {
+public class ReportPostRequest {
     String content;
 }

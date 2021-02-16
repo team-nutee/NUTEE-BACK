@@ -21,6 +21,12 @@ public class Comment extends LogDateTime {
 
     private boolean isDeleted;
 
+    private boolean isBlocked;
+
+    @OneToMany (mappedBy = "comment", cascade = CascadeType.PERSIST)
+    @Builder.Default
+    private List<CommentReport> commentReports = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
