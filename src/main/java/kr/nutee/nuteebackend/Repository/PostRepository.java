@@ -67,4 +67,37 @@ public interface PostRepository extends JpaRepository<Post,Long>{
     @Query("SELECT p FROM Post p WHERE p.isDeleted = false AND p.id < :lastId ORDER BY p.createdAt DESC")
     List<Post> findAllPostsAndIdLessThan(Long lastId, Pageable pageable);
 
+    @Query("SELECT DISTINCT p FROM Post p " +
+        "LEFT JOIN p.comments c " +
+        "LEFT JOIN c.member m " +
+        "WHERE m.id = :memberId " +
+        "AND p.isDeleted = false " +
+        "ORDER BY p.createdAt DESC")
+    List<Post> findUserCommentPosts(Long memberId, Pageable pageable);
+
+    @Query("SELECT DISTINCT p FROM Post p " +
+        "LEFT JOIN p.comments c " +
+        "LEFT JOIN c.member m " +
+        "WHERE m.id = :memberId " +
+        "AND p.isDeleted = false " +
+        "AND p.id < :lastId " +
+        "ORDER BY p.createdAt DESC")
+    List<Post> findUserCommentPostsAndIdLessThan(Long memberId, Long lastId, Pageable pageable);
+
+    @Query("SELECT p FROM Post p " +
+        "LEFT JOIN p.likes l " +
+        "LEFT JOIN l.member m " +
+        "WHERE m.id = :memberId " +
+        "AND p.isDeleted = false " +
+        "ORDER BY p.createdAt DESC")
+    List<Post> findUserLikePosts(Long memberId, Pageable pageable);
+
+    @Query("SELECT p FROM Post p " +
+        "LEFT JOIN p.likes l " +
+        "LEFT JOIN l.member m " +
+        "WHERE m.id = :memberId " +
+        "AND p.isDeleted = false " +
+        "AND p.id < :lastId " +
+        "ORDER BY p.createdAt DESC")
+    List<Post> findUserLikePostsAndIdLessThan(Long memberId, Long lastId, Pageable pageable);
 }

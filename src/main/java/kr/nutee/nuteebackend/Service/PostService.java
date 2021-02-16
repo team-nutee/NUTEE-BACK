@@ -261,6 +261,30 @@ public class PostService {
         return util.transferPosts(posts);
     }
 
+    public List<PostShowResponse> getUserCommentPosts(Long memberId, int limit, Long lastId) {
+        Pageable limitP = PageRequest.of(0, limit);
+        List<Post> posts;
+
+        if (lastId == 0) {
+            posts = postRepository.findUserCommentPosts(memberId, limitP);
+        } else {
+            posts = postRepository.findUserCommentPostsAndIdLessThan(memberId, lastId, limitP);
+        }
+        return util.transferPosts(posts);
+    }
+
+    public List<PostShowResponse> getUserLikePosts(Long memberId, int limit, Long lastId) {
+        Pageable limitP = PageRequest.of(0, limit);
+        List<Post> posts;
+
+        if (lastId == 0) {
+            posts = postRepository.findUserLikePosts(memberId, limitP);
+        } else {
+            posts = postRepository.findUserLikePostsAndIdLessThan(memberId, lastId, limitP);
+        }
+        return util.transferPosts(posts);
+    }
+
     /*
      글 생성 및 수정 로직에 따라서
      */
