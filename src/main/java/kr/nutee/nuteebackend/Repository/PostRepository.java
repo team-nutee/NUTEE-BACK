@@ -61,4 +61,10 @@ public interface PostRepository extends JpaRepository<Post,Long>{
     @Query("SELECT COUNT(p) FROM Post p WHERE p.isDeleted = false AND p.member.id = :memberId")
     int countPostsByMemberId(Long memberId);
 
+    @Query("SELECT p FROM Post p WHERE p.isDeleted = false")
+    List<Post> findAllPosts(Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.isDeleted = false AND p.id < :lastId ORDER BY p.createdAt DESC")
+    List<Post> findAllPostsAndIdLessThan(Long lastId, Pageable pageable);
+
 }

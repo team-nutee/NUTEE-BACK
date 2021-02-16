@@ -59,6 +59,17 @@ public class PostService {
         return util.transferPosts(posts);
     }
 
+    public List<PostShowResponse> getAllPosts(Long lastId, int limit) {
+        List<Post> posts;
+        Pageable limitP = PageRequest.of(0, limit);
+        if (lastId == 0) {
+            posts = postRepository.findAllPosts(limitP);
+        } else {
+            posts = postRepository.findAllPostsAndIdLessThan(lastId, limitP);
+        }
+        return util.transferPosts(posts);
+    }
+
     @Transactional
     public PostResponse createPost(Long memberId, CreatePostRequest body) {
         Member member = memberRepository.findMemberById(memberId);
