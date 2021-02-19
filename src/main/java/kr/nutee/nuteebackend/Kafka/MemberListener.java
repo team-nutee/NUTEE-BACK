@@ -23,7 +23,7 @@ public class MemberListener {
                 memberService.createUser(payload.getChange());
             }
             if (payload.getMethod().equals("UPDATE")) {
-                memberService.deleteUser(payload.getChange());
+                memberService.updateUser(payload.getChange());
             }
         } catch (Exception e) {
             if (payload.getMethod().equals("CREATE")) {
