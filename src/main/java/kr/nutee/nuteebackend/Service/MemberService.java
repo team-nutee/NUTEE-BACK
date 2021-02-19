@@ -33,6 +33,8 @@ public class MemberService {
     private final InterestRepository interestRepository;
     private final MajorRepository majorRepository;
     private final PasswordEncoder bcryptEncoder;
+
+    private final ImageRepository imageRepository;
     private final Util util;
 
     //
@@ -133,9 +135,42 @@ public class MemberService {
     }
 
     @Transactional
-    public void deleteUser(MemberDTO memberDTO){
-        long memberId = memberDTO.getId();
-        memberRepository.deleteById(memberId);
+    public void updateUser(MemberDTO memberDTO){
+        Member member = Member.builder()
+            .id(memberDTO.getId())
+            .userId(memberDTO.getUserId())
+            .nickname(memberDTO.getNickname())
+            .schoolEmail(memberDTO.getSchoolEmail())
+            .password(memberDTO.getPassword())
+            .accessedAt(memberDTO.getAccessedAt())
+            .isDeleted(memberDTO.isDeleted())
+            .isBlocked(memberDTO.isBlocked())
+            .role(memberDTO.getRole())
+            .build();
+        member.setCreatedAt(memberDTO.getCreatedAt());
+        member.setUpdatedAt(memberDTO.getUpdatedAt());
+        member = memberRepository.save(member);
+
+        Member finalMember = member;
+
+        memberDTO.getInterests().forEach(
+            v->interestRepository.save(
+                Interest.builder().interest(v).member(finalMember).build()
+            )
+        );
+
+        memberDTO.getInterests().forEach(
+            v->majorRepository.save(
+                Major.builder().major(v).member(finalMember).build()
+            )
+        );
+
+        imageRepository.save(
+            Image.builder()
+                .member(member)
+                .src(memberDTO.getProfileUrl())
+                .build()
+        );
     }
 
 }
