@@ -564,3 +564,43 @@ include::{snippets}/get-user-posts/http-request.adoc[]
 [[http-response]]
 ==== http-response
 include::{snippets}/get-user-posts/http-response.adoc[]
+
+
+
+
+
+
+
+[[resources-category]]
+== 카테고리
+
+유저는 SNS서비스를 사용하는 유저의 데이터를 의미한다.
+
+
+[[resources-get-interests]]
+=== 관심사 목록 조회
+
+`GET` 요청을 사용하여 관심사 목록을 조회할 수 있다.
+
+[[http-request]]
+==== http-request
+include::{snippets}/get-interests/http-request.adoc[]
+
+[[http-response]]
+==== http-response
+include::{snippets}/get-interests/http-response.adoc[]
+
+
+
+[[resources-get-majors]]
+=== 전공 목록 조회
+
+`GET` 요청을 사용하여 전공 목록을 조회할 수 있다.
+
+[[http-request]]
+==== http-request
+include::{snippets}/get-majors/http-request.adoc[]
+
+[[http-response]]
+==== http-response
+include::{snippets}/get-majors/http-response.adoc[]
