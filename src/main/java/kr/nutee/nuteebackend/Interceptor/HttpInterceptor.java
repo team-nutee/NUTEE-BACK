@@ -40,13 +40,15 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
             HttpServletResponse response,
             Object handler
     ) throws Exception {
-        String token = request.getHeader("Authorization").split(" ")[1];
-        Claims body = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        Map<String,Object> map = new HashMap<>();
-        map.put("sub",body.getSubject());
-        map.put("role",body.get("role",String.class));
-        map.put("id",body.get("id",Integer.class));
-        request.setAttribute("user",map);
+        if (request.getHeader("Authorization")!=null) {
+            String token = request.getHeader("Authorization").split(" ")[1];
+            Claims body = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+            Map<String,Object> map = new HashMap<>();
+            map.put("sub",body.getSubject());
+            map.put("role",body.get("role",String.class));
+            map.put("id",body.get("id",Integer.class));
+            request.setAttribute("user",map);
+        }
         return true;
     }
 }
