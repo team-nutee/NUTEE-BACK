@@ -168,13 +168,26 @@ public class MemberService {
                 Major.builder().major(v).member(finalMember).build()
             )
         );
-        if (member.getImage()!=null) {
-            imageRepository.save(
-                Image.builder()
-                    .member(member)
-                    .src(memberDTO.getProfileUrl())
-                    .build()
-            );
+        if (member.getImage()==null) {
+            if (memberDTO.getProfileUrl()!=null) {
+                imageRepository.save(
+                    Image.builder()
+                        .member(member)
+                        .src(memberDTO.getProfileUrl())
+                        .build()
+                );
+            }
+        } else {
+            if (memberDTO.getProfileUrl()==null) {
+                imageRepository.deleteImagesByMemberId(member.getId());
+            } else {
+                imageRepository.save(
+                    Image.builder()
+                        .member(member)
+                        .src(memberDTO.getProfileUrl())
+                        .build()
+                );
+            }
         }
     }
 
