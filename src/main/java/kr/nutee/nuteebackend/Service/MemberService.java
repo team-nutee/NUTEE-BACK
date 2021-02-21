@@ -153,6 +153,11 @@ public class MemberService {
 
         Member finalMember = member;
 
+        member.setInterests(null);
+        member.setImage(null);
+        member.setMajors(null);
+        memberRepository.save(member);
+
         memberDTO.getInterests().forEach(
             v->interestRepository.save(
                 Interest.builder().interest(v).member(finalMember).build()
