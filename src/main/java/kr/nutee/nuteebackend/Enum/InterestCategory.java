@@ -1,5 +1,8 @@
 package kr.nutee.nuteebackend.Enum;
 
+import lombok.Getter;
+
+@Getter
 public enum InterestCategory {
     FREE("FREE"),
     DORMITORY("DORMITORY"),
@@ -12,7 +15,7 @@ public enum InterestCategory {
     PROMOTION("PROMOTION"),
     ANIMAL("ANIMAL"),
     CERTIFICATE("CERTIFICATE");
-    public String interest;
+    private final String interest;
 
     InterestCategory(String interest) {
         this.interest = interest;

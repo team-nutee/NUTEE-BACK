@@ -468,12 +468,12 @@ public class PostService {
 
     private boolean isCorrectCategory(String category) {
         for (InterestCategory value : InterestCategory.values()) {
-            if (value.interest.equals(category)) {
+            if (value.getInterest().equals(category)) {
                 return true;
             }
         }
         for (MajorCategory value : MajorCategory.values()) {
-            if (value.major.equals(category)) {
+            if (value.getMajor().equals(category)) {
                 return true;
             }
         }
