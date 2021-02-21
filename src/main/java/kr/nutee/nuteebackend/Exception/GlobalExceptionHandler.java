@@ -74,22 +74,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             IllegalArgumentException.class, MissingServletRequestParameterException.class})
-    public ResponseEntity<Object> paramsEx(Exception e) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 52);
-        map.put("message","");
-        log.warn("params ex: "+ e.getClass());
-        return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+    public ResponseEntity<Response> paramsEx(Exception e) {
+        Response res = Response.builder()
+            .code(52)
+            .message(e.getMessage())
+            .body(null)
+            .build();
+        log.warn("IllegalArgumentException" + e.getClass());
+        return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<Object> nullEx(Exception e) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 53);
-        map.put("message","");
-        log.warn("null ex" + e.getClass());
-        e.printStackTrace();
-        return new ResponseEntity<>(map, HttpStatus.CONFLICT);
+    public ResponseEntity<Response> nullEx(Exception e) {
+        Response res = Response.builder()
+            .code(53)
+            .message(e.getMessage())
+            .body(null)
+            .build();
+        log.warn("NullPointerException" + e.getClass());
+        return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(AssertionError.class)

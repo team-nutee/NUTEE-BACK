@@ -163,7 +163,7 @@ public class MemberService {
             )
         );
 
-        memberDTO.getInterests().forEach(
+        memberDTO.getMajors().forEach(
             v->majorRepository.save(
                 Major.builder().major(v).member(finalMember).build()
             )
