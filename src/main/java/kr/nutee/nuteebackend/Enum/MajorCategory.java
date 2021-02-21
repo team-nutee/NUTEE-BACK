@@ -1,6 +1,9 @@
 package kr.nutee.nuteebackend.Enum;
 
-public enum Major {
+import lombok.Getter;
+
+@Getter
+public enum MajorCategory {
     SOCIOLOGY("SOCIOLOGY"),
     SOCIAL_SCIENCE("SOCIAL_SCIENCE"),
     ECONOMY("ECONOMY"),
@@ -20,9 +23,9 @@ public enum Major {
     MEDIA_CONTENTS("MEDIA_CONTENTS"),
     JOURNALISM("JOURNALISM"),
     DIGITAL_CONTENTS("DIGITAL_CONTENTS");
-    public String major;
+    private final String major;
 
-    Major(String major) {
+    MajorCategory(String major) {
         this.major = major;
     }
 

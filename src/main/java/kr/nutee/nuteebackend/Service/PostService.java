@@ -7,6 +7,8 @@ import kr.nutee.nuteebackend.DTO.Request.UpdatePostRequest;
 import kr.nutee.nuteebackend.DTO.Response.*;
 import kr.nutee.nuteebackend.Domain.*;
 import kr.nutee.nuteebackend.Enum.ErrorCode;
+import kr.nutee.nuteebackend.Enum.InterestCategory;
+import kr.nutee.nuteebackend.Enum.MajorCategory;
 import kr.nutee.nuteebackend.Exception.BusinessException;
 import kr.nutee.nuteebackend.Exception.NotAllowedException;
 import kr.nutee.nuteebackend.Exception.NotExistException;
@@ -74,6 +76,9 @@ public class PostService {
 
     @Transactional
     public PostResponse createPost(Long memberId, CreatePostRequest body) {
+        if (!isCorrectCategory(body.getCategory())) {
+            throw new IllegalArgumentException("서버에 해당하는 카테고리가 존재하지 않습니다.");
+        }
         Member member = memberRepository.findMemberById(memberId);
         Post post = util.fillPost(body, member);
         post = postRepository.save(post);
@@ -120,7 +125,7 @@ public class PostService {
     public Map<String,Long> deletePost(Long postId, Long memberId) {
         Post post = postRepository.findPostById(postId);
         if (!post.getMember().getId().equals(memberId)) {
-            throw new NotAllowedException("접근 권한이 없는 유저입 니다.", ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN);
+            throw new NotAllowedException("접근 권한이 없는 유저 입니다.", ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN);
         }
         post.setDeleted(true);
         post = postRepository.save(post);
@@ -459,6 +464,20 @@ public class PostService {
         }
         Comment changedComment = commentRepository.findCommentById(commentId);
         return util.transferCommentResponse(changedComment);
+    }
+
+    private boolean isCorrectCategory(String category) {
+        for (InterestCategory value : InterestCategory.values()) {
+            if (value.getInterest().equals(category)) {
+                return true;
+            }
+        }
+        for (MajorCategory value : MajorCategory.values()) {
+            if (value.getMajor().equals(category)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

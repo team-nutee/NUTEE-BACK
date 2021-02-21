@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
+import kr.nutee.nuteebackend.Enum.InterestCategory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
@@ -28,7 +29,7 @@ public class HashtagControllerTest extends BaseControllerTest {
 
         postService.createPost(1L, CreatePostRequest.builder()
             .content("#해쉬태그")
-            .category("INTER1")
+            .category(InterestCategory.ANIMAL.getInterest())
             .title("제목")
             .build());
 

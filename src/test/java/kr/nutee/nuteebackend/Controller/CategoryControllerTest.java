@@ -8,9 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import kr.nutee.nuteebackend.DTO.Request.CreatePostRequest;
-import kr.nutee.nuteebackend.Enum.Interest;
-import kr.nutee.nuteebackend.Enum.Major;
+import kr.nutee.nuteebackend.Enum.InterestCategory;
+import kr.nutee.nuteebackend.Enum.MajorCategory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ public class CategoryControllerTest extends BaseControllerTest  {
     @DisplayName("내가 댓글 작성한 게시글 호출 성공")
     void getInterests() throws Exception {
         //given
-        int size = Interest.values().length;
+        int size = InterestCategory.values().length;
 
         //when
         MockHttpServletRequestBuilder builder = get("/sns/category/interests")
@@ -48,7 +47,7 @@ public class CategoryControllerTest extends BaseControllerTest  {
     @DisplayName("내가 댓글 작성한 게시글 호출 성공")
     void getMajors() throws Exception {
         //given
-        int size = Major.values().length;
+        int size = MajorCategory.values().length;
 
         //when
         MockHttpServletRequestBuilder builder = get("/sns/category/majors")

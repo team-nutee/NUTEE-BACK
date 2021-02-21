@@ -5,6 +5,7 @@ import kr.nutee.nuteebackend.DTO.Response.PostResponse;
 import kr.nutee.nuteebackend.DTO.Response.User;
 import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Enum.Category;
+import kr.nutee.nuteebackend.Enum.InterestCategory;
 import org.junit.jupiter.api.*;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +32,7 @@ public class PostControllerTest extends BaseControllerTest {
         CreatePostRequest body = CreatePostRequest.builder()
                 .title("제목 테스트")
                 .content("내용 테스트")
-                .category(Category.INTER1.getCategory())
+                .category(InterestCategory.ANIMAL.getInterest())
                 .build();
 
         Long memberId = 1L;
@@ -60,7 +61,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("body.id").exists())
                 .andExpect(jsonPath("body.title").value("제목 테스트"))
                 .andExpect(jsonPath("body.content").value("내용 테스트"))
-                .andExpect(jsonPath("body.category").value(Category.INTER1.getCategory()))
+                .andExpect(jsonPath("body.category").value(InterestCategory.ANIMAL.getInterest()))
                 .andExpect(jsonPath("body.user").value(user))
                 .andExpect(jsonPath("body.images").isEmpty())
                 .andExpect(jsonPath("body.likers").isEmpty())
@@ -90,7 +91,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .title("제목 테스트2")
                 .content("내용 테스트2")
                 .images(images)
-                .category("IT2")
+                .category(InterestCategory.ANIMAL.getInterest())
                 .build();
 
         Long memberId = 1L;
@@ -119,7 +120,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("body.id").exists())
                 .andExpect(jsonPath("body.title").value("제목 테스트2"))
                 .andExpect(jsonPath("body.content").value("내용 테스트2"))
-                .andExpect(jsonPath("body.category").value("IT2"))
+                .andExpect(jsonPath("body.category").value(InterestCategory.ANIMAL.getInterest()))
                 .andExpect(jsonPath("body.user").value(user))
                 .andExpect(jsonPath("body.images").exists())
                 .andExpect(jsonPath("body.images[0].src").value("pathOfImage.jpg"))
