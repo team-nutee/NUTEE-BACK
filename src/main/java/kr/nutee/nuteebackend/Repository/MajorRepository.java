@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 
 public interface MajorRepository extends JpaRepository<Major, Long> {
-
+    void deleteMajorsByMemberId(Long memberId);
 }

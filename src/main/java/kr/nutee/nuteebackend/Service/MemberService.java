@@ -127,7 +127,7 @@ public class MemberService {
             )
         );
 
-        memberDTO.getInterests().forEach(
+        memberDTO.getMajors().forEach(
             v->majorRepository.save(
                 Major.builder().major(v).member(finalMember).build()
             )
@@ -153,10 +153,9 @@ public class MemberService {
 
         Member finalMember = member;
 
-        member.setInterests(null);
-        member.setImage(null);
-        member.setMajors(null);
-        memberRepository.save(member);
+        interestRepository.deleteInterestsByMemberId(member.getId());
+        majorRepository.deleteMajorsByMemberId(member.getId());
+        imageRepository.deleteImagesByMemberId(member.getId());
 
         memberDTO.getInterests().forEach(
             v->interestRepository.save(
@@ -169,13 +168,14 @@ public class MemberService {
                 Major.builder().major(v).member(finalMember).build()
             )
         );
-
-        imageRepository.save(
-            Image.builder()
-                .member(member)
-                .src(memberDTO.getProfileUrl())
-                .build()
-        );
+        if (member.getImage()!=null) {
+            imageRepository.save(
+                Image.builder()
+                    .member(member)
+                    .src(memberDTO.getProfileUrl())
+                    .build()
+            );
+        }
     }
 
 }

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 
 public interface InterestRepository extends JpaRepository<Interest, Long> {
-
+    void deleteInterestsByMemberId(Long memberId);
 }
