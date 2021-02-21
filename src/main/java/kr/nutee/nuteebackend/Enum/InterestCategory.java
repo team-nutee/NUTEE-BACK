@@ -1,6 +1,6 @@
 package kr.nutee.nuteebackend.Enum;
 
-public enum Interest {
+public enum InterestCategory {
     FREE("FREE"),
     DORMITORY("DORMITORY"),
     FOOD("FOOD"),
@@ -11,10 +11,10 @@ public enum Interest {
     STUDY("STUDY"),
     PROMOTION("PROMOTION"),
     ANIMAL("ANIMAL"),
-    CERTIFICATE("CERTIFICATE(");
+    CERTIFICATE("CERTIFICATE");
     public String interest;
 
-    Interest(String interest) {
+    InterestCategory(String interest) {
         this.interest = interest;
     }
 }

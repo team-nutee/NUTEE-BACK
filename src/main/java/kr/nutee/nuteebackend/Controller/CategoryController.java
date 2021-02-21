@@ -2,8 +2,8 @@ package kr.nutee.nuteebackend.Controller;
 
 import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
 import kr.nutee.nuteebackend.DTO.Response.Response;
-import kr.nutee.nuteebackend.Enum.Interest;
-import kr.nutee.nuteebackend.Enum.Major;
+import kr.nutee.nuteebackend.Enum.InterestCategory;
+import kr.nutee.nuteebackend.Enum.MajorCategory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -25,7 +25,7 @@ public class CategoryController {
         Response response = Response.builder()
             .code(10)
             .message("SUCCESS")
-            .body(Interest.values())
+            .body(InterestCategory.values())
             .build();
 
         ResponseResource resource = new ResponseResource(response, CategoryController.class);
@@ -37,7 +37,7 @@ public class CategoryController {
         Response response = Response.builder()
             .code(10)
             .message("SUCCESS")
-            .body(Major.values())
+            .body(MajorCategory.values())
             .build();
 
         ResponseResource resource = new ResponseResource(response, CategoryController.class);

@@ -1,6 +1,6 @@
 package kr.nutee.nuteebackend.Enum;
 
-public enum Major {
+public enum MajorCategory {
     SOCIOLOGY("SOCIOLOGY"),
     SOCIAL_SCIENCE("SOCIAL_SCIENCE"),
     ECONOMY("ECONOMY"),
@@ -22,7 +22,7 @@ public enum Major {
     DIGITAL_CONTENTS("DIGITAL_CONTENTS");
     public String major;
 
-    Major(String major) {
+    MajorCategory(String major) {
         this.major = major;
     }
 
