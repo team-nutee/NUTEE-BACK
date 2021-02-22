@@ -1,5 +1,6 @@
 package kr.nutee.nuteebackend.Controller;
 
+import java.util.Arrays;
 import kr.nutee.nuteebackend.DTO.Resource.ResponseResource;
 import kr.nutee.nuteebackend.DTO.Response.Response;
 import kr.nutee.nuteebackend.Enum.InterestCategory;
@@ -22,10 +23,12 @@ public class CategoryController {
 
     @GetMapping("/interests")
     public ResponseEntity<ResponseResource> getInterests() {
+        String[] interests = Arrays.stream(InterestCategory.values())
+            .map(InterestCategory::getInterest).toArray(String[]::new);
         Response response = Response.builder()
             .code(10)
             .message("SUCCESS")
-            .body(InterestCategory.values())
+            .body(interests)
             .build();
 
         ResponseResource resource = new ResponseResource(response, CategoryController.class);
@@ -34,10 +37,12 @@ public class CategoryController {
 
     @GetMapping("/majors")
     public ResponseEntity<ResponseResource> getMajors() {
+        String[] majors = Arrays.stream(MajorCategory.values())
+            .map(MajorCategory::getMajor).toArray(String[]::new);
         Response response = Response.builder()
             .code(10)
             .message("SUCCESS")
-            .body(MajorCategory.values())
+            .body(majors)
             .build();
 
         ResponseResource resource = new ResponseResource(response, CategoryController.class);
