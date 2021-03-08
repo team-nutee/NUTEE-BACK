@@ -4,8 +4,6 @@ import kr.nutee.nuteebackend.DTO.Response.Response;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 
-import java.net.URI;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 public class ResponseResource extends EntityModel<Response> {

@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 public class CategoryControllerTest extends BaseControllerTest  {
 
     @Test @Order(1)
-    @DisplayName("내가 댓글 작성한 게시글 호출 성공")
+    @DisplayName("관심목록 호출 성공")
     void getInterests() throws Exception {
         //given
         int size = InterestCategory.values().length;
@@ -43,8 +43,8 @@ public class CategoryControllerTest extends BaseControllerTest  {
             .andDo(document("get-interests"));
     }
 
-    @Test @Order(1)
-    @DisplayName("내가 댓글 작성한 게시글 호출 성공")
+    @Test @Order(2)
+    @DisplayName("전공 목록 호출 성공")
     void getMajors() throws Exception {
         //given
         int size = MajorCategory.values().length;
