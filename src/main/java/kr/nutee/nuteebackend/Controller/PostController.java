@@ -457,7 +457,7 @@ public class PostController {
     ) {
         Long memberId = util.getTokenMemberId(request);
 
-        CommentResponse comment = postService.reportComment(memberId, Long.parseLong(commentId), body.getContent());
+        CommentResponse comment = postService.reportComment(Long.parseLong(commentId),memberId, body.getContent());
 
         Response response = Response.builder()
             .code(10)
