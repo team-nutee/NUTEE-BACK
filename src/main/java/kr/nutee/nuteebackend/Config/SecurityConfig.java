@@ -34,8 +34,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll()
             .and()
                 .authorizeRequests()
-                .anyRequest()
-                .authenticated();
+                .antMatchers("/sns/hashtag/**").authenticated()
+                .antMatchers("/sns/upload/**").authenticated()
+                .antMatchers("/sns/post/**").authenticated()
+                .antMatchers("/sns/search/**").authenticated()
+                .antMatchers("/sns/user/**").authenticated();
     }
 
     @Override
