@@ -63,6 +63,29 @@ public class PostController {
     }
 
     /*
+        전공 게시판 불러오기
+     */
+    @GetMapping(path = "/major")
+    public ResponseEntity<ResponseResource> getMajorPosts(
+        HttpServletRequest request,
+        @RequestParam("lastId") int lastId,
+        @RequestParam("limit") int limit
+    ) {
+        Long memberId = util.getTokenMemberId(request);
+
+        Response response = Response.builder()
+            .code(10)
+            .message("SUCCESS")
+            .body(postService.getMajorPosts((long) lastId, limit, memberId))
+            .build();
+
+        ResponseResource resource = new ResponseResource(response, PostController.class);
+        resource.add(linkTo(PostController.class).slash("major").withRel("get-major-posts"));
+
+        return ResponseEntity.ok().body(resource);
+    }
+
+    /*
         카테고리 게시판 불러오기
      */
     @GetMapping(path = "/category/{category}")
