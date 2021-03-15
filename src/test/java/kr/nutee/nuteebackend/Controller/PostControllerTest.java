@@ -393,10 +393,41 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("code").exists())
                 .andExpect(jsonPath("message").exists())
-                .andExpect(jsonPath("body",hasSize(10)))
+                .andExpect(jsonPath("body",hasSize(7)))
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.get-favorite-posts").exists())
                 .andDo(document("get-favorite-posts"));
+
+
+    }
+
+    @Test @Order(11)
+    @DisplayName("전공 게시판 목록 읽기 성공")
+    void getMajorPosts() throws Exception {
+        //given
+        Long lastId = 0L;
+        int limit = 10;
+
+        //when
+        MockHttpServletRequestBuilder builder = get("/sns/post/major",lastId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaTypes.HAL_JSON_VALUE)
+            .content("{}")
+            .param("lastId", String.valueOf(lastId))
+            .param("limit", String.valueOf(limit));
+
+        //then
+        mockMvc.perform(builder)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
+            .andExpect(jsonPath("code").exists())
+            .andExpect(jsonPath("message").exists())
+            .andExpect(jsonPath("body",hasSize(0)))
+            .andExpect(jsonPath("_links.self").exists())
+            .andExpect(jsonPath("_links.get-major-posts").exists())
+            .andDo(document("get-major-posts"));
 
 
     }

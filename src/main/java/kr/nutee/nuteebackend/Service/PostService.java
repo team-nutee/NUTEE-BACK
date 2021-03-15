@@ -237,7 +237,6 @@ public class PostService {
         Member member = memberRepository.findMemberById(memberId);
 
         member.getInterests().forEach(v->favorites.add(v.getInterest()));
-        member.getMajors().forEach(v->favorites.add(v.getMajor()));
         List<Post> finalPreferPosts = favoritePosts;
         favorites.forEach(v-> {
             if (lastId == 0) {
@@ -252,6 +251,30 @@ public class PostService {
 
         return util.transferPosts(favoritePosts).stream()
                 .limit(limit).collect(Collectors.toList());
+    }
+
+    //해당 유저가 구독한 전공 게시판의 글들을 가져온다.
+    public List<PostShowResponse> getMajorPosts(Long lastId, int limit, Long memberId) {
+        List<String> favorites = new ArrayList<>();
+        List<Post> favoritePosts = new ArrayList<>();
+        Pageable limitP = PageRequest.of(0, limit);
+        Member member = memberRepository.findMemberById(memberId);
+
+        member.getMajors().forEach(v->favorites.add(v.getMajor()));
+        List<Post> finalPreferPosts = favoritePosts;
+        favorites.forEach(v-> {
+            if (lastId == 0) {
+                finalPreferPosts.addAll(postRepository.findPostsByCategory(v, limitP));
+            } else {
+                finalPreferPosts.addAll(postRepository.findPostsByCategoryEqualsAndIdLessThan(v,lastId,limitP));
+            }
+        });
+        favoritePosts = favoritePosts.stream()
+            .sorted()
+            .collect(Collectors.toList());
+
+        return util.transferPosts(favoritePosts).stream()
+            .limit(limit).collect(Collectors.toList());
     }
 
     public List<PostShowResponse> getUserPosts(Long memberId, int limit, Long lastId) {
