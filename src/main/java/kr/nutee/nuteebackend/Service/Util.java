@@ -53,11 +53,12 @@ public class Util {
 
     public List<PostShowResponse> transferPosts(List<Post> posts) {
         List<PostShowResponse> result = new ArrayList<>();
+
         posts.forEach(v -> result.add(PostShowResponse.builder()
                 .id(v.getId())
                 .category(v.getCategory())
                 .images(transferImageResponses(v))
-                .commentNum(transferCommentsResponse(v.getComments())==null ? 0 : transferCommentsResponse(v.getComments()).size())
+                .commentNum(transferCommentsResponse(v.getComments())==null ? 0 : v.getComments().size() + getChildCommentNum(v.getComments()))
                 .content(v.getContent())
                 .hits(transferHits(v.getHits()))
                 .updatedAt(v.getUpdatedAt())
@@ -69,6 +70,14 @@ public class Util {
                 .user(transferUser(v.getMember()))
                 .build()));
         return result;
+    }
+
+    private int getChildCommentNum(List<Comment> comments) {
+        int count = 0;
+        for (Comment comment : comments) {
+            count += comment.getChild().size();
+        }
+        return count;
     }
 
     public List<Image> saveImage(CreatePostRequest body, Post post) {
