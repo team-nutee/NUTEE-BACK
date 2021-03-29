@@ -4,7 +4,6 @@ import kr.nutee.nuteebackend.DTO.Request.*;
 import kr.nutee.nuteebackend.DTO.Response.PostResponse;
 import kr.nutee.nuteebackend.DTO.Response.User;
 import kr.nutee.nuteebackend.Domain.Member;
-import kr.nutee.nuteebackend.Enum.Category;
 import kr.nutee.nuteebackend.Enum.InterestCategory;
 import org.junit.jupiter.api.*;
 import org.springframework.hateoas.MediaTypes;
@@ -40,7 +39,7 @@ public class PostControllerTest extends BaseControllerTest {
         User user = User.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
-                .image(util.transferImage(member.getImage()))
+                .image(util.transformImage(member.getImage()))
                 .build();
 
         //when
@@ -99,7 +98,7 @@ public class PostControllerTest extends BaseControllerTest {
         User user = User.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
-                .image(util.transferImage(member.getImage()))
+                .image(util.transformImage(member.getImage()))
                 .build();
 
         //when
@@ -172,7 +171,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .images(images)
                 .build();
 
-        PostResponse post = util.transferPost(postRepository.findPostById(postId));
+        PostResponse post = util.transformPost(postRepository.findPostById(postId));
         User user = post.getUser();
 
         //when

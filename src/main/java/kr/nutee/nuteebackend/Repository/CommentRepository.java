@@ -14,6 +14,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT c FROM Comment c WHERE c.isDeleted = false AND c.post.id = :postId AND c.parent IS NULL")
     List<Comment> findAllCommentsByPostId(Long postId);
 
+    @Query("SELECT COUNT (c) FROM Comment c WHERE c.isDeleted = false AND c.parent.id = :commentId")
+    int countAllReCommentsByCommentId(Long commentId);
+
     @Query("SELECT COUNT(c) FROM Comment c WHERE c.isDeleted = false AND c.member.id = :memberId AND c.post.isDeleted = false")
     int countCommentsByMemberId(Long memberId);
 }
