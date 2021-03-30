@@ -60,7 +60,7 @@ public class PostService {
         } else {
             posts = postRepository.findPostsByCategoryEqualsAndIdLessThan(category, lastId, limitP);
         }
-        return util.transferPosts(posts);
+        return util.transformPosts(posts);
     }
 
     public List<PostShowResponse> getAllPosts(Long lastId, int limit) {
@@ -71,7 +71,7 @@ public class PostService {
         } else {
             posts = postRepository.findAllPostsAndIdLessThan(lastId, limitP);
         }
-        return util.transferPosts(posts);
+        return util.transformPosts(posts);
     }
 
     @Transactional
@@ -84,7 +84,7 @@ public class PostService {
         post = postRepository.save(post);
         util.saveHashTag(body.getContent(), post);
         post.setImages(util.saveImage(body, post));
-        return util.transferPost(post);
+        return util.transformPost(post);
     }
 
     @Transactional
@@ -101,7 +101,7 @@ public class PostService {
             throw new NotAllowedException("현재 신고로 인하여 볼 수 없는 글 입니다.",ErrorCode.ACCEPT_DENIED, HttpStatus.FORBIDDEN,postId);
         }
         util.hitPost(post,member);
-        return util.transferPost(post);
+        return util.transformPost(post);
     }
 
     @Transactional
@@ -118,7 +118,7 @@ public class PostService {
         imageRepository.deleteImagesByPostId(postId);
         em.flush();
         post.setImages(util.saveImage(body, post));
-        return util.transferPost(post);
+        return util.transformPost(post);
     }
 
     @Transactional
@@ -150,7 +150,7 @@ public class PostService {
         }else{
             //이미 좋아요 누름
         }
-        return util.transferPost(post);
+        return util.transformPost(post);
     }
 
     @Transactional
@@ -167,7 +167,7 @@ public class PostService {
         }else{
             //이미 좋아요 없어진 상태
         }
-        return util.transferPost(post);
+        return util.transformPost(post);
     }
 
     @Transactional
@@ -197,7 +197,7 @@ public class PostService {
             post.setBlocked(true);
             postRepository.save(post);
         }
-        return util.transferPost(post);
+        return util.transformPost(post);
     }
 
     public List<PostShowResponse> searchPost(Long lastId, int limit, String text){
@@ -208,7 +208,7 @@ public class PostService {
         } else {
             posts = postRepository.findPostsByTextAndIdLessThan(text, lastId, limitP);
         }
-        return util.transferPosts(posts);
+        return util.transformPosts(posts);
     }
 
     public List<PostShowResponse> getHashtagPosts(Long lastId, int limit, String tag){
@@ -226,7 +226,7 @@ public class PostService {
                 posts = postRepository.findPostsByHashtagIdAndIdLessThan(hashtagId, lastId, limitP);
             }
         }
-        return util.transferPosts(posts);
+        return util.transformPosts(posts);
     }
 
     //해당 유저가 구독한 게시판의 글들을 가져온다.
@@ -249,7 +249,7 @@ public class PostService {
                 .sorted()
                 .collect(Collectors.toList());
 
-        return util.transferPosts(favoritePosts).stream()
+        return util.transformPosts(favoritePosts).stream()
                 .limit(limit).collect(Collectors.toList());
     }
 
@@ -273,7 +273,7 @@ public class PostService {
             .sorted()
             .collect(Collectors.toList());
 
-        return util.transferPosts(favoritePosts).stream()
+        return util.transformPosts(favoritePosts).stream()
             .limit(limit).collect(Collectors.toList());
     }
 
@@ -286,7 +286,7 @@ public class PostService {
         } else {
             posts = postRepository.findPostsByMemberIdAndIdLessThan(memberId, lastId, limitP);
         }
-        return util.transferPosts(posts);
+        return util.transformPosts(posts);
     }
 
     public List<PostShowResponse> getUserCommentPosts(Long memberId, int limit, Long lastId) {
@@ -298,7 +298,7 @@ public class PostService {
         } else {
             posts = postRepository.findUserCommentPostsAndIdLessThan(memberId, lastId, limitP);
         }
-        return util.transferPosts(posts);
+        return util.transformPosts(posts);
     }
 
     public List<PostShowResponse> getUserLikePosts(Long memberId, int limit, Long lastId) {
@@ -310,7 +310,7 @@ public class PostService {
         } else {
             posts = postRepository.findUserLikePostsAndIdLessThan(memberId, lastId, limitP);
         }
-        return util.transferPosts(posts);
+        return util.transformPosts(posts);
     }
 
     /*
@@ -334,7 +334,7 @@ public class PostService {
 
         post = postRepository.save(post);
         util.saveHashTag(body.getContent(), post);
-        return util.transferPost(post);
+        return util.transformPost(post);
     }
 
     public List<CommentResponse> getComments(Long postId) {
@@ -345,7 +345,7 @@ public class PostService {
                         "ORDER BY c.createdAt DESC", Comment.class)
                 .setParameter("postId", postId)
                 .getResultList();
-        return util.transferCommentsResponse(comments);
+        return util.transformCommentsResponse(comments);
     }
 
     @Transactional
@@ -367,7 +367,7 @@ public class PostService {
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
-                .user(util.transferUser(comment.getMember()))
+                .user(util.transformUser(comment.getMember()))
                 .build();
     }
 
@@ -384,7 +384,7 @@ public class PostService {
             //예외처리(수정 권한 없음)
         }
         commentRepository.save(comment);
-        return util.transferCommentResponse(comment);
+        return util.transformCommentResponse(comment);
     }
 
     @Transactional
@@ -403,7 +403,7 @@ public class PostService {
                 .post(post)
                 .build();
         Comment save = commentRepository.save(reComment);
-        return util.transferCommentResponse(save);
+        return util.transformCommentResponse(save);
     }
 
     @Transactional
@@ -417,7 +417,7 @@ public class PostService {
             //예외처리(수정 권한 없음)
         }
         List<Comment> comments = commentRepository.findAllCommentsByPostId(postId);
-        return util.transferCommentsResponse(comments);
+        return util.transformCommentsResponse(comments);
     }
 
     @Transactional
@@ -447,7 +447,7 @@ public class PostService {
             comment.setBlocked(true);
             commentRepository.save(comment);
         }
-        return util.transferCommentResponse(comment);
+        return util.transformCommentResponse(comment);
     }
 
     @Transactional
@@ -468,7 +468,7 @@ public class PostService {
             //이미 좋아요 누름
         }
         Comment changedComment = commentRepository.findCommentById(commentId);
-        return util.transferCommentResponse(changedComment);
+        return util.transformCommentResponse(changedComment);
     }
 
     @Transactional
@@ -486,7 +486,7 @@ public class PostService {
             //이미 좋아요 없어진 상태
         }
         Comment changedComment = commentRepository.findCommentById(commentId);
-        return util.transferCommentResponse(changedComment);
+        return util.transformCommentResponse(changedComment);
     }
 
     private boolean isCorrectCategory(String category) {

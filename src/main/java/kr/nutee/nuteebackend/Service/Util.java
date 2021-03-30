@@ -28,6 +28,7 @@ public class Util {
     private final HitRepository hitRepository;
     private final ImageRepository imageRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
 
     public void hitPost(Post post, Member member) {
         Hit hit = Hit.builder().member(member).post(post).build();
@@ -39,45 +40,48 @@ public class Util {
         }
     }
 
-    public CommentResponse transferCommentResponse(Comment comment) {
+    public CommentResponse transformCommentResponse(Comment comment) {
         return CommentResponse.builder()
                 .id(comment.getId())
-                .user(transferUser(comment.getMember()))
-                .likers(transferCommentLikeResponses(comment.getLikes()))
-                .reComment(transferReCommentResponses(comment))
+                .user(transformUser(comment.getMember()))
+                .likers(transformCommentLikeResponses(comment.getLikes()))
+                .reComment(transformReCommentResponses(comment))
                 .updatedAt(comment.getUpdatedAt())
                 .createdAt(comment.getCreatedAt())
                 .content(comment.getContent())
                 .build();
     }
 
-    public List<PostShowResponse> transferPosts(List<Post> posts) {
+    public List<PostShowResponse> transformPosts(List<Post> posts) {
         List<PostShowResponse> result = new ArrayList<>();
 
         posts.forEach(v -> result.add(PostShowResponse.builder()
                 .id(v.getId())
                 .category(v.getCategory())
-                .images(transferImageResponses(v))
-                .commentNum(transferCommentsResponse(v.getComments())==null ? 0 : v.getComments().size() + getChildCommentNum(v.getComments()))
+                .images(transformImageResponses(v))
+                .commentNum(getRealCommentNum(v))
                 .content(v.getContent())
-                .hits(transferHits(v.getHits()))
+                .hits(transformHits(v.getHits()))
                 .updatedAt(v.getUpdatedAt())
                 .createdAt(v.getCreatedAt())
                 .isBlocked(v.isBlocked())
-                .likers(transferPostLikeResponses(v.getLikes()))
-                .retweet(transferRetweet(v.getRetweet()))
+                .likers(transformPostLikeResponses(v.getLikes()))
+                .retweet(transformRetweet(v.getRetweet()))
                 .title(v.getTitle())
-                .user(transferUser(v.getMember()))
+                .user(transformUser(v.getMember()))
                 .build()));
         return result;
     }
 
-    private int getChildCommentNum(List<Comment> comments) {
-        int count = 0;
+    private int getRealCommentNum(Post post) {
+        List<Comment> comments = commentRepository.findAllCommentsByPostId(post.getId());
+
+        int commentSize = comments.size();
+
         for (Comment comment : comments) {
-            count += comment.getChild().size();
+            commentSize += commentRepository.countAllReCommentsByCommentId(comment.getId());
         }
-        return count;
+        return commentSize;
     }
 
     public List<Image> saveImage(CreatePostRequest body, Post post) {
@@ -133,14 +137,14 @@ public class Util {
         }
     }
 
-    public PostResponse transferPost(Post post) {
-        List<ImageResponse> imageResponses = transferImageResponses(post);
+    public PostResponse transformPost(Post post) {
+        List<ImageResponse> imageResponses = transformImageResponses(post);
         List<PostLike> likes = postLikeRepository.findPostLikesByPostId(post.getId());
-        List<User> likers = transferPostLikeResponses(likes);
-        List<CommentResponse> comments = transferCommentsResponse(post.getComments());
-        RetweetResponse retweet = transferRetweet(post.getRetweet());
+        List<User> likers = transformPostLikeResponses(likes);
+        List<CommentResponse> comments = transformCommentsResponse(commentRepository.findAllCommentsByPostId(post.getId()));
+        RetweetResponse retweet = transformRetweet(post.getRetweet());
         List<Hit> hitList = hitRepository.findHitsByPostId(post.getId());
-        int hits = transferHits(hitList);
+        int hits = transformHits(hitList);
 
         return PostResponse.builder()
                 .id(post.getId())
@@ -150,7 +154,7 @@ public class Util {
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .isBlocked(post.isBlocked())
-                .user(transferUser(post.getMember()))
+                .user(transformUser(post.getMember()))
                 .images(imageResponses)
                 .likers(likers)
                 .comments(comments)
@@ -159,7 +163,7 @@ public class Util {
                 .build();
     }
 
-    public int transferHits(List<Hit> hitList) {
+    public int transformHits(List<Hit> hitList) {
         int hits;
         if(hitList==null){
             hits = 0;
@@ -169,28 +173,28 @@ public class Util {
         return hits;
     }
 
-    public RetweetResponse transferRetweet(Post retweet) {
+    public RetweetResponse transformRetweet(Post retweet) {
         if (retweet == null) {
             return null;
         }
         return RetweetResponse.builder()
                 .id(retweet.getId())
                 .content(retweet.getContent())
-                .hits(transferHits(retweet.getHits()))
+                .hits(transformHits(retweet.getHits()))
                 .commentNum(retweet.getComments().size())
                 .createdAt(retweet.getCreatedAt())
-                .images(transferImageResponses(retweet))
+                .images(transformImageResponses(retweet))
                 .isDeleted(retweet.isDeleted())
                 .isBlocked(retweet.isBlocked())
-                .likers(transferPostLikeResponses(retweet.getLikes()))
+                .likers(transformPostLikeResponses(retweet.getLikes()))
                 .category(retweet.getCategory())
                 .updatedAt(retweet.getUpdatedAt())
                 .title(retweet.getTitle())
-                .user(transferUser(retweet.getMember()))
+                .user(transformUser(retweet.getMember()))
                 .build();
     }
 
-    public List<ImageResponse> transferImageResponses(Post post) {
+    public List<ImageResponse> transformImageResponses(Post post) {
         if(post.getImages()==null){
             return null;
         }
@@ -198,11 +202,11 @@ public class Util {
             return null;
         }
         List<ImageResponse> imageResponses = new ArrayList<>();
-        post.getImages().forEach(v -> imageResponses.add(transferImage(v)));
+        post.getImages().forEach(v -> imageResponses.add(transformImage(v)));
         return imageResponses;
     }
 
-    public List<User> transferPostLikeResponses(List<PostLike> likes) {
+    public List<User> transformPostLikeResponses(List<PostLike> likes) {
         if (likes.size() == 0) {
             return null;
         }
@@ -210,14 +214,14 @@ public class Util {
         likes.forEach(v -> likers.add(
                 User.builder()
                         .id(v.getMember().getId())
-                        .image(transferImage(v.getMember().getImage()))
+                        .image(transformImage(v.getMember().getImage()))
                         .nickname(v.getMember().getNickname())
                         .build()
         ));
         return likers;
     }
 
-    public List<User> transferCommentLikeResponses(List<CommentLike> likes) {
+    public List<User> transformCommentLikeResponses(List<CommentLike> likes) {
         if (likes.size() == 0) {
             return null;
         }
@@ -225,14 +229,14 @@ public class Util {
         likes.forEach(v -> likers.add(
             User.builder()
                 .id(v.getMember().getId())
-                .image(transferImage(v.getMember().getImage()))
+                .image(transformImage(v.getMember().getImage()))
                 .nickname(v.getMember().getNickname())
                 .build()
         ));
         return likers;
     }
 
-    public List<CommentResponse> transferCommentsResponse(List<Comment> originComments) {
+    public List<CommentResponse> transformCommentsResponse(List<Comment> originComments) {
         if (originComments==null){
             return null;
         }
@@ -246,25 +250,25 @@ public class Util {
                 .forEach(v -> comments.add(new CommentResponse(
                         v.getId(),
                         v.getContent(),
-                        v.getLikes().stream().map(CommentLike::getMember).map(this::transferUser).collect(Collectors.toList()),
+                        v.getLikes().stream().map(CommentLike::getMember).map(this::transformUser).collect(Collectors.toList()),
                         v.getCreatedAt(),
                         v.getUpdatedAt(),
-                        transferReCommentResponses(v),
-                        transferUser(v.getMember())
+                        transformReCommentResponses(v),
+                        transformUser(v.getMember())
                 )));
         return comments;
     }
 
-    public List<ReCommentResponse> transferReCommentResponses(Comment comment) {
+    public List<ReCommentResponse> transformReCommentResponses(Comment comment) {
         List<ReCommentResponse> reComments = new ArrayList<>();
         comment.getChild().stream().filter(v -> !v.isDeleted())
                 .forEach(v -> reComments.add(new ReCommentResponse(
                         v.getId(),
                         v.getContent(),
-                        v.getLikes().stream().map(CommentLike::getMember).map(this::transferUser).collect(Collectors.toList()),
+                        v.getLikes().stream().map(CommentLike::getMember).map(this::transformUser).collect(Collectors.toList()),
                         v.getCreatedAt(),
                         v.getUpdatedAt(),
-                        transferUser(v.getMember())
+                        transformUser(v.getMember())
                 )));
         if (reComments.size() == 0) {
             return null;
@@ -272,15 +276,15 @@ public class Util {
         return reComments;
     }
 
-    public User transferUser(Member member) {
+    public User transformUser(Member member) {
         return new User(
                 member.getId(),
                 member.getNickname(),
-                transferImage(member.getImage())
+                transformImage(member.getImage())
         );
     }
 
-    public ImageResponse transferImage(Image image) {
+    public ImageResponse transformImage(Image image) {
         if (image == null) {
             return null;
         }

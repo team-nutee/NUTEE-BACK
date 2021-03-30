@@ -7,7 +7,6 @@ import kr.nutee.nuteebackend.Domain.Interest;
 import kr.nutee.nuteebackend.Domain.Major;
 import kr.nutee.nuteebackend.Domain.Member;
 import kr.nutee.nuteebackend.Domain.Post;
-import kr.nutee.nuteebackend.Enum.RoleType;
 import kr.nutee.nuteebackend.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -94,7 +92,7 @@ public class MemberService {
         return UserData.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
-                .image(util.transferImage(member.getImage()))
+                .image(util.transformImage(member.getImage()))
                 .interests(member.getInterests().stream().map(Interest::getInterest).collect(Collectors.toList()))
                 .majors(member.getMajors().stream().map(Major::getMajor).collect(Collectors.toList()))
                 .commentNum(commentNum)
