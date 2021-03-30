@@ -1,5 +1,12 @@
 # NUTEE-SNS
+
+## NUTEE 구조도
 ![NUTEE 구조도](https://user-images.githubusercontent.com/47442178/108618442-96779080-7461-11eb-819e-c8dd855a8070.jpg)
+
+## SNS Server 구조도
+![SNS 구조도](https://user-images.githubusercontent.com/47442178/112945366-269aab00-916f-11eb-8e91-3d515af644bc.png)
+
+
 ### 서비스 주요 기능
 - NUTEE 통합 서비스의 SNS 커뮤니티 관련 API 제공
 - 타임라인, 해시태그, 검색, 파일 업로드, 댓글, 답글, 신고 등의 기능 제공 
