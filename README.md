@@ -9,9 +9,12 @@
 - Spring Data JPA
 - MySQL
 - Kafka
+- AWS S3
+- AWS CloudFront
 
 ### 서비스 설계시 고려사항
 - 서비스의 핵심 기능인 만큼, 코드의 변경과 확장에 유연하게 대응할 수 있도록 설계.
 - 클라이언트가 사용하기 편한 API 제공
 - SNS 서비스에 연동된 NUTEE-ALARM 서비스가 비동기적으로 처리되도록 Kafka 사용.
 - 다양한 동시성 문제를 해결하기 위해 트랜잭션을 관리하기 쉬운 RDBMS 사용.
+- 이미지는 aws cloud front cdn을 사용하여 이미지 서버 부하를 분산.
